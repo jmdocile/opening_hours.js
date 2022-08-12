@@ -577,6 +577,7 @@ Almost everything from opening_hours definition is supported, as well as some ex
 
   - Countries with PH definition:
 
+    - [Argentina][ph-ar]
     - [Australia][ph-au]
     - [Austria][ph-at] ([footnotes][ph-at] are ignored)
     - [Belgium][ph-be] (See [issue #115](https://github.com/opening-hours/opening_hours.js/issues/115) for details)

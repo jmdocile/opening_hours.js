@@ -170,11 +170,8 @@ Changed
 ~~~~~~~
 
 * chore: change default git branch from `master` to `main`
-
-Changed
-~~~~~~~
-
 * chore: remove `bower.json`
+* docs: move Contributing section from README to CONTRIBUTING file and add "Branching Model" section
 
 v3.9.0_ - 2025-05-31
 --------------------

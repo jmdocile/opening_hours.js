@@ -884,7 +884,7 @@ The opening brackets `{{{` (and the corresponding closing onces) are used to fol
 
 ## Contributors
 
-Refer to the [Changelog](https://github.com/opening-hours/opening_hours.js/blob/master/CHANGELOG.rst)
+Refer to the [Changelog](https://github.com/opening-hours/opening_hours.js/blob/main/CHANGELOG.rst)
 
 ## Credits
 

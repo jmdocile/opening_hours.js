@@ -170,11 +170,12 @@ Changed
 ~~~~~~~
 
 * chore: change default git branch from `master` to `main`
-
-Changed
-~~~~~~~
-
 * chore: remove `bower.json`
+
+Added
+~~~~~
+
+* feat: script to update German school holidays [scripts/update_german_sh.mjs](scripts/update_german_sh.mjs) (#492)
 
 v3.9.0_ - 2025-05-31
 --------------------

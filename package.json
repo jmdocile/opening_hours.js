@@ -1,6 +1,7 @@
 {
   "name": "opening_hours",
   "main": "build/opening_hours.js",
+  "type": "commonjs",
   "typings": "./types/index.d.ts",
   "types": "./types/index.d.ts",
   "description": "Library to parse and process opening_hours tag from OpenStreetMap data",
@@ -78,7 +79,7 @@
     "moment": "^2.30.1",
     "npm-check-updates": "^17.1.16",
     "optimist": "^0.6.1",
-    "package-json-validator": "^0.10.1",
+    "package-json-validator": "^0.18.0",
     "pinst": "^3.0.0",
     "rollup": "^4.39.0",
     "sprintf-js": "1.1.3",

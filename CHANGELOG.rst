@@ -171,6 +171,7 @@ Changed
 
 * chore: change default git branch from `master` to `main`
 * chore: remove `bower.json`
+* docs: move Contributing section from README to CONTRIBUTING file and add "Branching Model" section
 
 Added
 ~~~~~

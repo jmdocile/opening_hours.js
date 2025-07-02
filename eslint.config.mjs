@@ -19,8 +19,7 @@ export default defineConfig([
     },
     rules: {
       'no-empty': 'warn',
-      'no-empty-function': 'warn',
-      'no-func-assign': 'warn'
+      'no-empty-function': 'warn'
     },
   },
   { files: ['**/*.md'], plugins: { markdown }, language: 'markdown/gfm', extends: ['markdown/recommended'] },

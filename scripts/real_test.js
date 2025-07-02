@@ -193,7 +193,7 @@ function opening_hours_test() {
             var logfile_out_string = '';
 
             for (let i = 0; i < data.data.length; i++) {
-                if (indexOf.call(ignored_values, data.data[i].value) === -1) {
+                if (ignored_values.indexOf(data.data[i].value) === -1) {
                     total_differ++;
                     total += data.data[i].count;
                 }
@@ -224,7 +224,7 @@ function opening_hours_test() {
             var parsed_values = 0; // total number of values which are "parsed" (if one value appears more than one, it counts more than one)
             for (let i = 0; i < total_differ; i++) {
                 var oh_value = data.data[i].value;
-                if (indexOf.call(ignored_values, oh_value) === -1) {
+                if (ignored_values.indexOf(oh_value) === -1) {
                     var oh_crahsed = true,
                         oh_warnings = [],
                         oh_value_prettified,
@@ -513,7 +513,7 @@ function opening_hours_test() {
                         elem.tags = [];
                     }
                     Object.keys(elem.tags).forEach(function (key) {
-                        if (indexOf.call(related_tags, key) !== -1) {
+                        if (related_tags.indexOf(key) !== -1) {
                             var val = elem.tags[key];
                             if (typeof(taginfo_format[key]) === 'undefined') {
                                 taginfo_format[key] = { data: [] };
@@ -608,28 +608,6 @@ function opening_hours_test() {
         if (a[1] < b[1]) return 1;
         return 0;
     }
-
-    function indexOf(needle) {
-        if(typeof Array.prototype.indexOf === 'function') {
-            indexOf = Array.prototype.indexOf;
-        } else {
-            indexOf = function(needle) {
-                let i = -1, index = -1;
-
-                for(i = 0; i < this.length; i++) {
-                    if(this[i] === needle) {
-                        index = i;
-                        break;
-                    }
-                }
-
-                return index;
-            };
-        }
-
-        return indexOf.call(this, needle);
-    }
-
     function get_dump_creation_time_from_file(file) {
         try {
             var data = JSON.parse(fs.readFileSync(file, 'utf8'));

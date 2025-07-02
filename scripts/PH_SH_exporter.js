@@ -73,9 +73,9 @@ if (!(argv['public-holidays'] || argv['school-holidays'] || argv['all-locations'
     console.error("Either --school-holidays or --public-holidays has to be specified.");
     process.exit(1);
 }
-let nominatim_by_loc = {};
-for (let nominatim_file of glob.sync("src/holidays/nominatim_cache/*.yaml")) {
-    let country_state = nominatim_file.match(/^.*\/([^/]*)\.yaml$/)[1];
+const nominatim_by_loc = {};
+for (const nominatim_file of glob.sync("src/holidays/nominatim_cache/*.yaml")) {
+    const country_state = nominatim_file.match(/^.*\/([^/]*)\.yaml$/)[1];
     nominatim_by_loc[country_state] = YAML.parse(fs.readFileSync(nominatim_file, "utf8"));
 }
 
@@ -87,7 +87,7 @@ var filepath = argv._[0];
 var oh_value = argv['public-holidays'] ? 'PH' : 'SH';
 
 if (argv['all-locations']) {
-    for (let nominatim_file_lookup_string in nominatim_by_loc) {
+    for (const nominatim_file_lookup_string in nominatim_by_loc) {
         write_config_file(filepath, oh_value, nominatim_file_lookup_string, new Date(argv.from, 0, 1), new Date(argv.to + 1, 0, 1));
     }
 } else {
@@ -101,7 +101,7 @@ if (argv['all-locations']) {
 }
 
 function write_config_file(filepath, oh_value, nominatim_file_lookup_string, from_date, to_date) {
-    let nominatim_data = nominatim_by_loc[nominatim_file_lookup_string] || nominatim_by_loc[argv.country];
+    const nominatim_data = nominatim_by_loc[nominatim_file_lookup_string] || nominatim_by_loc[argv.country];
 
     if (typeof nominatim_data !== 'object') {
         console.error(nominatim_file_lookup_string + " is currently not supported.");

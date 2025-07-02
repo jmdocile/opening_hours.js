@@ -18,6 +18,7 @@ export default defineConfig([
       sourceType: 'module',
     },
     rules: {
+      'prefer-const': 'error',
     },
   },
   { files: ['**/*.md'], plugins: { markdown }, language: 'markdown/gfm', extends: ['markdown/recommended'] },

@@ -92,16 +92,16 @@ for (let i = 0; i < argv._.length; i++) {
         console.log("connected");
 
         socket.on('data', function (data) {
-            let value = data.toString();
+            const value = data.toString();
             console.log(value);
-            let result = opening_hours_object(value);
+            const result = opening_hours_object(value);
             socket.write(JSON.stringify(result, null, '\t'));
         });
     }).listen(argv._[i]);
 }
 
 if (typeof argv.value === 'string') {
-    let result = opening_hours_object(argv.value);
+    const result = opening_hours_object(argv.value);
     console.log(JSON.stringify(result, null, '\t') + '\n');
 } else {
     var rl = readline.createInterface({
@@ -110,7 +110,7 @@ if (typeof argv.value === 'string') {
     });
 
     rl.on('line', function (value) {
-        let result = opening_hours_object(value);
+        const result = opening_hours_object(value);
         console.log(JSON.stringify(result, null, '\t') + '\n');
 
     }).on('close', function() {

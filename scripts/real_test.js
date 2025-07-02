@@ -172,7 +172,7 @@ function opening_hours_test() {
                 for (let i = 0; i < global_manually_ignored.length; i++) {
                     ignored_values.push(global_manually_ignored[i]);
                 }
-                for (let i in options.manually_ignored) {
+                for (const i in options.manually_ignored) {
                     ignored_values.push(options.manually_ignored[i]);
                 }
             }
@@ -457,7 +457,7 @@ function opening_hours_test() {
             return;
         }
 
-        let filename_asciified = filename.replace(/♡/g, '@');
+        const filename_asciified = filename.replace(/♡/g, '@');
         /* TODO: JavaScript could not handle [^♡] */
         let re = filename_asciified.match(/^export@([^@]+)@([^@]+)(@[^@]+|).json$/);
         let info;

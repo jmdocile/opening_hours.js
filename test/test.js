@@ -5614,7 +5614,7 @@ function opening_hours_test() {
     }; /* }}} */
 
     this.runSingleTestCompMatchingRule = function(test_data_object) { /* {{{ */
-        let name           = test_data_object[0],
+        const name           = test_data_object[0],
             value          = test_data_object[1],
             point_in_time  = test_data_object[2],
             expected_matching_rule  = test_data_object[3],
@@ -5624,8 +5624,8 @@ function opening_hours_test() {
         let passed = false;
         try {
             // since they should fail anyway we can give them the nominatim_default
-            let oh = new opening_hours(value, nominatim_data);
-            let it = oh.getIterator(new Date(point_in_time));
+            const oh = new opening_hours(value, nominatim_data);
+            const it = oh.getIterator(new Date(point_in_time));
 
             matching_rule = oh.prettifyValue({ rule_index: it.getMatchingRule() });
             matching_rule_ok = matching_rule === expected_matching_rule;
@@ -5662,7 +5662,7 @@ function opening_hours_test() {
         let prettified_value;
         let passed = false;
         try {
-            let oh = new opening_hours(value, nominatim_default);
+            const oh = new opening_hours(value, nominatim_default);
 
             prettified_value = oh.prettifyValue({ 'conf': { 'locale': prettify_locale } });
             prettify_value_ok = prettified_value === expected_prettified_value;
@@ -5689,7 +5689,7 @@ function opening_hours_test() {
     }; /* }}} */
 
     this.runSingleTestEqualTo = function(test_data_object) { /* {{{ */
-        let name = test_data_object[0],
+        const name = test_data_object[0],
             first_value = test_data_object[1],
             second_value = test_data_object[2],
             expected_result = test_data_object[3];
@@ -5698,8 +5698,8 @@ function opening_hours_test() {
         let crashed = true;
         let actual_result;
         try {
-            let first_oh = new opening_hours(first_value, nominatim_default);
-            let second_oh = new opening_hours(second_value, nominatim_default);
+            const first_oh = new opening_hours(first_value, nominatim_default);
+            const second_oh = new opening_hours(second_value, nominatim_default);
 
             actual_result = first_oh.isEqualTo(second_oh, new Date('Sat Oct 17 2015 18:20:29 GMT+0200 (CEST)'));
 
@@ -5769,7 +5769,7 @@ function opening_hours_test() {
             console.warn(this.ignored.length + ' test' + (this.ignored.length === 1 ? ' was' : 's where') + ' (partly) ignored, sorted by commonness:');
             var ignored_categories = [];
             for (let i = 0; i < this.ignored.length; i++) {
-                let reason  = this.ignored[i][1];
+                const reason  = this.ignored[i][1];
                 if (typeof ignored_categories[reason] !== 'number') {
                     ignored_categories[reason] = 1;
                 } else {
@@ -5778,7 +5778,7 @@ function opening_hours_test() {
             }
 
             var sorted_ignores = [];
-            for (let key in ignored_categories)
+            for (const key in ignored_categories)
                 sorted_ignores.push([key, ignored_categories[key]]);
 
             sorted_ignores.sort(function(a, b) {
@@ -5786,7 +5786,7 @@ function opening_hours_test() {
             });
             for (let i = 0; i < sorted_ignores.length; i++) {
                 let reason = sorted_ignores[i][0];
-                let count  = sorted_ignores[i][1];
+                const count  = sorted_ignores[i][1];
                 switch (reason) {
                     case 'prettifyValue':
                         reason += " (most of the cases this is used to test if values with selectors in wrong order or wrong symbols (error tolerance) are evaluated correctly)";

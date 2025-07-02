@@ -152,7 +152,7 @@ export default function(value, nominatim_object, optional_conf_parm) {
             } else {
                 translatorFunction = i18next.t;
             }
-            let text = translatorFunction('opening_hours:texts.' + str, variables);
+            const text = translatorFunction('opening_hours:texts.' + str, variables);
             return text;
         }
         let text = lang[str];
@@ -746,7 +746,7 @@ export default function(value, nominatim_object, optional_conf_parm) {
                 // console.log('Matched: ' + JSON.stringify(tmp));
                 for (let pos = 1; pos <= 3; pos += 2) {
                     // console.log('Pos: ' + pos + ', substring: ' + tmp[pos]);
-                    let correct_val = returnCorrectWordOrToken(tmp[pos],
+                    const correct_val = returnCorrectWordOrToken(tmp[pos],
                         value.length - (pos === 3 ? tmp[1].length + tmp[2].length : 0)
                     );
                     if (typeof correct_val !== 'string' && tmp[pos] !== '"') {
@@ -2346,13 +2346,13 @@ export default function(value, nominatim_object, optional_conf_parm) {
         for (; at < tokens.length; at++) {
             if (matchTokens(tokens, at, 'holiday')) {
                 if (tokens[at][0] === 'PH') {
-                    let applying_holidays = getMatchingHoliday(tokens[at][0]);
+                    const applying_holidays = getMatchingHoliday(tokens[at][0]);
 
                     // Only allow moving one day in the past or in the future.
                     // This makes implementation easier because only one holiday is assumed to be moved to the next year.
                     var add_days = getMoveDays(tokens, at+1, 1, 'public holiday');
 
-                    let selector = function(applying_holidays, add_days) { return function(date) {
+                    const selector = function(applying_holidays, add_days) { return function(date) {
 
                         var holidays = getApplyingHolidaysForYear(applying_holidays, date.getFullYear(), add_days);
                         // Needs to be calculated each time because of movable days.
@@ -2410,9 +2410,9 @@ export default function(value, nominatim_object, optional_conf_parm) {
 
                     at += 1 + add_days[1];
                 } else if (tokens[at][0] === 'SH') {
-                    let applying_holidays = getMatchingHoliday(tokens[at][0]);
+                    const applying_holidays = getMatchingHoliday(tokens[at][0]);
 
-                    let selector = function(applying_holidays) { return function(date) {
+                    const selector = function(applying_holidays) { return function(date) {
                         var date_num = getValueForDate(date);
 
                         // Iterate over holiday array containing the different holiday ranges.
@@ -3180,7 +3180,7 @@ export default function(value, nominatim_object, optional_conf_parm) {
                     inside = false;
                 }
 
-                let selector = function(month_from, month_to, inside) { return function(date) {
+                const selector = function(month_from, month_to, inside) { return function(date) {
                     var ourmonth = date.getMonth();
 
                     if (month_to < month_from) {
@@ -3274,7 +3274,7 @@ export default function(value, nominatim_object, optional_conf_parm) {
                 if (has_month[1])
                     checkIfDateIsValid(tokens[at_sec_event_or_month][0], tokens[at_sec_event_or_month+1][0], nrule, at_sec_event_or_month+1);
 
-                let selector = function(tokens, at, nrule, has_year, has_event, has_calc, at_sec_event_or_month, has_constrained_weekday) { return function(date) {
+                const selector = function(tokens, at, nrule, has_year, has_event, has_calc, at_sec_event_or_month, has_constrained_weekday) { return function(date) {
                     var start_of_next_year = new Date(date.getFullYear() + 1, 0, 1);
 
                     var movableDays, from_date;
@@ -3403,7 +3403,7 @@ export default function(value, nominatim_object, optional_conf_parm) {
                         nrule, at+has_year+(is_range ? 3 : 1));
                     /* }}} */
 
-                    let selector = function(year, has_year, month, range_from, range_to, period) { return function(date) {
+                    const selector = function(year, has_year, month, range_from, range_to, period) { return function(date) {
                         var start_of_next_year = new Date(date.getFullYear() + 1, 0, 1);
 
                         var from_date = new Date(has_year ? year : date.getFullYear(),
@@ -3450,7 +3450,7 @@ export default function(value, nominatim_object, optional_conf_parm) {
                 // Only event like easter {{{
             } else if (has_event[0]) {
 
-                let selector = function(tokens, at, nrule, has_year, add_days) { return function(date) {
+                const selector = function(tokens, at, nrule, has_year, add_days) { return function(date) {
 
                     // console.log('enter selector with date: ' + date);
                     var movableDays = getMovableEventsForYear((has_year ? tokens[at][0] : date.getFullYear()));
@@ -3582,7 +3582,7 @@ export default function(value, nominatim_object, optional_conf_parm) {
 
         // console.log(date_matching_rules);
         for (let nrule = 0; nrule < date_matching_rules.length; nrule++) {
-            let rule = date_matching_rules[nrule];
+            const rule = date_matching_rules[nrule];
 
             // console.log('Processing rule ' + rule + ': with date ' + date
                 // + ' and ' + rules[rule].time.length + ' time selectors (comment: "' + rules[rule].comment + '").');
@@ -3602,7 +3602,7 @@ export default function(value, nominatim_object, optional_conf_parm) {
             }
 
             for (let timesel = 0; timesel < rules[rule].time.length; timesel++) {
-                let res = rules[rule].time[timesel](date);
+                const res = rules[rule].time[timesel](date);
 
                 // console.log('res:', res);
                 if (res[0]) {

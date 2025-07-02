@@ -30,7 +30,7 @@ fs.readFile(json_file, 'utf8', function (err, json) {
         console.log('Error: ' + err);
         return;
     }
-    let parsedJson = JSON.parse(json);
+    const parsedJson = JSON.parse(json);
 
     rl.setPrompt('regex search> ');
     rl.prompt();
@@ -89,8 +89,8 @@ fs.readFile(json_file, 'utf8', function (err, json) {
 
 function print_values(matched) {
     for (let i = 0; i < matched.length; i++) {
-        let count = matched[i][1];
-        let res   = matched[i][2];
+        const count = matched[i][1];
+        const res   = matched[i][2];
         console.log('Matched (count: '+ count +'): ' + res[1] + res[2].blue + res[3]);
     }
 }

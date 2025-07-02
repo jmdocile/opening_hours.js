@@ -1,7 +1,7 @@
 /* global i18next */
 
 // localization {{{
-var resources = { // English is fallback language.
+const resources = { // English is fallback language.
     // English (en) localization {{{
     en: {
         translation: {
@@ -1511,10 +1511,10 @@ var resources = { // English is fallback language.
 // eslint-disable-next-line no-unused-vars
 function getUserSelectTranslateHTMLCode() {
     document.write('<span class="hd">');
-    var res = i18next.t('lang.choose')
+    let res = i18next.t('lang.choose')
             + (i18next.language !== 'en' ? ' ('+ i18next.t('lang.choose', { lng: 'en' }) +')' : '' )
             + ':</span> ';
-    for (var lang in resources) {
+    for (const lang in resources) {
         if (Object.prototype.hasOwnProperty.call(resources, lang)) {
           res += '<button type="button" onclick="location.href=\'?lng='
                 + lang +'\'">' + i18next.t('lang.' + lang)
@@ -1541,7 +1541,7 @@ if (!i18next.isInitialized) {
     });
 } else {
     // compat with an app that already initializes i18next
-    for (var lang in resources) {
+    for (const lang in resources) {
         i18next.addResourceBundle(lang, 'translation', resources[lang]['translation'], true);
     }
 }

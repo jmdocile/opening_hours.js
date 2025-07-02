@@ -32,14 +32,14 @@
  */
 
 /* Required modules {{{ */
-var opening_hours = require('../build/opening_hours.js');
-var fs            = require('node:fs');
-var colors        = require('colors');
-var sprintf       = require('sprintf-js').sprintf;
-var assert        = require('node:assert');
+const opening_hours = require('../build/opening_hours.js');
+const fs            = require('node:fs');
+const colors        = require('colors');
+const sprintf       = require('sprintf-js').sprintf;
+const assert        = require('node:assert');
 /* }}} */
 
-var test_framework = new opening_hours_test();
+const test_framework = new opening_hours_test();
 
 /* Add as much tests (for different tags) as you like. Just make sure that the
  * export is present by adding it as dependence to the related_tags.txt file.
@@ -108,7 +108,7 @@ test_framework.config = {
 /* }}} */
 
 /* Parameter handling {{{ */
-var optimist = require('optimist')
+const optimist = require('optimist')
     .usage('Usage: $0 export*.json [export*.json]')
     .describe('h', 'Display the usage')
     .describe('v', 'Verbose output')
@@ -128,7 +128,7 @@ var optimist = require('optimist')
     .alias('p', 'punchcard')
     .alias('m', 'map-bad-oh-values');
 
-var argv = optimist.argv;
+const argv = optimist.argv;
 
 if (argv.help || argv._.length === 0) {
     optimist.showHelp();
@@ -138,36 +138,36 @@ if (argv.help || argv._.length === 0) {
 
 // test_framework.tag_key_name('opening_hours');
 for (let i = 0; i < argv._.length; i++) {
-    var filename = argv._[i];
+    const filename = argv._[i];
     test_framework.json_file(filename);
 }
 
 /* Test framework {{{ */
 function opening_hours_test() {
 
-    // var percent_number_format     = '%04.1f %%';
+    // let percent_number_format     = '%04.1f %%';
     // Looks kind of unusual.
-    var percent_number_format            = '%.1f %%';
-    var total_value_number_format        = '%7d';
-    var total_differ_value_number_format = '%6d';
-    var ms_runtime_number_format         = '%5d';
+    const percent_number_format            = '%.1f %%';
+    const total_value_number_format        = '%7d';
+    const total_differ_value_number_format = '%6d';
+    const ms_runtime_number_format         = '%5d';
 
-    var related_tags_file = 'related_tags.txt';
+    const related_tags_file = 'related_tags.txt';
 
-    var nominatimTestJSON = {'place_id':'44651229','licence':'Data \u00a9 OpenStreetMap contributors, ODbL 1.0. https://www.openstreetmap.org/copyright','osm_type':'way','osm_id':'36248375','lat':'49.5400039','lon':'9.7937133','display_name':'K 2847, Lauda-K\u00f6nigshofen, Main-Tauber-Kreis, Regierungsbezirk Stuttgart, Baden-W\u00fcrttemberg, Germany, European Union','address':{'road':'K 2847','city':'Lauda-K\u00f6nigshofen','county':'Main-Tauber-Kreis','state_district':'Regierungsbezirk Stuttgart','state':'Baden-W\u00fcrttemberg','country':'Germany','country_code':'de','continent':'European Union'}};
+    const nominatimTestJSON = {'place_id':'44651229','licence':'Data \u00a9 OpenStreetMap contributors, ODbL 1.0. https://www.openstreetmap.org/copyright','osm_type':'way','osm_id':'36248375','lat':'49.5400039','lon':'9.7937133','display_name':'K 2847, Lauda-K\u00f6nigshofen, Main-Tauber-Kreis, Regierungsbezirk Stuttgart, Baden-W\u00fcrttemberg, Germany, European Union','address':{'road':'K 2847','city':'Lauda-K\u00f6nigshofen','county':'Main-Tauber-Kreis','state_district':'Regierungsbezirk Stuttgart','state':'Baden-W\u00fcrttemberg','country':'Germany','country_code':'de','continent':'European Union'}};
 
     console.log('The holiday definitions for the country ' + nominatimTestJSON.address.country_code + ' are used so the result will probably be a bit worse in reality but you can change that by providing the definition for missing holidays.\n');
 
     this.config = {};
 
     this.parse_tag = function (tag_key_name, info, data) { /* {{{ */
-        var options = this.config[tag_key_name];
+        const options = this.config[tag_key_name];
 
-        var how_often_print_stats = 15000;
-        var importance_threshold  = 30;
-        var global_manually_ignored = [ 'fixme', 'FIXME' ];
+        const how_often_print_stats = 15000;
+        const importance_threshold  = 30;
+        const global_manually_ignored = [ 'fixme', 'FIXME' ];
 
-            var ignored_values = [];
+            const ignored_values = [];
             if (argv['ignore-manual-values'] && typeof options === 'object' && typeof options.manually_ignored === 'object') {
                 for (let i = 0; i < global_manually_ignored.length; i++) {
                     ignored_values.push(global_manually_ignored[i]);
@@ -180,17 +180,17 @@ function opening_hours_test() {
             console.log('Parsing ' + tag_key_name.blue.bold
                 + (ignored_values.length === 0 ? '' : ' (ignoring: ' + ignored_values.join(', ') + ')') + ' …');
 
-            var success_differ       = 0; // increment only by one despite that the value might appears more than one time
-            var success              = 0; // increment by number of appearances
-            var total_differ         = 0; // number of different values
-            var total                = 0; // total number of values (if one value appears more than one, it counts more than one)
-            var warnings             = 0; // number of values which throw warnings
-            var warnings_differ      = 0; // number of values which throw warnings (only one warning is counted for each value if more appear)
-            var not_pretty           = 0; // number of values which are not the same as the value returned by oh.prettifyValue()
-            var not_pretty_differ    = 0; // number of values which are not pretty (only one warning is counted for each value if more appear)
-            var important_and_failed = [];
+            let success_differ       = 0; // increment only by one despite that the value might appears more than one time
+            let success              = 0; // increment by number of appearances
+            let total_differ         = 0; // number of different values
+            let total                = 0; // total number of values (if one value appears more than one, it counts more than one)
+            let warnings             = 0; // number of values which throw warnings
+            let warnings_differ      = 0; // number of values which throw warnings (only one warning is counted for each value if more appear)
+            let not_pretty           = 0; // number of values which are not the same as the value returned by oh.prettifyValue()
+            let not_pretty_differ    = 0; // number of values which are not pretty (only one warning is counted for each value if more appear)
+            let important_and_failed = [];
 
-            var logfile_out_string = '';
+            let logfile_out_string = '';
 
             for (let i = 0; i < data.data.length; i++) {
                 if (ignored_values.indexOf(data.data[i].value) === -1) {
@@ -199,17 +199,17 @@ function opening_hours_test() {
                 }
             }
 
-            var time_at_test_begin = new Date();
+            const time_at_test_begin = new Date();
 
-            var punchcard_data = {};
-            var punchcard_data_out = {};
+            const punchcard_data = {};
+            const punchcard_data_out = {};
             // eslint-disable-next-line no-unused-vars
-            var punchcard_debug = [];
+            const punchcard_debug = [];
             // eslint-disable-next-line no-unused-vars
-            var punchcard_debug2 = [];
-            var day_number_to_name = [ 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday' ];
-            var cur_date = new Date();
-            var punchcard_csv = '';
+            const punchcard_debug2 = [];
+            const day_number_to_name = [ 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday' ];
+            const cur_date = new Date();
+            let punchcard_csv = '';
             for (let i = 0; i < day_number_to_name.length; i++) {
                 punchcard_data[i] = [];
                 for (let hours_per_day = 0; hours_per_day < 24; hours_per_day++) {
@@ -221,11 +221,11 @@ function opening_hours_test() {
             }
             punchcard_csv += '\n';
 
-            var parsed_values = 0; // total number of values which are "parsed" (if one value appears more than one, it counts more than one)
+            let parsed_values = 0; // total number of values which are "parsed" (if one value appears more than one, it counts more than one)
             for (let i = 0; i < total_differ; i++) {
-                var oh_value = data.data[i].value;
+                const oh_value = data.data[i].value;
                 if (ignored_values.indexOf(oh_value) === -1) {
-                    var oh_crahsed = true,
+                    let oh_crashed = true,
                         oh_warnings = [],
                         oh_value_prettified,
                         oh;
@@ -244,19 +244,19 @@ function opening_hours_test() {
                         oh_warnings = oh.getWarnings();
                         oh_value_prettified = oh.prettifyValue();
 
-                        oh_crahsed = false;
+                        oh_crashed = false;
                     } catch {
-                        oh_crahsed = true;
+                        oh_crashed = true;
                     }
 
                     if (typeof oh_warnings !== 'object') {
-                        oh_warnings = 1; // oh_crahsed by oh.getWarnings()
+                        oh_warnings = 1; // oh_crashed by oh.getWarnings()
                     } else {
                         oh_warnings = oh_warnings.length;
                     }
 
-                    logfile_out_string += (Number(!oh_crahsed)) + ' ' + oh_value + '\n';
-                    if (!oh_crahsed) {
+                    logfile_out_string += (Number(!oh_crashed)) + ' ' + oh_value + '\n';
+                    if (!oh_crashed) {
                         success_differ++;
                         success += data.data[i].count;
                         warnings_differ += Number(!!oh_warnings);
@@ -265,9 +265,9 @@ function opening_hours_test() {
                         not_pretty += data.data[i].count * Number(oh_value_prettified !== oh_value);
                         // console.log('passed', oh_value);
                         if (argv.punchcard && tag_key_name === 'opening_hours') {
-                            var check_date = new Date(cur_date.getFullYear(), cur_date.getMonth(), cur_date.getDate(), 0, 1, 0);
-                            var iterator = oh.getIterator(check_date);
-                            for (var t_offset = 0; t_offset <= 7 * 24; t_offset++) {
+                            const check_date = new Date(cur_date.getFullYear(), cur_date.getMonth(), cur_date.getDate(), 0, 1, 0);
+                            const iterator = oh.getIterator(check_date);
+                            for (let t_offset = 0; t_offset <= 7 * 24; t_offset++) {
                                 if (iterator.getState()) {
                                     punchcard_data[check_date.getDay()][check_date.getHours()] += data.data[i].count;
                                     // if (argv.verbose && check_date.getDay() === 3 && check_date.getHours() === 0) {
@@ -306,8 +306,8 @@ function opening_hours_test() {
             if (important_and_failed.length > 0) {
                 important_and_failed = important_and_failed.sort(Comparator);
                 for (let i = 0; i < important_and_failed.length; i++) {
-                    var value = important_and_failed[i][0];
-                    var count = important_and_failed[i][1];
+                    const value = important_and_failed[i][0];
+                    const count = important_and_failed[i][1];
                     console.log('Failed with value which appears ' + sprintf(total_differ_value_number_format, count) + ' times: ' + value);
                 }
             }
@@ -356,7 +356,7 @@ function opening_hours_test() {
 
             if (argv.punchcard && tag_key_name === 'opening_hours') {
                 for (let i = 0; i < day_number_to_name.length; i++) {
-                    for (var hours_per_day = 0; hours_per_day < 24; hours_per_day++) {
+                    for (let hours_per_day = 0; hours_per_day < 24; hours_per_day++) {
                         punchcard_data[i][hours_per_day] = (punchcard_data[i][hours_per_day] / total * 100).toFixed(2);
                     }
                     punchcard_data_out[day_number_to_name[i]] = punchcard_data[i];
@@ -367,8 +367,8 @@ function opening_hours_test() {
                     // if (punchcard_debug.length > 0) {
                         // punchcard_debug = punchcard_debug.sort(Comparator);
                         // for (let i = 0; i < punchcard_debug.length; i++) {
-                            // var count = punchcard_debug[i][0];
-                            // var value = punchcard_debug[i][1];
+                            // let count = punchcard_debug[i][0];
+                            // let value = punchcard_debug[i][1];
                             // console.log('Open ' + sprintf(total_differ_value_number_format, count) + ' times: ' + value);
                         // }
                     // }
@@ -376,8 +376,8 @@ function opening_hours_test() {
                     // if (punchcard_debug2.length > 0) {
                         // punchcard_debug2 = punchcard_debug2.sort(Comparator);
                         // for (let i = 0; i < punchcard_debug2.length; i++) {
-                            // var count = punchcard_debug2[i][0];
-                            // var value = punchcard_debug2[i][1];
+                            // let count = punchcard_debug2[i][0];
+                            // let value = punchcard_debug2[i][1];
                             // console.log('Open ' + sprintf(total_differ_value_number_format, count) + ' times: ' + value);
                         // }
                     // }
@@ -417,9 +417,9 @@ function opening_hours_test() {
                 if (typeof(info.timestamp) !== 'object') {
                     throw('dump creation time is unknown.');
                 }
-                var timestamp = info.timestamp.toISOString();
-                var known_timestamp = false;
-                var csv_line = [
+                const timestamp = info.timestamp.toISOString();
+                let known_timestamp = false;
+                const csv_line = [
                     timestamp,
                     total, total_differ,
                     success, success_differ,
@@ -461,6 +461,7 @@ function opening_hours_test() {
         /* TODO: JavaScript could not handle [^♡] */
         let re = filename_asciified.match(/^export@([^@]+)@([^@]+)(@[^@]+|).json$/);
         let info;
+        const related_tags = [];
         if (re !== null) {
             info = {
                 'key': re[1],
@@ -478,7 +479,6 @@ function opening_hours_test() {
                 info.timestamp = new Date();
             }
             // console.log(info);
-            var related_tags = [];
             fs.readFileSync(related_tags_file, 'utf8').split('\n').forEach(function (line) {
                 if (line.match(/^[^#]/)) {
                     related_tags.push(line);
@@ -501,26 +501,26 @@ function opening_hours_test() {
                 return;
             }
 
-            var taginfo_format = {};
+            const taginfo_format = {};
 
             data = JSON.parse(data);
 
             if (info.export_format === 'overpass') {
-                var no_data_returned = true;
-                for (var elements_number = 0; elements_number < data.elements.length; elements_number++) {
-                    var elem = data.elements[elements_number];
+                let no_data_returned = true;
+                for (let elements_number = 0; elements_number < data.elements.length; elements_number++) {
+                    const elem = data.elements[elements_number];
                     if (typeof(elem.tags) === 'undefined') {
                         elem.tags = [];
                     }
                     Object.keys(elem.tags).forEach(function (key) {
                         if (related_tags.indexOf(key) !== -1) {
-                            var val = elem.tags[key];
+                            const val = elem.tags[key];
                             if (typeof(taginfo_format[key]) === 'undefined') {
                                 taginfo_format[key] = { data: [] };
                             }
-                            var known_value = false;
+                            let known_value = false;
                             Object.keys(taginfo_format[key].data).forEach(function (data_index) {
-                                var tag = taginfo_format[key].data[data_index];
+                                const tag = taginfo_format[key].data[data_index];
                                 if (tag.value === val) {
                                     known_value = data_index;
                                 }
@@ -569,7 +569,7 @@ function opening_hours_test() {
     function log_to_user(tests_done, total, total_differ, currently_parsed_value, parsed_values,
         success, success_differ, warnings, warnings_differ, not_pretty, not_pretty_differ, time_at_test_begin) {
 
-        var delta = (new Date()).getTime() - time_at_test_begin.getTime();
+        const delta = (new Date()).getTime() - time_at_test_begin.getTime();
 
         // if (tests_done)
             // console.log('Done:');
@@ -610,7 +610,7 @@ function opening_hours_test() {
     }
     function get_dump_creation_time_from_file(file) {
         try {
-            var data = JSON.parse(fs.readFileSync(file, 'utf8'));
+            const data = JSON.parse(fs.readFileSync(file, 'utf8'));
             for (let i = 0; i < data.length; i++) {
                 if (data[i].name === 'Database') {
                     return new Date(data[i].data_until);

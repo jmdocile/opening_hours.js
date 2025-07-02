@@ -1,7 +1,7 @@
 /*
  * Upstream source: https://wiki.openstreetmap.org/wiki/Nominatim/Country_Codes
  */
-var countryToLanguageMapping = {
+const countryToLanguageMapping = {
     'ad': 'ca',
     'ae': 'ar',
     'af': 'fa,ps',

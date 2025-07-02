@@ -6,13 +6,13 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-var fs = require('node:fs');
-var readline = require('node:readline');
+const fs = require('node:fs');
+const readline = require('node:readline');
 
-var page_width = 20;
+const page_width = 20;
 
-var args = process.argv.splice(2);
-var json_file = args[0];
+const args = process.argv.splice(2);
+let json_file = args[0];
 if (typeof json_file === 'undefined') {
     // json_file = 'export.opening_hours.json';
     json_file = 'export.opening_hours:kitchen.json';
@@ -20,7 +20,7 @@ if (typeof json_file === 'undefined') {
     // return;
 }
 
-var rl = readline.createInterface({
+const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
@@ -40,18 +40,17 @@ fs.readFile(json_file, 'utf8', function (err, json) {
             process.exit(0);
         }
 
-        var user_re_ok = false;
+        let user_re = false;
         try {
-            var user_re = new RegExp('^(.*?)(' + line + ')(.*)$', 'i');
-            user_re_ok = true;
+            user_re = new RegExp('^(.*?)(' + line + ')(.*)$', 'i');
         } catch (err) {
             console.log('Your regular expression did not compile: ' + err);
         }
 
-        if (user_re_ok) {
+        if (user_re !== false) {
             let matched = [];
             for (let i = 0; i < parsedJson.data.length; i++) {
-                var res = parsedJson.data[i].value.match(user_re);
+                const res = parsedJson.data[i].value.match(user_re);
                 if (res)
                     matched.push([parsedJson.data[i].value, parsedJson.data[i].count, res]);
             }
@@ -60,7 +59,7 @@ fs.readFile(json_file, 'utf8', function (err, json) {
                 console.log('Did not match any value with regular expression: ' + line)
             } else {
                 matched = matched.sort(Comparator);
-                var total_in_use = 0;
+                let total_in_use = 0;
                 for (let i = 0; i < matched.length; i++) {
                     total_in_use += matched[i][1];
                 }

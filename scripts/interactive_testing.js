@@ -4,7 +4,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-var optimist = require('optimist')
+const optimist = require('optimist')
     .usage('Usage: $0 [optional parameters] [server_listening_ports]')
     .describe('h', 'Display the usage')
     // .describe('v', 'Verbose output')
@@ -22,26 +22,26 @@ var optimist = require('optimist')
     .default('l', 'en')
     .default('L', 'en');
 
-var argv = optimist.argv;
+const argv = optimist.argv;
 
 if (argv.help) {
     optimist.showHelp();
     process.exit(0);
 }
 
-var opening_hours = require('./' + argv['library-file']);
-var readline      = require('node:readline');
-var net           = require('node:net');
+const opening_hours = require('./' + argv['library-file']);
+const readline      = require('node:readline');
+const net           = require('node:net');
 
 // used for sunrise, sunset and PH,SH
 // https://nominatim.openstreetmap.org/reverse?format=json&lat=49.5487429714954&lon=9.81602098644987&zoom=18&addressdetails=1
-var nominatimTestJSON = {'place_id':'44651229','licence':'Data \u00a9 OpenStreetMap contributors, ODbL 1.0. https://www.openstreetmap.org/copyright','osm_type':'way','osm_id':'36248375','lat':'49.5400039','lon':'9.7937133','display_name':'K 2847, Lauda-K\u00f6nigshofen, Main-Tauber-Kreis, Regierungsbezirk Stuttgart, Baden-W\u00fcrttemberg, Germany, European Union','address':{'road':'K 2847','city':'Lauda-K\u00f6nigshofen','county':'Main-Tauber-Kreis','state_district':'Regierungsbezirk Stuttgart','state':'Baden-W\u00fcrttemberg','country':'Germany','country_code':'de','continent':'European Union'}};
+const nominatimTestJSON = {'place_id':'44651229','licence':'Data \u00a9 OpenStreetMap contributors, ODbL 1.0. https://www.openstreetmap.org/copyright','osm_type':'way','osm_id':'36248375','lat':'49.5400039','lon':'9.7937133','display_name':'K 2847, Lauda-K\u00f6nigshofen, Main-Tauber-Kreis, Regierungsbezirk Stuttgart, Baden-W\u00fcrttemberg, Germany, European Union','address':{'road':'K 2847','city':'Lauda-K\u00f6nigshofen','county':'Main-Tauber-Kreis','state_district':'Regierungsbezirk Stuttgart','state':'Baden-W\u00fcrttemberg','country':'Germany','country_code':'de','continent':'European Union'}};
 
 function opening_hours_object(value) {
-    var oh;
-    var crashed = true;
-    var needed_nominatim_json = false;
-    var warnings = [];
+    let oh;
+    let crashed = true;
+    let needed_nominatim_json = false;
+    let warnings = [];
     try {
         oh = new opening_hours(value, {}, { 'locale': argv.locale } );
         warnings = oh.getWarnings();
@@ -59,7 +59,7 @@ function opening_hours_object(value) {
         }
     }
 
-    var result = { 'needed_nominatim_json': needed_nominatim_json };
+    const result = { 'needed_nominatim_json': needed_nominatim_json };
     if (crashed) {
         result.error      = true;
         result.eval_notes = crashed;
@@ -85,7 +85,7 @@ function opening_hours_object(value) {
     return result;
 }
 
-var servers = [];
+const servers = [];
 for (let i = 0; i < argv._.length; i++) {
     console.log('Starting to listen on "%s"', argv._[i]);
     servers[i] = net.createServer(function(socket) {
@@ -104,7 +104,7 @@ if (typeof argv.value === 'string') {
     const result = opening_hours_object(argv.value);
     console.log(JSON.stringify(result, null, '\t') + '\n');
 } else {
-    var rl = readline.createInterface({
+    const rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout,
     });

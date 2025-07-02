@@ -36,7 +36,7 @@
 // preamble {{{
 
 /* Parameter handling {{{ */
-var optimist = require('optimist')
+const optimist = require('optimist')
     .usage('Usage: $0 [optional parameters]')
     .describe('h', 'Display the usage')
     // .describe('v', 'Verbose output')
@@ -49,7 +49,7 @@ var optimist = require('optimist')
     .default('f', './opening_hours.js')
     .default('l', 'en');
 
-var argv = optimist.argv;
+const argv = optimist.argv;
 
 if (argv.help) {
     optimist.showHelp();
@@ -59,13 +59,13 @@ if (argv.help) {
 
 /* Required modules {{{ */
 const {resolve} = require('path')
-var opening_hours = require(resolve(argv['library-file']));
-var colors        = require('colors');
-var sprintf       = require('sprintf-js').sprintf;
-var timekeeper    = require('timekeeper');
-var glob          = require('glob');
-var YAML          = require('yaml');
-var fs            = require('fs');
+const opening_hours = require(resolve(argv['library-file']));
+const colors        = require('colors');
+const sprintf       = require('sprintf-js').sprintf;
+const timekeeper    = require('timekeeper');
+const glob          = require('glob');
+const YAML          = require('yaml');
+const fs            = require('fs');
 /* }}} */
 
 colors.setTheme({
@@ -81,10 +81,10 @@ colors.setTheme({
 process.env.TZ = 'Europe/Berlin';
 
 /* Fake time to make "The year is in the past." test deterministic. */
-var timekeeperTime = new Date('Sat May 23 2018 23:23:23 GMT+0200 (CEST)');
+const timekeeperTime = new Date('Sat May 23 2018 23:23:23 GMT+0200 (CEST)');
 timekeeper.travel(timekeeperTime); // Travel to that date.
 
-var test = new opening_hours_test();
+const test = new opening_hours_test();
 
 // test.extensive_testing = true;
 // FIXME: Do it.
@@ -93,16 +93,16 @@ var test = new opening_hours_test();
 
 // Nominatim data {{{
 
-var nominatim_by_loc = {};
-for (var nominatim_file of glob.sync('src/holidays/nominatim_cache/*.yaml')) {
-    var country_state = nominatim_file.match(/^.*\/([^/]*)\.yaml$/)[1];
+const nominatim_by_loc = {};
+for (const nominatim_file of glob.sync('src/holidays/nominatim_cache/*.yaml')) {
+    const country_state = nominatim_file.match(/^.*\/([^/]*)\.yaml$/)[1];
     nominatim_by_loc[country_state] = YAML.parse(fs.readFileSync(nominatim_file, 'utf8'));
 }
 
-var nominatim_default = nominatim_by_loc.de_bw;
+const nominatim_default = nominatim_by_loc.de_bw;
 
 // https://nominatim.openstreetmap.org/reverse?format=json&lat=60.5487429714954&lon=9.81602098644987&zoom=18&addressdetails=1
-var nominatim_sunrise_below = {
+const nominatim_sunrise_below = {
   'place_id': '71977948',
   'licence': 'Data © OpenStreetMap contributors, ODbL 1.0. https://www.openstreetmap.org/copyright',
   'osm_type': 'way',
@@ -121,7 +121,7 @@ var nominatim_sunrise_below = {
 
 // https://nominatim.openstreetmap.org/reverse?format=json&lat=27.567&lon=-71.093&zoom=18&addressdetails=1
 // Actual response: {"error":"Unable to geocode"}
-var nominatim_no_valid_address = {
+const nominatim_no_valid_address = {
     'place_id': '-966',
     'licence': 'Data © OpenStreetMap contributors, ODbL 1.0. https://www.openstreetmap.org/copyright',
     'osm_type': 'way',
@@ -140,13 +140,13 @@ var nominatim_no_valid_address = {
 
 /* }}} */
 
-var sane_value_suffix = '; 00:01-00:02 closed "warning at correct position?"';
+const sane_value_suffix = '; 00:01-00:02 closed "warning at correct position?"';
 // Suffix to add to values to make the value more complex and to spot problems
 // easier without changing there meaning (in most cases).
-var value_suffix = '; 00:23-00:42 unknown "warning at correct position?"';
+const value_suffix = '; 00:23-00:42 unknown "warning at correct position?"';
 // This suffix value is there to test if the warning marks the correct position of the problem.
-var value_suffix_to_disable_time_not_used = ' 12:00-15:00';
-var value_perfectly_valid = [
+const value_suffix_to_disable_time_not_used = ' 12:00-15:00';
+const value_perfectly_valid = [
     'Mo-Fr 12:00-18:00; We off; Sa,PH 12:00-17:00; Th[3],Th[-1] off',
     'open; Tu-Su 08:30-09:00 off; Tu-Su,PH 14:00-14:30 off; Mo 08:00-13:00 off',
     /* Don‘t use 24/7 instead of "open". PH usage does not make much sense … */
@@ -2932,7 +2932,7 @@ test.addTest('Week range second week', [
     ], 1000 * 60 * 60 * 24 * 7 * 2, 0, false, {}, 'not only test');
 
 (function() {
-var week_range_result = [
+const week_range_result = [
     [
         [ '2012-01-02 00:00', '2012-01-09 00:00' ],
         [ '2012-01-16 00:00', '2012-01-23 00:00' ],
@@ -3062,7 +3062,7 @@ test.addTest('Week range', [
     ], 1000 * 60 * 60 * 24 * 104, 0, false);
 
 (function() {
-var week_range_result = [
+const week_range_result = [
     [
         [ '2012-01-23 00:00', '2012-04-23 00:00' ],
         [ '2013-01-21 00:00', '2013-04-22 00:00' ],
@@ -3215,9 +3215,9 @@ timekeeper.reset();
  * deterministic and the test log is compared, it potentially would still
  * break the tests.
  *
-var moment        = require('moment');
-var toTime = moment(new Date()).add(1, 'day').hours(23).minutes(59).seconds(0).milliseconds(0);
-var isOddWeekStart = (toTime % 2 === 0) ? '01' : '02';
+let moment        = require('moment');
+let toTime = moment(new Date()).add(1, 'day').hours(23).minutes(59).seconds(0).milliseconds(0);
+let isOddWeekStart = (toTime % 2 === 0) ? '01' : '02';
 test.addTest('Week range. Working with Objects not Strings. from = moment(new Date())', [
         'week ' + isOddWeekStart + '-53/2 Mo-Su 07:30-08:00',
     ], moment(new Date()), toTime.toDate(), [
@@ -5378,7 +5378,7 @@ function opening_hours_test() {
     // This might be useful for testing to avoid to comment tests out and something like that …
 
     this.runSingleTestShouldFail = function(test_data_object) { /* {{{ */
-        var name           = test_data_object[0],
+        const name           = test_data_object[0],
             value          = test_data_object[1],
             nominatim_data = test_data_object[2],
             oh_mode        = test_data_object[3];
@@ -5413,18 +5413,18 @@ function opening_hours_test() {
     }; /* }}} */
 
     this.runSingleTestShouldThrowWarning = function(test_data_object) { /* {{{ */
-        var name           = test_data_object[0],
-            value          = test_data_object[1],
-            nominatim_data = test_data_object[2],
-            oh_mode        = test_data_object[3];
-        var ignored = typeof value !== 'string';
+        const name           = test_data_object[0];
+        let value            = test_data_object[1];
+        const nominatim_data = test_data_object[2];
+        const oh_mode        = test_data_object[3];
+        let ignored = typeof value !== 'string';
         if (ignored) {
             this.ignored.push(value);
             ignored = value[1];
             value   = value[0];
         }
 
-        var warnings, oh;
+        let warnings, oh;
         let crashed = false;
         try {
             oh = new opening_hours(value, nominatim_data, oh_mode);
@@ -5435,7 +5435,7 @@ function opening_hours_test() {
         }
 
         let passed = false;
-        var str = '"' + name + '" for "'
+        let str = '"' + name + '" for "'
             + (typeof value === 'string'
                 ? value.replace('\n', '*newline*')
                 : value
@@ -5465,16 +5465,16 @@ function opening_hours_test() {
     }; /* }}} */
 
     this.runSingleTest = function(test_data_object) { /* {{{ */
-        var name                = test_data_object[0],
-            value               = test_data_object[1],
-            first_value         = test_data_object[2],
-            from                = test_data_object[3],
-            to                  = test_data_object[4],
-            expected_intervals  = test_data_object[5],
-            expected_durations  = test_data_object[6],
-            expected_weekstable = test_data_object[7],
-            nominatim_data      = test_data_object[8],
-            oh_mode             = test_data_object[9];
+        const name                = test_data_object[0];
+        let   value               = test_data_object[1];
+        const first_value         = test_data_object[2];
+        let   from                = test_data_object[3];
+        let   to                  = test_data_object[4];
+        const expected_intervals  = test_data_object[5];
+        const expected_durations  = test_data_object[6];
+        const expected_weekstable = test_data_object[7];
+        const nominatim_data      = test_data_object[8];
+        const oh_mode             = test_data_object[9];
 
         // fix from and to dates
         if (!(from instanceof Date)) {
@@ -5484,16 +5484,16 @@ function opening_hours_test() {
             to = new Date(to);
         }
 
-        var ignored = typeof value !== 'string';
+        let ignored = typeof value !== 'string';
         if (ignored) {
             this.ignored.push(value);
             ignored = value[1];
             value   = value[0];
         }
 
-        var oh, intervals, durations, weekstable, prettified, intervals_ok, duration_ok, weekstable_ok, prettify_ok, crashed = true;
+        let oh, intervals, durations, weekstable, prettified, intervals_ok, duration_ok, weekstable_ok, prettify_ok, crashed = true;
 
-        var warnings;
+        let warnings;
         try {
             oh = new opening_hours(value, nominatim_data, oh_mode);
 
@@ -5503,7 +5503,7 @@ function opening_hours_test() {
             durations = oh.getOpenDuration(from, to);
             weekstable = oh.isWeekStable();
 
-            var prettifyValue_argument_hash = {};
+            const prettifyValue_argument_hash = {};
             prettified = oh.prettifyValue(prettifyValue_argument_hash);
 
             intervals_ok  = typeof expected_intervals  === 'undefined' || intervals.length === expected_intervals.length;
@@ -5517,10 +5517,10 @@ function opening_hours_test() {
             crashed = err;
         }
 
-        for (var interval = 0; interval < expected_intervals.length; interval++) {
+        for (let interval = 0; interval < expected_intervals.length; interval++) {
 
-            var expected_from = new Date(expected_intervals[interval][0]);
-            var expected_to   = new Date(expected_intervals[interval][1]);
+            const expected_from = new Date(expected_intervals[interval][0]);
+            const expected_to   = new Date(expected_intervals[interval][1]);
 
             if (intervals_ok) {
                 if (   intervals[interval][0].getTime() !== expected_from.getTime()
@@ -5539,9 +5539,9 @@ function opening_hours_test() {
 
                 oh = new opening_hours(value, nominatim_data, oh_mode);
 
-                for (var move_date = expected_from; move_date.getTime() < expected_to.getTime(); move_date.setHours(move_date.getHours() + 1)) {
-                    var is_open = oh.getState(move_date);
-                    var unknown = oh.getUnknown(move_date);
+                for (let move_date = expected_from; move_date.getTime() < expected_to.getTime(); move_date.setHours(move_date.getHours() + 1)) {
+                    const is_open = oh.getState(move_date);
+                    const unknown = oh.getUnknown(move_date);
 
                     if (!is_open ||
                             (
@@ -5633,7 +5633,7 @@ function opening_hours_test() {
             crashed = err;
         }
 
-        var str = '"' + name + '" for "' + value.replace('\n', '*newline*') + '": ';
+        let str = '"' + name + '" for "' + value.replace('\n', '*newline*') + '": ';
         if (!crashed && matching_rule_ok) {
             str += 'PASSED'.passed;
             passed = true;
@@ -5653,11 +5653,11 @@ function opening_hours_test() {
     }; /* }}} */
 
     this.runSingleTestPrettifyValue = function(test_data_object) { /* {{{ */
-        var name = test_data_object[0],
+        const name = test_data_object[0],
             value = test_data_object[1],
             prettify_locale = test_data_object[2],
             expected_prettified_value = test_data_object[3];
-        var prettify_value_ok;
+        let prettify_value_ok;
         let crashed = false;
         let prettified_value;
         let passed = false;
@@ -5670,7 +5670,7 @@ function opening_hours_test() {
             crashed = err;
         }
 
-        var str = '"' + name + '" for "' + value.replace('\n', '*newline*') + '": ';
+        let str = '"' + name + '" for "' + value.replace('\n', '*newline*') + '": ';
         if (!crashed && prettify_value_ok) {
             str += 'PASSED'.passed;
             passed = true;
@@ -5709,7 +5709,7 @@ function opening_hours_test() {
         }
         // console.log(JSON.stringify(actual_result, null, '    '));
 
-        var str = '"' + name + '" for "' + first_value.replace('\n', '*newline*') + '": ';
+        let str = '"' + name + '" for "' + first_value.replace('\n', '*newline*') + '": ';
         if (!crashed && JSON.stringify(expected_result) === JSON.stringify(actual_result)) {
             str += 'PASSED'.passed;
             passed = true;
@@ -5731,13 +5731,13 @@ function opening_hours_test() {
 
     // run all tests (public function) {{{
     this.run = function() {
-        var tests_length = this.tests.length +
+        const tests_length = this.tests.length +
             this.tests_should_fail.length +
             this.tests_should_warn.length +
             this.tests_comp_matching_rule.length +
             this.tests_prettify_value.length +
             this.tests_equal_to.length;
-        var success   = 0;
+        let success   = 0;
         this.ignored  = [];
         for (let test = 0; test < this.tests.length; test++) {
             if (this.runSingleTest(this.tests[test]))
@@ -5767,7 +5767,7 @@ function opening_hours_test() {
         console.warn(success + '/' + tests_length + ' tests passed. ' + (tests_length - success) + ' did not pass.');
         if (this.ignored.length) {
             console.warn(this.ignored.length + ' test' + (this.ignored.length === 1 ? ' was' : 's where') + ' (partly) ignored, sorted by commonness:');
-            var ignored_categories = [];
+            const ignored_categories = [];
             for (let i = 0; i < this.ignored.length; i++) {
                 const reason  = this.ignored[i][1];
                 if (typeof ignored_categories[reason] !== 'number') {
@@ -5777,7 +5777,7 @@ function opening_hours_test() {
                 }
             }
 
-            var sorted_ignores = [];
+            const sorted_ignores = [];
             for (const key in ignored_categories)
                 sorted_ignores.push([key, ignored_categories[key]]);
 
@@ -5808,7 +5808,7 @@ function opening_hours_test() {
 
         oh_mode = get_oh_mode_parameter(oh_mode);
 
-        for (var expected_interval = 0; expected_interval < expected_intervals.length; expected_interval++) {
+        for (let expected_interval = 0; expected_interval < expected_intervals.length; expected_interval++) {
             // Set default of unknown to false. If you expect something else you
             // will have to specify it.
             if (typeof expected_intervals[expected_interval][2] === 'undefined')
@@ -5818,7 +5818,7 @@ function opening_hours_test() {
             this.tests.push([name, values, values, from, to, expected_intervals,
                 [ expected_duration, expected_unknown_duration ], expected_weekstable, nominatim_data, oh_mode]);
         else
-            for (var value_ind = 0; value_ind < values.length; value_ind++)
+            for (let value_ind = 0; value_ind < values.length; value_ind++)
                 this.tests.push([name, values[value_ind], values[0], from, to, expected_intervals,
                     [ expected_duration, expected_unknown_duration ], expected_weekstable, nominatim_data, oh_mode]);
     };
@@ -5836,7 +5836,7 @@ function opening_hours_test() {
         if (typeof values === 'string')
             this.tests_should_fail.push([name, values, nominatim_data, oh_mode]);
         else
-            for (var value_ind = 0; value_ind < values.length; value_ind++)
+            for (let value_ind = 0; value_ind < values.length; value_ind++)
                 this.tests_should_fail.push([name, values[value_ind], nominatim_data, oh_mode]);
     };
     // }}}
@@ -5853,7 +5853,7 @@ function opening_hours_test() {
         if (typeof values === 'string')
             this.tests_should_warn.push([name, values, nominatim_data, oh_mode]);
         else
-            for (var value_ind = 0; value_ind < values.length; value_ind++)
+            for (let value_ind = 0; value_ind < values.length; value_ind++)
                 this.tests_should_warn.push([name, values[value_ind], nominatim_data, oh_mode]);
     };
     // }}}
@@ -5868,7 +5868,7 @@ function opening_hours_test() {
         if (typeof values === 'string')
             this.tests_comp_matching_rule.push([name, values, date, matching_rule, nominatim_data]);
         else
-            for (var value_ind = 0; value_ind < values.length; value_ind++)
+            for (let value_ind = 0; value_ind < values.length; value_ind++)
                 this.tests_comp_matching_rule.push([name, values[value_ind], date, matching_rule, nominatim_data]);
     };
     // }}}
@@ -5888,7 +5888,7 @@ function opening_hours_test() {
             if (typeof values === 'string') {
                 this.tests_prettify_value.push([name, values, only_test_for_locale, expected_prettified_value]);
             } else {
-                for (var value_ind = 0; value_ind < values.length; value_ind++)
+                for (let value_ind = 0; value_ind < values.length; value_ind++)
                     this.tests_prettify_value.push([name, values[value_ind], only_test_for_locale, expected_prettified_value]);
             }
         }
@@ -5905,7 +5905,7 @@ function opening_hours_test() {
         if (typeof first_values === 'string') {
             this.tests_equal_to.push([name, first_values, second_value, expected_result]);
         } else if (typeof first_values === 'object'){
-            for (var value_ind = 0; value_ind < first_values.length; value_ind++)
+            for (let value_ind = 0; value_ind < first_values.length; value_ind++)
                 this.tests_equal_to.push([name, first_values[value_ind], second_value, expected_result]);
         } else {
             throw 'first_values must be either a string or a object!';
@@ -5915,16 +5915,16 @@ function opening_hours_test() {
 
     // helpers {{{
     function intervalsToString(intervals) { /* {{{ */
-        var res = '';
+        let res = '';
 
         if (intervals.length === 0)
             return '(none)';
 
-        for (var interval = 0; interval < intervals.length; interval++) {
-            var item = intervals[interval];
-            var from = formatDate(item[0]);
-            var to   = formatDate(item[1]);
-            var comment = typeof item[3] !== 'undefined' ? '\'' + item[3] + '\'' : item[3];
+        for (let interval = 0; interval < intervals.length; interval++) {
+            const item = intervals[interval];
+            const from = formatDate(item[0]);
+            const to   = formatDate(item[1]);
+            const comment = typeof item[3] !== 'undefined' ? '\'' + item[3] + '\'' : item[3];
 
             if (interval !== 0)
                 res += '\n';
@@ -5957,7 +5957,7 @@ function opening_hours_test() {
         if (typeof date === 'string')
             return date;
 
-        var res = '';
+        let res = '';
         res += date.getFullYear() + '-';
         res += ('0' + (date.getMonth() + 1)).substr(-2, 2) + '-';
         res += ('0' + date.getDate()).substr(-2, 2) + ' ';

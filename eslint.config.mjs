@@ -22,6 +22,7 @@ export default defineConfig([
     rules: {
       '@stylistic/quotes': [ 'error', 'single' ],
       'prefer-const': 'error',
+      'no-var': 'error'
     },
   },
   { files: ['**/*.md'], plugins: { markdown }, language: 'markdown/gfm', extends: ['markdown/recommended'] },

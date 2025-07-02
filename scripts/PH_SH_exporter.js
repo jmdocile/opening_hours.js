@@ -20,14 +20,14 @@
  * }}} */
 
 /* Required modules {{{ */
-var opening_hours = require('../build/opening_hours.js');
-var fs            = require('node:fs');
-var glob          = require('glob');
-var YAML          = require('yaml');
+const opening_hours = require('../build/opening_hours.js');
+const fs            = require('node:fs');
+const glob          = require('glob');
+const YAML          = require('yaml');
 /* }}} */
 
 /* Parameter handling {{{ */
-var optimist = require('optimist')
+const optimist = require('optimist')
     .usage('Usage: $0 export_list.conf')
     .describe('h', 'Display the usage')
     .describe('v', 'Verbose output')
@@ -57,7 +57,7 @@ var optimist = require('optimist')
     .string(['c', 'r', ])
     .alias('o', 'omit-date-hyphens');
 
-var argv = optimist.argv;
+const argv = optimist.argv;
 
 if (argv.help || argv._.length === 0) {
     optimist.showHelp();
@@ -82,9 +82,9 @@ for (const nominatim_file of glob.sync('src/holidays/nominatim_cache/*.yaml')) {
 /* }}} */
 /* }}} */
 
-var filepath = argv._[0];
+const filepath = argv._[0];
 
-var oh_value = argv['public-holidays'] ? 'PH' : 'SH';
+const oh_value = argv['public-holidays'] ? 'PH' : 'SH';
 
 if (argv['all-locations']) {
     for (const nominatim_file_lookup_string in nominatim_by_loc) {
@@ -112,18 +112,18 @@ function write_config_file(filepath, oh_value, nominatim_file_lookup_string, fro
     try {
         oh = new opening_hours(oh_value, nominatim_data);
     } catch (err) {
-        var error_message = 'Error creating new opening_hours(\'' + oh_value + '\', ' + JSON.stringify(nominatim_data) + '): ';
+        let error_message = 'Error creating new opening_hours(\'' + oh_value + '\', ' + JSON.stringify(nominatim_data) + '): ';
         error_message += 'Error: ' + err + '. Please file an issue at https://github.com/opening-hours/opening_hours.js/issues';
         console.error(error_message);
         process.exit(0);
     }
 
-    var intervals = oh.getOpenIntervals(from_date, to_date);
+    const intervals = oh.getOpenIntervals(from_date, to_date);
 
-    var output_lines = [];
+    let output_lines = [];
     for (let i = 0; i < intervals.length; i++) {
-        var holiday_entry = intervals[i];
-        var output_line = [
+        const holiday_entry = intervals[i];
+        const output_line = [
             getISODate(holiday_entry[0], 0, argv['omit-date-hyphens']),
         ];
         if (oh_value === 'SH') { /* Add end date */
@@ -143,7 +143,7 @@ function write_config_file(filepath, oh_value, nominatim_file_lookup_string, fro
 /* Helper functions {{{ */
 // https://stackoverflow.com/a/2998822
 function pad(num, size) {
-    var s = String(num);
+    let s = String(num);
     while (s.length < size) {
         s = '0' + s;
     }
@@ -157,7 +157,7 @@ function getISODate(date, day_offset, omit_date_hyphens) { /* Is a valid ISO 860
     }
 
     date.setDate(date.getDate() + day_offset);
-    var date_parts = [date.getFullYear(), pad(date.getMonth() + 1, 2), pad(date.getDate(), 2)];
+    const date_parts = [date.getFullYear(), pad(date.getMonth() + 1, 2), pad(date.getDate(), 2)];
     if (omit_date_hyphens) {
         return date_parts.join('')
     } else {

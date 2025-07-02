@@ -22,8 +22,7 @@ export default defineConfig([
       'no-constant-binary-expression': 'warn',
       'no-empty': 'warn',
       'no-empty-function': 'warn',
-      'no-func-assign': 'warn',
-      'no-prototype-builtins': 'warn'
+      'no-func-assign': 'warn'
     },
   },
   { files: ['**/*.md'], plugins: { markdown }, language: 'markdown/gfm', extends: ['markdown/recommended'] },

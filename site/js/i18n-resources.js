@@ -1515,7 +1515,7 @@ function getUserSelectTranslateHTMLCode() {
             + (i18next.language !== 'en' ? ' ('+ i18next.t('lang.choose', { lng: 'en' }) +')' : '' )
             + ':</span> ';
     for (var lang in resources) {
-        if (resources.hasOwnProperty(lang)) {
+        if (Object.prototype.hasOwnProperty.call(resources, lang)) {
           res += '<button type="button" onclick="location.href=\'?lng='
                 + lang +'\'">' + i18next.t('lang.' + lang)
                 + (i18next.language !== 'en' ? ' ('+ i18next.t('lang.' +lang, { lng: 'en' }) +')' : '' )

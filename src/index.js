@@ -2079,7 +2079,7 @@ export default function(value, nominatim_object, optional_conf_parm) {
                             );
                     return minutes;
                 } else {
-                    error = [ at+6, '. ' + t('missing', {'symbol': ")"}) + '.'];
+                    error = [ at+6, '. ' + t('missing', {'symbol': ')'}) + '.'];
                 }
             } else {
                 error = [ at+5, ' ' + t('(time)') + '.'];

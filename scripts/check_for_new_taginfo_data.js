@@ -64,23 +64,23 @@ var request = https.get(taginfo_api_url_source, function(response) {
     response.pipe(file);
 
     response.on('error', function(err) {
-        throw("Got error: " + err.message);
+        throw('Got error: ' + err.message);
     });
 
     response.on('end', function() {
         var upstream_dump_creation_time = get_dump_creation_time_from_file('taginfo_sources.json');
 
         if (typeof local_dump_creation_time === 'object')
-            console.log("Local taginfo data was generated on: " + local_dump_creation_time);
+            console.log('Local taginfo data was generated on: ' + local_dump_creation_time);
 
         if (typeof local_dump_creation_time === 'object'
                 && local_dump_creation_time.getTime() === upstream_dump_creation_time.getTime()) {
 
-                console.log("Not newer then local data.");
+                console.log('Not newer then local data.');
                 process.exit(exit_code_not_new);
             } else {
-                console.log("New data available …");
-                console.log("Taginfo data was generated on: " + upstream_dump_creation_time.toISOString());
+                console.log('New data available …');
+                console.log('Taginfo data was generated on: ' + upstream_dump_creation_time.toISOString());
                 process.exit(exit_code_new);
             }
     });

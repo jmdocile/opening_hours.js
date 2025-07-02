@@ -2,6 +2,7 @@ import { defineConfig, globalIgnores } from 'eslint/config'
 import globals from 'globals'
 import js from '@eslint/js'
 import markdown from '@eslint/markdown'
+import stylistic from '@stylistic/eslint-plugin'
 import tseslint from 'typescript-eslint'
 
 export default defineConfig([
@@ -9,6 +10,7 @@ export default defineConfig([
   {
     files: ['**/*.js', '**/*.mjs'],
     extends: [js.configs.recommended],
+    plugins: { '@stylistic': stylistic },
     languageOptions: {
       ecmaVersion: 'latest',
       globals: {
@@ -18,6 +20,7 @@ export default defineConfig([
       sourceType: 'module',
     },
     rules: {
+      '@stylistic/quotes': [ 'error', 'single' ],
       'prefer-const': 'error',
     },
   },

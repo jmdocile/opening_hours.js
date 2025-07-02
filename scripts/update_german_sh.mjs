@@ -16,22 +16,22 @@
   [2] https://github.com/maxleistner/deutsche-schulferien-api
 */
 
-import fs from "fs/promises";
-import yaml from "yaml";
+import fs from 'fs/promises';
+import yaml from 'yaml';
 
 const year = process.argv[2] || new Date().getFullYear();
 const API_URL = `https://ferien-api.maxleistner.de/api/v1/${year}/`;
-const YAML_FILE = "src/holidays/de.yaml";
+const YAML_FILE = 'src/holidays/de.yaml';
 
 // Convert data to an inline YAML format
 function toInlineYaml(data) {
   if (Array.isArray(data)) {
-    return `[${data.join(", ")}]`;
-  } else if (typeof data === "object" && data !== null) {
+    return `[${data.join(', ')}]`;
+  } else if (typeof data === 'object' && data !== null) {
     const entries = Object.entries(data).map(([k, v]) => {
       return `"${k}": ${toInlineYaml(v)}`;
     });
-    return `{${entries.join(", ")}}`;
+    return `{${entries.join(', ')}}`;
   } else {
     return JSON.stringify(data);
   }
@@ -39,17 +39,17 @@ function toInlineYaml(data) {
 
 // Build the YAML string
 function convertToYaml(data, intendDash) {
-  let yamlString = "";
+  let yamlString = '';
 
   for (const [key, value] of Object.entries(data)) {
-    if (key === "PH") {
+    if (key === 'PH') {
       yamlString +=
-        "PH:  # https://de.wikipedia.org/wiki/Feiertage_in_Deutschland\n";
+        'PH:  # https://de.wikipedia.org/wiki/Feiertage_in_Deutschland\n';
       value.forEach(item => {
         yamlString += `  - ${toInlineYaml(item)}\n`;
       });
-    } else if (key === "SH") {
-      yamlString += `  SH:\n`;
+    } else if (key === 'SH') {
+      yamlString += '  SH:\n';
       value.forEach(item => {
         yamlString += `    - name: '${item.name}'\n`;
         for (const [key, value] of Object.entries(item)) {
@@ -58,7 +58,7 @@ function convertToYaml(data, intendDash) {
           }
         }
       });
-    } else if (key.startsWith("_")) {
+    } else if (key.startsWith('_')) {
       if (intendDash) {
         yamlString += `  ${key}: '${value}'\n`;
       } else {
@@ -84,10 +84,10 @@ async function fetchData() {
 
 async function readYaml() {
   try {
-    const file = await fs.readFile(YAML_FILE, "utf8");
+    const file = await fs.readFile(YAML_FILE, 'utf8');
     return yaml.parse(file);
   } catch (error) {
-    console.error("Error reading YAML file:", error);
+    console.error('Error reading YAML file:', error);
     throw error;
   }
 }
@@ -143,25 +143,25 @@ async function updateYaml(data) {
         holidayData[entry.year].push(endMonth);
         holidayData[entry.year].push(endDay);
       } catch (error) {
-        console.error("Error updating holiday data:", error);
-        console.error("State:", state);
-        console.error("Holiday:", holidayName);
-        console.error("Data:", holidayData);
-        console.error("Year:", entry.year);
-        console.error("Start:", startMonth, startDay);
-        console.error("End:", endMonth, endDay);
+        console.error('Error updating holiday data:', error);
+        console.error('State:', state);
+        console.error('Holiday:', holidayName);
+        console.error('Data:', holidayData);
+        console.error('Year:', entry.year);
+        console.error('Start:', startMonth, startDay);
+        console.error('End:', endMonth, endDay);
       }
     });
 
-    let yamlString = "---\n\n";
+    let yamlString = '---\n\n';
     yamlString += convertToYaml(updatedData, false);
     // Remove double newlines at the end to satisfy the YAML linter
-    yamlString = yamlString.replace(/\n\n$/, "\n");
+    yamlString = yamlString.replace(/\n\n$/, '\n');
 
-    await fs.writeFile(YAML_FILE, yamlString, "utf8");
+    await fs.writeFile(YAML_FILE, yamlString, 'utf8');
     console.log(`YAML file "${YAML_FILE}" updated successfully.`);
   } catch (error) {
-    console.error("Error updating YAML file:", error);
+    console.error('Error updating YAML file:', error);
   }
 }
 
@@ -170,7 +170,7 @@ async function updateData() {
     const apiData = await fetchData();
     await updateYaml(apiData);
   } catch (error) {
-    console.error("Error:", error);
+    console.error('Error:', error);
   }
 }
 

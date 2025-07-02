@@ -66,17 +66,17 @@ if (argv.help || argv._.length === 0) {
 
 /* Error handling {{{ */
 if (argv['public-holidays'] && argv['school-holidays']) {
-    console.error("--school-holidays and --public-holidays can not be used together.");
+    console.error('--school-holidays and --public-holidays can not be used together.');
     process.exit(1);
 }
 if (!(argv['public-holidays'] || argv['school-holidays'] || argv['all-locations'])) {
-    console.error("Either --school-holidays or --public-holidays has to be specified.");
+    console.error('Either --school-holidays or --public-holidays has to be specified.');
     process.exit(1);
 }
 const nominatim_by_loc = {};
-for (const nominatim_file of glob.sync("src/holidays/nominatim_cache/*.yaml")) {
+for (const nominatim_file of glob.sync('src/holidays/nominatim_cache/*.yaml')) {
     const country_state = nominatim_file.match(/^.*\/([^/]*)\.yaml$/)[1];
-    nominatim_by_loc[country_state] = YAML.parse(fs.readFileSync(nominatim_file, "utf8"));
+    nominatim_by_loc[country_state] = YAML.parse(fs.readFileSync(nominatim_file, 'utf8'));
 }
 
 /* }}} */
@@ -104,7 +104,7 @@ function write_config_file(filepath, oh_value, nominatim_file_lookup_string, fro
     const nominatim_data = nominatim_by_loc[nominatim_file_lookup_string] || nominatim_by_loc[argv.country];
 
     if (typeof nominatim_data !== 'object') {
-        console.error(nominatim_file_lookup_string + " is currently not supported.");
+        console.error(nominatim_file_lookup_string + ' is currently not supported.');
         process.exit(1);
     }
 
@@ -133,7 +133,7 @@ function write_config_file(filepath, oh_value, nominatim_file_lookup_string, fro
         output_line.push(holiday_entry[3]);
         output_lines.push(output_line.join(' '));
     }
-    output_lines = output_lines.join("\n");
+    output_lines = output_lines.join('\n');
     if (argv.verbose) {
         console.log(`${nominatim_file_lookup_string}:\n${output_lines}`);
     }
@@ -145,7 +145,7 @@ function write_config_file(filepath, oh_value, nominatim_file_lookup_string, fro
 function pad(num, size) {
     var s = String(num);
     while (s.length < size) {
-        s = "0" + s;
+        s = '0' + s;
     }
     return s;
 }

@@ -154,7 +154,7 @@ function opening_hours_test() {
 
     var related_tags_file = 'related_tags.txt';
 
-    var nominatimTestJSON = {"place_id":"44651229","licence":"Data \u00a9 OpenStreetMap contributors, ODbL 1.0. https://www.openstreetmap.org/copyright","osm_type":"way","osm_id":"36248375","lat":"49.5400039","lon":"9.7937133","display_name":"K 2847, Lauda-K\u00f6nigshofen, Main-Tauber-Kreis, Regierungsbezirk Stuttgart, Baden-W\u00fcrttemberg, Germany, European Union","address":{"road":"K 2847","city":"Lauda-K\u00f6nigshofen","county":"Main-Tauber-Kreis","state_district":"Regierungsbezirk Stuttgart","state":"Baden-W\u00fcrttemberg","country":"Germany","country_code":"de","continent":"European Union"}};
+    var nominatimTestJSON = {'place_id':'44651229','licence':'Data \u00a9 OpenStreetMap contributors, ODbL 1.0. https://www.openstreetmap.org/copyright','osm_type':'way','osm_id':'36248375','lat':'49.5400039','lon':'9.7937133','display_name':'K 2847, Lauda-K\u00f6nigshofen, Main-Tauber-Kreis, Regierungsbezirk Stuttgart, Baden-W\u00fcrttemberg, Germany, European Union','address':{'road':'K 2847','city':'Lauda-K\u00f6nigshofen','county':'Main-Tauber-Kreis','state_district':'Regierungsbezirk Stuttgart','state':'Baden-W\u00fcrttemberg','country':'Germany','country_code':'de','continent':'European Union'}};
 
     console.log('The holiday definitions for the country ' + nominatimTestJSON.address.country_code + ' are used so the result will probably be a bit worse in reality but you can change that by providing the definition for missing holidays.\n');
 
@@ -397,11 +397,11 @@ function opening_hours_test() {
                     fs.appendFile(
                         csv_filename,
                         [
-                            "Time",
-                            "Number of values", "Number of different values",
-                            "Number of values which could be parsed", "Number of different values which could be parsed",
-                            "Number of values which returned a warning", "Number of different values which returned a warning",
-                            "Number of values which are not prettified", "Number of different values which are not prettified",
+                            'Time',
+                            'Number of values', 'Number of different values',
+                            'Number of values which could be parsed', 'Number of different values which could be parsed',
+                            'Number of values which returned a warning', 'Number of different values which returned a warning',
+                            'Number of values which are not prettified', 'Number of different values which are not prettified',
                         ].join(', ') + '\n',
                         function(err) {
                             if (err) {
@@ -428,8 +428,8 @@ function opening_hours_test() {
                 ].join(', ');
                 fs.readFileSync(csv_filename, 'utf8').split('\n').forEach(function (line) {
                     if (!known_timestamp && line.match(new RegExp('^' + timestamp))) {
-                        console.error("Skipping write to stats file. An entry does already exist for the timestamp: " + timestamp);
-                        console.log("Line: " + csv_line);
+                        console.error('Skipping write to stats file. An entry does already exist for the timestamp: ' + timestamp);
+                        console.log('Line: ' + csv_line);
                         known_timestamp = true;
                     }
                 });
@@ -453,7 +453,7 @@ function opening_hours_test() {
 
     this.json_file = function (filename /* file exported by the taginfo API */) { /* {{{ */
         if (!fs.existsSync(filename)) {
-            console.error("File " + filename + " does not exist.");
+            console.error('File ' + filename + ' does not exist.');
             return;
         }
 
@@ -469,9 +469,9 @@ function opening_hours_test() {
                 'filename': filename,
                 'export_format': 'overpass',
             };
-            assert.strictEqual(typeof(info.key)       , "string")
-            assert.strictEqual(typeof(info.value)     , "string")
-            assert.strictEqual(typeof(info.timestamp) , "string")
+            assert.strictEqual(typeof(info.key)       , 'string')
+            assert.strictEqual(typeof(info.value)     , 'string')
+            assert.strictEqual(typeof(info.timestamp) , 'string')
             if (info.timestamp.length > 0) {
                 info.timestamp = new Date(info.timestamp);
             } else {
@@ -490,7 +490,7 @@ function opening_hours_test() {
                 'filename': filename,
                 'export_format': 'taginfo',
             };
-            assert.strictEqual(typeof(info.key)       , "string")
+            assert.strictEqual(typeof(info.key)       , 'string')
         } else {
             throw 'Filename of unknown type given.';
         }
@@ -530,8 +530,8 @@ function opening_hours_test() {
                             } else {
                                 taginfo_format[key].data.push(
                                     {
-                                        "value": val,
-                                        "count": 1,
+                                        'value': val,
+                                        'count': 1,
                                     }
                                 );
                             }

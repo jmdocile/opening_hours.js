@@ -18,8 +18,6 @@ export default defineConfig([
       sourceType: 'module',
     },
     rules: {
-      'no-empty': 'warn',
-      'no-empty-function': 'warn'
     },
   },
   { files: ['**/*.md'], plugins: { markdown }, language: 'markdown/gfm', extends: ['markdown/recommended'] },

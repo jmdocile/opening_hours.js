@@ -89,11 +89,9 @@ fs.readFile(json_file, 'utf8', function (err, json) {
 
 function print_values(matched) {
     for (let i = 0; i < matched.length; i++) {
-        if (i !== 0 && i % page_width === 0) {
-        }
         let count = matched[i][1];
         let res   = matched[i][2];
-        console.log('Matched (count: '+ count +'): ' + res[1] + res[2].blue + res[3])
+        console.log('Matched (count: '+ count +'): ' + res[1] + res[2].blue + res[3]);
     }
 }
 

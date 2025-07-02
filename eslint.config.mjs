@@ -18,7 +18,6 @@ export default defineConfig([
       sourceType: 'module',
     },
     rules: {
-      'no-constant-binary-expression': 'warn',
       'no-empty': 'warn',
       'no-empty-function': 'warn',
       'no-func-assign': 'warn'

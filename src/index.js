@@ -492,7 +492,7 @@ export default function(value, nominatim_object, optional_conf_parm) {
                 pos = value.length - at;
             } else { // Issue occurred at a later time, position in string needs to be reconstructed.
                 if (typeof tokens_to_use[nrule][0][at] === 'undefined') {
-                    if (typeof tokens_to_use[nrule][0] && at === -1) {
+                    if (typeof tokens_to_use[nrule][0] !== 'undefined' && at === -1) {
                         pos = value.length;
                         if (typeof tokens_to_use[nrule+1] === 'object' && typeof tokens_to_use[nrule+1][2] === 'number') {
                             pos -= tokens_to_use[nrule+1][2];
@@ -3652,9 +3652,10 @@ export default function(value, nominatim_object, optional_conf_parm) {
                              * '17:00-00:00 unknown "Specified as open end. Closing time was guessed.", 13:00-00:00 open' // First internal rule.
                              * + ', ' overwritten part: 00:00-03:00 open + '00:00-02:00 open', // Second internal rule.
                              */
-                            // eslint-disable-next-line no-constant-condition
-                            if (    false
-                                    && typeof rules[rule-1] === 'object'
+
+                            /*
+                            if (
+                                    typeof rules[rule-1] === 'object'
                                     && rules[rule].build_from_token_rule.toString() === rules[rule-1].build_from_token_rule.toString()
                                     && typeof rules[rule] === 'object'
                                     && rules[rule].build_from_token_rule.toString() === rules[rule].build_from_token_rule.toString()
@@ -3679,7 +3680,6 @@ export default function(value, nominatim_object, optional_conf_parm) {
                                     resultstate = false;
                                     unknown     = false;
                                 }
-                            /* }}} */
                             }
                             /* }}} */
                         }

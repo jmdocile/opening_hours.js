@@ -484,7 +484,7 @@ function opening_hours_test() {
                     related_tags.push(line);
                 }
             });
-        } else if (re = filename.match(/^export\.([^.]+).json$/)) {
+        } else if ((re = filename.match(/^export\.([^.]+).json$/))) {
             info = {
                 'key': re[1],
                 'filename': filename,

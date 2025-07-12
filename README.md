@@ -823,7 +823,7 @@ If you want to contribute to this project, please read the [contribution guideli
 
 ## Contributors
 
-Refer to the [Changelog](https://github.com/opening-hours/opening_hours.js/blob/main/CHANGELOG.rst)
+Refer to the [Changelog](https://github.com/opening-hours/opening_hours.js/blob/main/CHANGELOG.md)
 
 ## Credits
 

@@ -279,7 +279,7 @@ With [1m[34mwarnings[39m[22m:
 "Time ranges spanning midnight with date overwriting (complex real world example)" for "Su-Tu 11:00-01:00, We-Th 11:00-03:00, Fr 11:00-06:00, Sa 11:00-07:00": [1m[32mPASSED[39m[22m
 "Time ranges spanning midnight with date overwriting (complex real world example)" for "Su-Tu 11:00-01:00, We-Th11:00-03:00, Fr 11:00-06:00, Sa 11:00-07:00": [1m[32mPASSED[39m[22m
 "Time ranges spanning midnight (maximum supported)" for "Tu 23:59-48:00": [1m[32mPASSED[39m[22m
-"Time ranges spanning midnight with open ened (maximum supported)" for "Tu 23:59-40:00+": [1m[32mPASSED[39m[22m
+"Time ranges spanning midnight with open end (maximum supported)" for "Tu 23:59-40:00+": [1m[32mPASSED[39m[22m
 "Open end" for "07:00+ open "visit there website to know if they did already close"": [1m[32mPASSED[39m[22m
 "Open end" for "07:00+ unknown "visit there website to know if they did already close"": [1m[32mPASSED[39m[22m
 "Open end" for "17:00+": [1m[32mPASSED[39m[22m

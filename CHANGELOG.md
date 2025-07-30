@@ -117,13 +117,14 @@ work hours!
 - Public holiday definitions updated:
   - France ([#470](https://github.com/opening-hours/opening_hours.js/pull/470))
   - Germany
-    - "Frauentag" is a public holiday in Mecklenburg-Vorpommern since 2023
+    - "Frauentag" is a public holiday in Mecklenburg-Vorpommern since 2023 ([#511](https://github.com/opening-hours/opening_hours.js/pull/511))
 - School holiday definitions updated:
   - Hungary ([#450](https://github.com/opening-hours/opening_hours.js/pull/450))
 
 ### Fixed
 
 - fix: add missing `country_code` to `xa.yaml` ([#499](https://github.com/opening-hours/opening_hours.js/pull/499))
+- fix: localize expected test strings for German locale ([#512](https://github.com/opening-hours/opening_hours.js/pull/512))
 
 ### Removed
 

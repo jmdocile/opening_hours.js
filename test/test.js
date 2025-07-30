@@ -86,6 +86,11 @@ timekeeper.travel(timekeeperTime); // Travel to that date.
 
 const test = new opening_hours_test();
 
+// Localized expected strings based on locale
+const EXPECTED_OPEN_END_MESSAGE = argv.locale === 'de' 
+    ? 'Angegeben als "open end". Schließzeit wurde geraten.'
+    : 'Specified as open end. Closing time was guessed.';
+
 // test.extensive_testing = true;
 // FIXME: Do it.
 
@@ -443,12 +448,12 @@ test.addTest('Time ranges spanning midnight (maximum supported)', [
         [ '2012-10-02 23:59', '2012-10-04 00:00' ],
     ], 1000 * 60 * (24 * 60 + 1), 0, true, {}, 'not last test');
 
-test.addTest('Time ranges spanning midnight with open ened (maximum supported)', [
+test.addTest('Time ranges spanning midnight with open end (maximum supported)', [
         'Tu 23:59-40:00+',
         // 'Tu 23:59-00:00 open, 24:00-40:00 open, 40:00+ open, 40:00+',
     ], '2012-10-01 0:00', '2012-10-08 0:00', [
         [ '2012-10-02 23:59', '2012-10-03 16:00' ],
-        [ '2012-10-03 16:00', '2012-10-04 00:00', true,  'Specified as open end. Closing time was guessed.' ],
+        [ '2012-10-03 16:00', '2012-10-04 00:00', true,  EXPECTED_OPEN_END_MESSAGE ],
     ], 1000 * 60 * (16 * 60 + 1), 1000 * 60 * 60 * 8, true, {}, 'not only test');
 // }}}
 
@@ -474,20 +479,20 @@ test.addTest('Open end', [
         '17:00+; 15:00-16:00 off',
         '15:00-16:00 off; 17:00+',
     ], '2012-10-01 0:00', '2012-10-02 0:00', [
-        [ '2012-10-01 00:00', '2012-10-01 03:00', true, 'Specified as open end. Closing time was guessed.' ],
-        [ '2012-10-01 17:00', '2012-10-02 00:00', true, 'Specified as open end. Closing time was guessed.' ],
+        [ '2012-10-01 00:00', '2012-10-01 03:00', true, EXPECTED_OPEN_END_MESSAGE ],
+        [ '2012-10-01 17:00', '2012-10-02 00:00', true, EXPECTED_OPEN_END_MESSAGE ],
     ], 0, 1000 * 60 * 60 * (3 + 24 - 17), true, nominatim_default, 'not last test');
 
 test.addTest('Open end, variable time', [
         'sunrise+',
     ], '2012-10-01 0:00', '2012-10-02 0:00', [
-        [ '2012-10-01 07:22', '2012-10-02 00:00', true,  'Specified as open end. Closing time was guessed.' ],
+        [ '2012-10-01 07:22', '2012-10-02 00:00', true,  EXPECTED_OPEN_END_MESSAGE ],
     ], 0, 1000 * 60 * (60 * 16 + 60 - 22), false, nominatim_default, 'not last test');
 
 test.addTest('Open end, variable time', [
         '(sunrise+01:00)+',
     ], '2012-10-01 0:00', '2012-10-02 0:00', [
-        [ '2012-10-01 08:22', '2012-10-02 00:00', true,  'Specified as open end. Closing time was guessed.' ],
+        [ '2012-10-01 08:22', '2012-10-02 00:00', true,  EXPECTED_OPEN_END_MESSAGE ],
     ], 0, 1000 * 60 * (60 * 15 + 60 - 22), false, nominatim_default, 'not last test');
 
 test.addTest('Open end', [
@@ -503,7 +508,7 @@ test.addTest('Open end', [
         '07:00+,12:00-13:00,13:00-16:00',
         '07:00+,12:00-16:00; 16:00-24:00 closed "needed because of open end"', // Now obsolete: https://github.com/opening-hours/opening_hours.js/issues/48
     ], '2012-10-01 0:00', '2012-10-02 5:00', [
-        [ '2012-10-01 07:00', '2012-10-01 12:00', true,  'Specified as open end. Closing time was guessed.' ],
+        [ '2012-10-01 07:00', '2012-10-01 12:00', true,  EXPECTED_OPEN_END_MESSAGE ],
         [ '2012-10-01 12:00', '2012-10-01 16:00' ],
     ], 1000 * 60 * 60 * 4, 1000 * 60 * 60 * 5, true, {}, 'not only test');
 
@@ -514,7 +519,7 @@ test.addTest('Open end', [
     ], '2012-10-01 0:00', '2012-10-02 5:00', [
         [ '2012-10-01 05:00', '2012-10-01 06:00' ],
         [ '2012-10-01 06:45', '2012-10-01 07:00' ],
-        [ '2012-10-01 07:00', '2012-10-01 13:00', true,  'Specified as open end. Closing time was guessed.' ],
+        [ '2012-10-01 07:00', '2012-10-01 13:00', true,  EXPECTED_OPEN_END_MESSAGE ],
         [ '2012-10-01 13:00', '2012-10-01 16:00' ],
     ], 1000 * 60 * 60 * (4 + 0.25), 1000 * 60 * 60 * 6, true, {}, 'not only test');
 
@@ -535,9 +540,9 @@ test.addTest('Open end', [
         '13:00-02:00,17:00+', // Do not use.
         '13:00-17:00 open, 17:00+'
     ], '2012-10-01 0:00', '2012-10-02 5:00', [
-        [ '2012-10-01 00:00', '2012-10-01 03:00', true,  'Specified as open end. Closing time was guessed.' ],
+        [ '2012-10-01 00:00', '2012-10-01 03:00', true,  EXPECTED_OPEN_END_MESSAGE ],
         [ '2012-10-01 13:00', '2012-10-01 17:00' ],
-        [ '2012-10-01 17:00', '2012-10-02 03:00', true,  'Specified as open end. Closing time was guessed.' ],
+        [ '2012-10-01 17:00', '2012-10-02 03:00', true,  EXPECTED_OPEN_END_MESSAGE ],
     ], 1000 * 60 * 60 * 4, 1000 * 60 * 60 * (3 + (3+4+3)), true, {}, 'not only test');
 
 test.addTest('Open end', [
@@ -556,9 +561,9 @@ test.addTest('Open end', [
 test.addTest('Fixed time followed by open end', [
         '14:00-17:00+',
     ], '2012-10-01 0:00', '2012-10-02 0:00', [
-        [ '2012-10-01 00:00', '2012-10-01 03:00', true,  'Specified as open end. Closing time was guessed.' ],
+        [ '2012-10-01 00:00', '2012-10-01 03:00', true,  EXPECTED_OPEN_END_MESSAGE ],
         [ '2012-10-01 14:00', '2012-10-01 17:00' ],
-        [ '2012-10-01 17:00', '2012-10-02 00:00', true,  'Specified as open end. Closing time was guessed.' ],
+        [ '2012-10-01 17:00', '2012-10-02 00:00', true,  EXPECTED_OPEN_END_MESSAGE ],
     ], 1000 * 60 * 60 * 3, 1000 * 60 * 60 * (3 + 7), true, {}, 'not last test');
 
 test.addTest('Fixed time followed by open end, wrapping over midnight', [
@@ -566,15 +571,15 @@ test.addTest('Fixed time followed by open end, wrapping over midnight', [
         'Mo 22:00-28:00+',
     ], '2012-10-01 0:00', '2012-10-03 0:00', [
         [ '2012-10-01 22:00', '2012-10-02 04:00' ],
-        [ '2012-10-02 04:00', '2012-10-02 12:00', true,  'Specified as open end. Closing time was guessed.' ],
+        [ '2012-10-02 04:00', '2012-10-02 12:00', true,  EXPECTED_OPEN_END_MESSAGE ],
     ], 1000 * 60 * 60 * 6, 1000 * 60 * 60 * 8, true, {}, 'not last test');
 
 test.addTest('variable time range followed by open end', [
         '14:00-sunset+',
     ], '2012-10-01 0:00', '2012-10-02 0:00', [
-        [ '2012-10-01 00:00', '2012-10-01 04:00', true,  'Specified as open end. Closing time was guessed.' ],
+        [ '2012-10-01 00:00', '2012-10-01 04:00', true,  EXPECTED_OPEN_END_MESSAGE ],
         [ '2012-10-01 14:00', '2012-10-01 19:00' ],
-        [ '2012-10-01 19:00', '2012-10-02 00:00', true,  'Specified as open end. Closing time was guessed.' ],
+        [ '2012-10-01 19:00', '2012-10-02 00:00', true,  EXPECTED_OPEN_END_MESSAGE ],
     ], 1000 * 60 * 60 * 5, 1000 * 60 * 60 * (4 + 5), false, nominatim_default, 'not last test');
 
 test.addTest('variable time range followed by open end', [
@@ -583,16 +588,16 @@ test.addTest('variable time range followed by open end', [
         'sunrise-14:00 open, 14:00+',
     ], '2012-10-01 0:00', '2012-10-02 5:00', [
         [ '2012-10-01 07:22', '2012-10-01 14:00' ],
-        [ '2012-10-01 14:00', '2012-10-02 00:00', true,  'Specified as open end. Closing time was guessed.' ],
+        [ '2012-10-01 14:00', '2012-10-02 00:00', true,  EXPECTED_OPEN_END_MESSAGE ],
     ], 1000 * 60 * (38 + 60 * 6), 1000 * 60 * 60 * 10, false, nominatim_default, 'not only test');
 
 test.addTest('variable time range followed by open end', [
         'sunrise-(sunset+01:00)+',
         'sunrise-(sunset+01:00)+; Su off',
     ], '2012-10-06 0:00', '2012-10-07 0:00', [
-        [ '2012-10-06 00:00', '2012-10-06 05:00', true,  'Specified as open end. Closing time was guessed.' ],
+        [ '2012-10-06 00:00', '2012-10-06 05:00', true,  EXPECTED_OPEN_END_MESSAGE ],
         [ '2012-10-06 07:29', '2012-10-06 19:50' ],
-        [ '2012-10-06 19:50', '2012-10-07 00:00', true,  'Specified as open end. Closing time was guessed.' ],
+        [ '2012-10-06 19:50', '2012-10-07 00:00', true,  EXPECTED_OPEN_END_MESSAGE ],
     ], 1000 * 60 * (31 + (19 - 8) * 60 + 50), 1000 * 60 * (60 * 5 + 60 * 4 + 10), false, nominatim_default, 'not last test');
 
 test.addTest('variable time range followed by open end, day wrap and different states', [
@@ -3833,13 +3838,13 @@ test.addTest('Real world example: Was processed right (month range/monthday rang
 test.addTest('Real world example: Was not processed right (month range/monthday range)', [ // FIXME -> SH
           'Mo-Sa 18:00+; SH off',
     ], '2014-09-01 0:00', '2014-09-21 0:00', [
-        [ '2014-09-14 00:00', '2014-09-14 04:00', true,  'Specified as open end. Closing time was guessed.' ], // FIXME
-        [ '2014-09-15 18:00', '2014-09-16 04:00', true,  'Specified as open end. Closing time was guessed.' ],
-        [ '2014-09-16 18:00', '2014-09-17 04:00', true,  'Specified as open end. Closing time was guessed.' ],
-        [ '2014-09-17 18:00', '2014-09-18 04:00', true,  'Specified as open end. Closing time was guessed.' ],
-        [ '2014-09-18 18:00', '2014-09-19 04:00', true,  'Specified as open end. Closing time was guessed.' ],
-        [ '2014-09-19 18:00', '2014-09-20 04:00', true,  'Specified as open end. Closing time was guessed.' ],
-        [ '2014-09-20 18:00', '2014-09-21 00:00', true,  'Specified as open end. Closing time was guessed.' ],
+        [ '2014-09-14 00:00', '2014-09-14 04:00', true,  EXPECTED_OPEN_END_MESSAGE ], // FIXME
+        [ '2014-09-15 18:00', '2014-09-16 04:00', true,  EXPECTED_OPEN_END_MESSAGE ],
+        [ '2014-09-16 18:00', '2014-09-17 04:00', true,  EXPECTED_OPEN_END_MESSAGE ],
+        [ '2014-09-17 18:00', '2014-09-18 04:00', true,  EXPECTED_OPEN_END_MESSAGE ],
+        [ '2014-09-18 18:00', '2014-09-19 04:00', true,  EXPECTED_OPEN_END_MESSAGE ],
+        [ '2014-09-19 18:00', '2014-09-20 04:00', true,  EXPECTED_OPEN_END_MESSAGE ],
+        [ '2014-09-20 18:00', '2014-09-21 00:00', true,  EXPECTED_OPEN_END_MESSAGE ],
     ], 0, 1000 * 60 * 60 * (4 + (6 + 4) * 5 + 6), false, nominatim_default, 'not only test');
 
 test.addTest('Real world example: Was not processed right (month range/monthday range)', [
@@ -3849,24 +3854,24 @@ test.addTest('Real world example: Was not processed right (month range/monthday 
         // 'PH off; Mo-Sa 18:00-19:00',
         // 'Sep 01-14 "Sommerferien"; Mo-Sa 18:00+',
     ], '2014-09-01 0:00', '2014-09-21 0:00', [
-        [ '2014-09-01 18:00', '2014-09-02 04:00', true, 'Specified as open end. Closing time was guessed.' ],
-        [ '2014-09-02 18:00', '2014-09-03 04:00', true, 'Specified as open end. Closing time was guessed.' ],
-        [ '2014-09-03 18:00', '2014-09-04 04:00', true, 'Specified as open end. Closing time was guessed.' ],
-        [ '2014-09-04 18:00', '2014-09-05 04:00', true, 'Specified as open end. Closing time was guessed.' ],
-        [ '2014-09-05 18:00', '2014-09-06 04:00', true, 'Specified as open end. Closing time was guessed.' ],
-        [ '2014-09-06 18:00', '2014-09-07 04:00', true, 'Specified as open end. Closing time was guessed.' ],
-        [ '2014-09-08 18:00', '2014-09-09 04:00', true, 'Specified as open end. Closing time was guessed.' ],
-        [ '2014-09-09 18:00', '2014-09-10 04:00', true, 'Specified as open end. Closing time was guessed.' ],
-        [ '2014-09-10 18:00', '2014-09-11 04:00', true, 'Specified as open end. Closing time was guessed.' ],
-        [ '2014-09-11 18:00', '2014-09-12 04:00', true, 'Specified as open end. Closing time was guessed.' ],
-        [ '2014-09-12 18:00', '2014-09-13 04:00', true, 'Specified as open end. Closing time was guessed.' ],
-        [ '2014-09-13 18:00', '2014-09-14 04:00', true, 'Specified as open end. Closing time was guessed.' ],
-        [ '2014-09-15 18:00', '2014-09-16 04:00', true, 'Specified as open end. Closing time was guessed.' ],
-        [ '2014-09-16 18:00', '2014-09-17 04:00', true, 'Specified as open end. Closing time was guessed.' ],
-        [ '2014-09-17 18:00', '2014-09-18 04:00', true, 'Specified as open end. Closing time was guessed.' ],
-        [ '2014-09-18 18:00', '2014-09-19 04:00', true, 'Specified as open end. Closing time was guessed.' ],
-        [ '2014-09-19 18:00', '2014-09-20 04:00', true, 'Specified as open end. Closing time was guessed.' ],
-        [ '2014-09-20 18:00', '2014-09-21 00:00', true, 'Specified as open end. Closing time was guessed.' ],
+        [ '2014-09-01 18:00', '2014-09-02 04:00', true, EXPECTED_OPEN_END_MESSAGE ],
+        [ '2014-09-02 18:00', '2014-09-03 04:00', true, EXPECTED_OPEN_END_MESSAGE ],
+        [ '2014-09-03 18:00', '2014-09-04 04:00', true, EXPECTED_OPEN_END_MESSAGE ],
+        [ '2014-09-04 18:00', '2014-09-05 04:00', true, EXPECTED_OPEN_END_MESSAGE ],
+        [ '2014-09-05 18:00', '2014-09-06 04:00', true, EXPECTED_OPEN_END_MESSAGE ],
+        [ '2014-09-06 18:00', '2014-09-07 04:00', true, EXPECTED_OPEN_END_MESSAGE ],
+        [ '2014-09-08 18:00', '2014-09-09 04:00', true, EXPECTED_OPEN_END_MESSAGE ],
+        [ '2014-09-09 18:00', '2014-09-10 04:00', true, EXPECTED_OPEN_END_MESSAGE ],
+        [ '2014-09-10 18:00', '2014-09-11 04:00', true, EXPECTED_OPEN_END_MESSAGE ],
+        [ '2014-09-11 18:00', '2014-09-12 04:00', true, EXPECTED_OPEN_END_MESSAGE ],
+        [ '2014-09-12 18:00', '2014-09-13 04:00', true, EXPECTED_OPEN_END_MESSAGE ],
+        [ '2014-09-13 18:00', '2014-09-14 04:00', true, EXPECTED_OPEN_END_MESSAGE ],
+        [ '2014-09-15 18:00', '2014-09-16 04:00', true, EXPECTED_OPEN_END_MESSAGE ],
+        [ '2014-09-16 18:00', '2014-09-17 04:00', true, EXPECTED_OPEN_END_MESSAGE ],
+        [ '2014-09-17 18:00', '2014-09-18 04:00', true, EXPECTED_OPEN_END_MESSAGE ],
+        [ '2014-09-18 18:00', '2014-09-19 04:00', true, EXPECTED_OPEN_END_MESSAGE ],
+        [ '2014-09-19 18:00', '2014-09-20 04:00', true, EXPECTED_OPEN_END_MESSAGE ],
+        [ '2014-09-20 18:00', '2014-09-21 00:00', true, EXPECTED_OPEN_END_MESSAGE ],
     ], 0, 1000 * 60 * 60 * (17 * (6 + 4) + 6), false, nominatim_default, 'not only test');
 /* }}} */
 
@@ -3920,30 +3925,30 @@ test.addTest('Real world example: Was not processed right.', [
         'Jan Su[-2]-Jan Su[-1],Feb Su[-2]-Feb Su[-1]: Fr-Su 12:00+; Mar 01-Dec 31: Tu-Su 12:00+; Dec 24-26,Dec 31: off'
         // Optimized value. Should mean the same.
     ], '2014-11-29 0:00', '2015-01-11 0:00', [
-        [ '2014-11-29 12:00', '2014-11-30 00:00', true,  'Specified as open end. Closing time was guessed.' ],
-        [ '2014-11-30 12:00', '2014-12-01 00:00', true,  'Specified as open end. Closing time was guessed.' ],
-        [ '2014-12-02 12:00', '2014-12-03 00:00', true,  'Specified as open end. Closing time was guessed.' ],
-        [ '2014-12-03 12:00', '2014-12-04 00:00', true,  'Specified as open end. Closing time was guessed.' ],
-        [ '2014-12-04 12:00', '2014-12-05 00:00', true,  'Specified as open end. Closing time was guessed.' ],
-        [ '2014-12-05 12:00', '2014-12-06 00:00', true,  'Specified as open end. Closing time was guessed.' ],
-        [ '2014-12-06 12:00', '2014-12-07 00:00', true,  'Specified as open end. Closing time was guessed.' ],
-        [ '2014-12-07 12:00', '2014-12-08 00:00', true,  'Specified as open end. Closing time was guessed.' ],
-        [ '2014-12-09 12:00', '2014-12-10 00:00', true,  'Specified as open end. Closing time was guessed.' ],
-        [ '2014-12-10 12:00', '2014-12-11 00:00', true,  'Specified as open end. Closing time was guessed.' ],
-        [ '2014-12-11 12:00', '2014-12-12 00:00', true,  'Specified as open end. Closing time was guessed.' ],
-        [ '2014-12-12 12:00', '2014-12-13 00:00', true,  'Specified as open end. Closing time was guessed.' ],
-        [ '2014-12-13 12:00', '2014-12-14 00:00', true,  'Specified as open end. Closing time was guessed.' ],
-        [ '2014-12-14 12:00', '2014-12-15 00:00', true,  'Specified as open end. Closing time was guessed.' ],
-        [ '2014-12-16 12:00', '2014-12-17 00:00', true,  'Specified as open end. Closing time was guessed.' ],
-        [ '2014-12-17 12:00', '2014-12-18 00:00', true,  'Specified as open end. Closing time was guessed.' ],
-        [ '2014-12-18 12:00', '2014-12-19 00:00', true,  'Specified as open end. Closing time was guessed.' ],
-        [ '2014-12-19 12:00', '2014-12-20 00:00', true,  'Specified as open end. Closing time was guessed.' ],
-        [ '2014-12-20 12:00', '2014-12-21 00:00', true,  'Specified as open end. Closing time was guessed.' ],
-        [ '2014-12-21 12:00', '2014-12-22 00:00', true,  'Specified as open end. Closing time was guessed.' ],
-        [ '2014-12-23 12:00', '2014-12-24 00:00', true,  'Specified as open end. Closing time was guessed.' ],
-        [ '2014-12-27 12:00', '2014-12-28 00:00', true,  'Specified as open end. Closing time was guessed.' ],
-        [ '2014-12-28 12:00', '2014-12-29 00:00', true,  'Specified as open end. Closing time was guessed.' ],
-        [ '2014-12-30 12:00', '2014-12-31 00:00', true,  'Specified as open end. Closing time was guessed.' ],
+        [ '2014-11-29 12:00', '2014-11-30 00:00', true,  EXPECTED_OPEN_END_MESSAGE ],
+        [ '2014-11-30 12:00', '2014-12-01 00:00', true,  EXPECTED_OPEN_END_MESSAGE ],
+        [ '2014-12-02 12:00', '2014-12-03 00:00', true,  EXPECTED_OPEN_END_MESSAGE ],
+        [ '2014-12-03 12:00', '2014-12-04 00:00', true,  EXPECTED_OPEN_END_MESSAGE ],
+        [ '2014-12-04 12:00', '2014-12-05 00:00', true,  EXPECTED_OPEN_END_MESSAGE ],
+        [ '2014-12-05 12:00', '2014-12-06 00:00', true,  EXPECTED_OPEN_END_MESSAGE ],
+        [ '2014-12-06 12:00', '2014-12-07 00:00', true,  EXPECTED_OPEN_END_MESSAGE ],
+        [ '2014-12-07 12:00', '2014-12-08 00:00', true,  EXPECTED_OPEN_END_MESSAGE ],
+        [ '2014-12-09 12:00', '2014-12-10 00:00', true,  EXPECTED_OPEN_END_MESSAGE ],
+        [ '2014-12-10 12:00', '2014-12-11 00:00', true,  EXPECTED_OPEN_END_MESSAGE ],
+        [ '2014-12-11 12:00', '2014-12-12 00:00', true,  EXPECTED_OPEN_END_MESSAGE ],
+        [ '2014-12-12 12:00', '2014-12-13 00:00', true,  EXPECTED_OPEN_END_MESSAGE ],
+        [ '2014-12-13 12:00', '2014-12-14 00:00', true,  EXPECTED_OPEN_END_MESSAGE ],
+        [ '2014-12-14 12:00', '2014-12-15 00:00', true,  EXPECTED_OPEN_END_MESSAGE ],
+        [ '2014-12-16 12:00', '2014-12-17 00:00', true,  EXPECTED_OPEN_END_MESSAGE ],
+        [ '2014-12-17 12:00', '2014-12-18 00:00', true,  EXPECTED_OPEN_END_MESSAGE ],
+        [ '2014-12-18 12:00', '2014-12-19 00:00', true,  EXPECTED_OPEN_END_MESSAGE ],
+        [ '2014-12-19 12:00', '2014-12-20 00:00', true,  EXPECTED_OPEN_END_MESSAGE ],
+        [ '2014-12-20 12:00', '2014-12-21 00:00', true,  EXPECTED_OPEN_END_MESSAGE ],
+        [ '2014-12-21 12:00', '2014-12-22 00:00', true,  EXPECTED_OPEN_END_MESSAGE ],
+        [ '2014-12-23 12:00', '2014-12-24 00:00', true,  EXPECTED_OPEN_END_MESSAGE ],
+        [ '2014-12-27 12:00', '2014-12-28 00:00', true,  EXPECTED_OPEN_END_MESSAGE ],
+        [ '2014-12-28 12:00', '2014-12-29 00:00', true,  EXPECTED_OPEN_END_MESSAGE ],
+        [ '2014-12-30 12:00', '2014-12-31 00:00', true,  EXPECTED_OPEN_END_MESSAGE ],
     ], 0, 1000 * 60 * 60 * 12 * 24, false, {}, 'not last test');
 
 test.addTest('Simplifed real world example: Was not processed right.', [
@@ -3966,11 +3971,11 @@ test.addTest('Real world example: Was processed right form library.', [
         'Mo 19:00+; We 14:00+; Su 10:00+ || "Führung, Sonderführungen nach Vereinbarung."',
     ], '2014-01-06 0:00', '2014-01-13 0:00', [
         [ '2014-01-06 00:00', '2014-01-06 19:00', true, 'Führung, Sonderführungen nach Vereinbarung.' ],
-        [ '2014-01-06 19:00', '2014-01-07 05:00', true, 'Specified as open end. Closing time was guessed.' ],
+        [ '2014-01-06 19:00', '2014-01-07 05:00', true, EXPECTED_OPEN_END_MESSAGE ],
         [ '2014-01-07 05:00', '2014-01-08 14:00', true, 'Führung, Sonderführungen nach Vereinbarung.' ],
-        [ '2014-01-08 14:00', '2014-01-09 00:00', true, 'Specified as open end. Closing time was guessed.' ],
+        [ '2014-01-08 14:00', '2014-01-09 00:00', true, EXPECTED_OPEN_END_MESSAGE ],
         [ '2014-01-09 00:00', '2014-01-12 10:00', true, 'Führung, Sonderführungen nach Vereinbarung.' ],
-        [ '2014-01-12 10:00', '2014-01-13 00:00', true, 'Specified as open end. Closing time was guessed.' ],
+        [ '2014-01-12 10:00', '2014-01-13 00:00', true, EXPECTED_OPEN_END_MESSAGE ],
     ], 0, 1000 * 60 * 60 * 24 * 7, true, {}, 'not last test');
 
 test.addTest('Real world example: Was processed right form library.', [
@@ -3984,7 +3989,7 @@ test.addTest('Real world example: Was processed right form library.', [
 test.addTest('Real world example: Was processed right form library.', [
         'Mo 19:00+ || "Sonderführungen nach Vereinbarung."',
     ], '2014-01-07 1:00', '2014-01-13 0:00', [
-        [ '2014-01-07 01:00', '2014-01-07 05:00', true, 'Specified as open end. Closing time was guessed.' ],
+        [ '2014-01-07 01:00', '2014-01-07 05:00', true, EXPECTED_OPEN_END_MESSAGE ],
         [ '2014-01-07 05:00', '2014-01-13 00:00', true, 'Sonderführungen nach Vereinbarung.' ],
     ], 0, 1000 * 60 * 60 * (24 * 6 - 1), true, {}, 'not last test');
 // }}}
@@ -4345,7 +4350,7 @@ test.addTest('Real world example: Problem with <additional_rule_separator> in ho
         [ '2015-05-26 00:00', '2015-05-27 00:00' ], // Tu: 1
         [ '2015-05-28 00:00', '2015-06-03 00:00' ], // Th till Tu: 6
         [ '2015-06-03 11:00', '2015-06-03 14:00' ], // We
-        [ '2015-06-03 17:00', '2015-06-04 03:00', true, 'Specified as open end. Closing time was guessed.' ],
+        [ '2015-06-03 17:00', '2015-06-04 03:00', true, EXPECTED_OPEN_END_MESSAGE ],
         [ '2015-06-04 03:00', '2015-06-05 00:00', false, 'Fronleichnam' ], // Th
         [ '2015-06-05 00:00', '2015-06-10 00:00' ], // Fr-Tu: 5
     ], 1000 * 60 * 60 * (24 * (1 + 1 + 6 + 5) + 3 + (24 - 3)), 1000 * 60 * 60 * (24 - 17 + 3), false, nominatim_default, 'not last test');

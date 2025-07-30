@@ -116,6 +116,8 @@ work hours!
 
 - Public holiday definitions updated:
   - France ([#470](https://github.com/opening-hours/opening_hours.js/pull/470))
+  - Germany
+    - "Frauentag" is a public holiday in Mecklenburg-Vorpommern since 2023
 - School holiday definitions updated:
   - Hungary ([#450](https://github.com/opening-hours/opening_hours.js/pull/450))
 

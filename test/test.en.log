@@ -365,32 +365,11 @@ With [1m[34mwarnings[39m[22m:
 With [1m[34mwarnings[39m[22m:
 	*daylight <--- (Please use notation "sunrise-sunset" for "daylight".)
 "Variable times calculation with coordinates" for "(sunrise+02:00)-sunset": [1m[32mPASSED[39m[22m
-"Variable times which moves over fix end time" for "sunrise-08:02": [1m[31mFAILED[39m[22m, bad duration(s): 1860000,0, expected 1800000,0, bad intervals: 
-[ '2013-01-27 08:01', '2013-01-27 08:02', false, undefined ],
-[ '2013-01-28 08:00', '2013-01-28 08:02', false, undefined ],
-[ '2013-01-29 07:59', '2013-01-29 08:02', false, undefined ],
-[ '2013-01-30 07:58', '2013-01-30 08:02', false, undefined ],
-[ '2013-01-31 07:56', '2013-01-31 08:02', false, undefined ],
-[ '2013-02-01 07:55', '2013-02-01 08:02', false, undefined ],
-[ '2013-02-02 07:54', '2013-02-02 08:02', false, undefined ],
-expected:
-[ '2013-01-28 08:00', '2013-01-28 08:02', false, undefined ],
-[ '2013-01-29 07:59', '2013-01-29 08:02', false, undefined ],
-[ '2013-01-30 07:58', '2013-01-30 08:02', false, undefined ],
-[ '2013-01-31 07:56', '2013-01-31 08:02', false, undefined ],
-[ '2013-02-01 07:55', '2013-02-01 08:02', false, undefined ],
-[ '2013-02-02 07:54', '2013-02-02 08:02', false, undefined ],
+"Variable times which moves over fix end time" for "sunrise-08:02": [1m[32mPASSED[39m[22m
 "Variable times which moves over fix end time" for "sunrise-08:00": [1m[32mPASSED[39m[22m
 "Variable times which moves over fix end time" for "sunrise-07:58": [1m[32mPASSED[39m[22m
 "Variable times which moves over fix end time" for "sunrise-06:00": [1m[32mPASSED[39m[22m
-"Variable times which moves over fix end time" for "sunrise-05:59": [1m[31mFAILED[39m[22m, bad duration(s): 158220000,0, expected 158160000,0, bad intervals: 
-[ '2013-01-26 00:00', '2013-01-26 05:59', false, undefined ],
-[ '2013-01-26 08:01', '2013-01-27 05:59', false, undefined ],
-[ '2013-01-27 08:00', '2013-01-28 00:00', false, undefined ],
-expected:
-[ '2013-01-26 00:00', '2013-01-26 05:59', false, undefined ],
-[ '2013-01-26 08:02', '2013-01-27 05:59', false, undefined ],
-[ '2013-01-27 08:00', '2013-01-28 00:00', false, undefined ],
+"Variable times which moves over fix end time" for "sunrise-05:59": [1m[32mPASSED[39m[22m
 "Variable times which moves over fix end time" for "sunrise-06:00": [1m[32mPASSED[39m[22m
 "Variable times which moves over fix end time" for "sunrise-05:59": [1m[33mIGNORED[39m[22m, reason: not implemented yet
 "Variable times spanning midnight" for "sunset-sunrise": [1m[32mPASSED[39m[22m
@@ -2745,7 +2724,7 @@ The optional_conf_parm["tag_key"] is missing, required by optional_conf_parm["ma
 "Test isEqualTo function" for "Mo 10:00-20:00; We-Fr 10:00-20:01": [1m[32mPASSED[39m[22m
 "Test isEqualTo function" for "Mo 10:00-20:00; We-Fr 10:00-19:59": [1m[32mPASSED[39m[22m
 "Test isEqualTo function" for "closed; Sa unknown "comment"": [1m[32mPASSED[39m[22m
-925/939 tests passed. 14 did not pass.
+927/939 tests passed. 12 did not pass.
 41 tests where (partly) ignored, sorted by commonness:
 * 26: prettifyValue (most of the cases this is used to test if values with selectors in wrong order or wrong symbols (error tolerance) are evaluated correctly)
 * 11: not implemented yet

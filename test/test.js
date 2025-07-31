@@ -681,13 +681,14 @@ test.addTest('Variable times which moves over fix end time', [
     ], '2013-01-26 0:00', '2013-02-03 0:00', [
         // [ '2013-01-26 08:03', '2013-01-26 08:02' ], // Ignored because it would be interpreted as time range spanning midnight
         // [ '2013-01-27 08:02', '2013-01-27 08:02' ], // which is probably not what you want.
+        [ '2013-01-27 08:01', '2013-01-27 08:02' ],
         [ '2013-01-28 08:00', '2013-01-28 08:02' ],
         [ '2013-01-29 07:59', '2013-01-29 08:02' ],
         [ '2013-01-30 07:58', '2013-01-30 08:02' ],
         [ '2013-01-31 07:56', '2013-01-31 08:02' ],
         [ '2013-02-01 07:55', '2013-02-01 08:02' ],
         [ '2013-02-02 07:54', '2013-02-02 08:02' ],
-    ], 1000 * 60 * (6 * 2 + 1 + 2 + 4 + 5 + 6), 0, false, nominatim_default);
+    ], 1000 * 60 * (1 + 2 + 3 + 4 + 6 + 7 + 8), 0, false, nominatim_default);
 
 test.addTest('Variable times which moves over fix end time', [
         'sunrise-08:00',
@@ -717,9 +718,9 @@ test.addTest('Variable times which moves over fix end time', [
         'sunrise-05:59', // end time < constant time < from time
     ], '2013-01-26 0:00', '2013-01-28 0:00', [
     [ '2013-01-26 00:00', '2013-01-26 05:59' ],
-    [ '2013-01-26 08:02', '2013-01-27 05:59' ],
+    [ '2013-01-26 08:01', '2013-01-27 05:59' ],
     [ '2013-01-27 08:00', '2013-01-28 00:00' ],
-    ], 1000 * 60 * ((60 * 5 + 59) + (60 * 22 - 3) + (60 * 16)), 0, false, nominatim_default, 'not last test');
+    ], 1000 * 60 * ((60 * 5 + 59) + (60 * 22 - 2) + (60 * 16)), 0, false, nominatim_default, 'not last test');
 
 test.addTest('Variable times which moves over fix end time', [
         'sunrise-06:00', // from time < constant time <= end time

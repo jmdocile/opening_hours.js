@@ -124,7 +124,8 @@ work hours!
 ### Fixed
 
 - fix: add missing `country_code` to `xa.yaml` ([#499](https://github.com/opening-hours/opening_hours.js/pull/499))
-- fix: localize expected test strings for German locale ([#512](https://github.com/opening-hours/opening_hours.js/pull/512))
+- fix(test): localize expected test strings for German locale ([#512](https://github.com/opening-hours/opening_hours.js/pull/512))
+- fix(test): correct two `sunrise` test expectations to match SunCalc output ([#513](https://github.com/opening-hours/opening_hours.js/pull/513))
 
 ### Removed
 

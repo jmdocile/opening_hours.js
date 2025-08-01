@@ -2218,12 +2218,15 @@ export default function(value, nominatim_object, optional_conf_parm) {
                         }
 
                         // we hit the target day
-                        if (date.getDate() === target_day_with_added_days_this_month.getDate()) {
+                        const currentDateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+                        const targetDateOnly = new Date(target_day_with_added_days_this_month.getFullYear(), target_day_with_added_days_this_month.getMonth(), target_day_with_added_days_this_month.getDate());
+                        
+                        if (currentDateOnly.getTime() === targetDateOnly.getTime()) {
                             return [true, dateAtDayMinutes(date, minutes_in_day)];
                         }
 
                         // we're before target day
-                        if (date.getDate() < target_day_with_added_days_this_month.getDate()) {
+                        if (currentDateOnly.getTime() < targetDateOnly.getTime()) {
                             return [false, target_day_with_added_days_this_month];
                         }
 

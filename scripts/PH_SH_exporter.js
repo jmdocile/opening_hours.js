@@ -27,14 +27,14 @@ const YAML          = require('yaml');
 /* }}} */
 
 /* Parameter handling {{{ */
-const optimist = require('optimist')
+const yargs = require('yargs')
     .usage('Usage: $0 export_list.conf')
     .describe('h', 'Display the usage')
     .describe('v', 'Verbose output')
     .describe('f', 'From year (including)')
-    .demand('f')
+    .demandOption('f')
     .describe('t', 'Until year (including)')
-    .demand('t')
+    .demandOption('t')
     .describe('p', 'Export public holidays. Can not be used together with --school-holidays.')
     // .default('p', true)
     .describe('s', 'Export school holidays. Can not be used together with --public-holidays.')
@@ -55,12 +55,13 @@ const optimist = require('optimist')
     .alias('r', 'state')
     .alias('a', 'all-locations')
     .string(['c', 'r', ])
-    .alias('o', 'omit-date-hyphens');
+    .alias('o', 'omit-date-hyphens')
+    .help(false);
 
-const argv = optimist.argv;
+const argv = yargs.parse();
 
 if (argv.help || argv._.length === 0) {
-    optimist.showHelp();
+    yargs.showHelp();
     process.exit(0);
 }
 

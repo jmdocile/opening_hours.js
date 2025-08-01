@@ -24,20 +24,21 @@ const fs = require('node:fs');
 /* }}} */
 
 /* Parameter handling {{{ */
-const optimist = require('optimist')
+const yargs = require('yargs')
     .usage('Usage: $0 -')
     .describe('h', 'Display the usage')
     .describe('k', 'File containing the list of supported keys')
-    .demand('k')
+    .demandOption('k')
     .describe('i', 'Template taginfo.json which is used to merge with the list of keys')
     .alias('h', 'help')
     .alias('k', 'key-file')
-    .alias('i', 'template-file');
+    .alias('i', 'template-file')
+    .help(false);
 
-const argv = optimist.argv;
+const argv = yargs.parse();
 
 if (argv.help) {
-    optimist.showHelp();
+    yargs.showHelp();
     process.exit(0);
 }
 /* }}} */

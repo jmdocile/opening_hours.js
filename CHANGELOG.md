@@ -115,6 +115,7 @@ work hours!
 - refactor: overload getStateString for better return type ([#504](https://github.com/opening-hours/opening_hours.js/pull/504))
 - refactor: replace deprecated `optimist` with `yargs` for command line argument parsing ([#515](https://github.com/opening-hours/opening_hours.js/pull/515))
 - refactor: improve week range test descriptions for clarity ([#518](https://github.com/opening-hours/opening_hours.js/pull/518))
+- refactor: rework and enable week range tests with various Date object types ([#518](https://github.com/opening-hours/opening_hours.js/pull/518))
 
 - Public holiday definitions updated:
   - France ([#470](https://github.com/opening-hours/opening_hours.js/pull/470))

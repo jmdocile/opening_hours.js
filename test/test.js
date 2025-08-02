@@ -3210,40 +3210,40 @@ test.addTest('Week range: first week multi-year with specific hours (week 01 00:
     ], 1000 * 60 * (60 * 24 * 7 * 12 - 7 * 12), 0, false, {}, 'not last test');
 
 (function() {
-
 // timekeeper makes the Date() Object nonReactive. Reset the timekeeper
 timekeeper.reset();
 
-/*
- * Temporally disabled as they are not deterministic. Waiting for feedback:
- * https://github.com/opening-hours/opening_hours.js/pull/191
- *
- * ignored('week ' + isOddWeekStart + '-53/2 Mo-Su 07:30-08:00', 'notDeterministic'),
- * could be used to ignore the test but the problem is as the tests are not
- * deterministic and the test log is compared, it potentially would still
- * break the tests.
- *
-let moment        = require('moment');
-let toTime = moment(new Date()).add(1, 'day').hours(23).minutes(59).seconds(0).milliseconds(0);
-let isOddWeekStart = (toTime % 2 === 0) ? '01' : '02';
-test.addTest('Week range. Working with Objects not Strings. from = moment(new Date())', [
+// Week range tests with various Date object types
+// Using fixed date in 2018 (week 21, which is odd) to ensure consistent test results
+const fixedBaseDate = new Date('2018-05-23 10:00:00');
+const toTime = new Date(fixedBaseDate);
+toTime.setDate(toTime.getDate() + 1); // Add 1 day
+toTime.setHours(23, 59, 0, 0); // Set to 23:59:00.000
+
+// Week 21 in 2018 is an odd week, so we use '01' for odd weeks
+const isOddWeekStart = '01';
+
+test.addTest('Week range: odd weeks with native Date objects (01-53/2)', [
         'week ' + isOddWeekStart + '-53/2 Mo-Su 07:30-08:00',
-    ], moment(new Date()), toTime.toDate(), [
-        [toTime.hours(7).minutes(30).toDate(), toTime.hours(8).minutes(0).toDate()],
+    ], new Date(fixedBaseDate), new Date(toTime), [
+        [new Date(toTime.getFullYear(), toTime.getMonth(), toTime.getDate(), 7, 30), 
+         new Date(toTime.getFullYear(), toTime.getMonth(), toTime.getDate(), 8, 0)],
     ], 1800000, 0, false);
 
-test.addTest('Week range. Working with Objects not Strings. from = moment(new Date()).seconds(0).milliseconds(0)', [
+test.addTest('Week range: odd weeks with normalized Date objects (01-53/2)', [
         'week ' + isOddWeekStart + '-53/2 Mo-Su 07:30-08:00',
-    ], moment(new Date()).seconds(0).milliseconds(0), toTime.toDate(), [
-        [toTime.hours(7).minutes(30).toDate(), toTime.hours(8).minutes(0).toDate()],
+    ], new Date(fixedBaseDate.getFullYear(), fixedBaseDate.getMonth(), fixedBaseDate.getDate(), 
+               fixedBaseDate.getHours(), fixedBaseDate.getMinutes(), 0, 0), new Date(toTime), [
+        [new Date(toTime.getFullYear(), toTime.getMonth(), toTime.getDate(), 7, 30), 
+         new Date(toTime.getFullYear(), toTime.getMonth(), toTime.getDate(), 8, 0)],
     ], 1800000, 0, false);
 
-test.addTest('Week range. Working with Objects not Strings. from = new Date()', [
+test.addTest('Week range: odd weeks with copied Date objects (01-53/2)', [
         'week ' + isOddWeekStart + '-53/2 Mo-Su 07:30-08:00',
-    ], new Date(), toTime, [
-        [toTime.hours(7).minutes(30).toDate(), toTime.hours(8).minutes(0).toDate()],
+    ], new Date(fixedBaseDate), new Date(toTime), [
+        [new Date(toTime.getFullYear(), toTime.getMonth(), toTime.getDate(), 7, 30), 
+         new Date(toTime.getFullYear(), toTime.getMonth(), toTime.getDate(), 8, 0)],
     ], 1800000, 0, false);
-*/
 
 // re Set the original fake value
 timekeeper.travel(timekeeperTime); // Travel to that date.

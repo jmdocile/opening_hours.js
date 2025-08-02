@@ -131,11 +131,11 @@ ready-for-hosting: dependencies-get build/opening_hours+deps.min.js
 
 ## command line programs {{{
 .PHONY: run-regex_search
-run-regex_search: export.$(SEARCH).json interactive_testing.js regex_search.py
-	$(NODEJS) regex_search.py "$<"
+run-regex_search: export.$(SEARCH).json ./scripts/interactive_testing.js scripts/regex_search.py
+	python3 ./scripts/regex_search.py "$<"
 
 .PHONY: run-interactive_testing
-run-interactive_testing: interactive_testing.js opening_hours.js
+run-interactive_testing: ./scripts/interactive_testing.js ./build/opening_hours.js
 	$(NODEJS) "$<" --locale "$(CHECK_LANG)"
 ## }}}
 

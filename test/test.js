@@ -36,7 +36,7 @@
 // preamble {{{
 
 /* Parameter handling {{{ */
-const optimist = require('optimist')
+const yargs = require('yargs')
     .usage('Usage: $0 [optional parameters]')
     .describe('h', 'Display the usage')
     // .describe('v', 'Verbose output')
@@ -47,12 +47,13 @@ const optimist = require('optimist')
     .alias('f', 'library-file')
     .alias('l', 'locale')
     .default('f', './opening_hours.js')
-    .default('l', 'en');
+    .default('l', 'en')
+    .help(false);
 
-const argv = optimist.argv;
+const argv = yargs.parse();
 
 if (argv.help) {
-    optimist.showHelp();
+    yargs.showHelp();
     process.exit(0);
 }
 /* }}} */

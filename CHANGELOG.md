@@ -128,6 +128,8 @@ work hours!
 - fix: use full date comparison for constrained weekday matching ([#514](https://github.com/opening-hours/opening_hours.js/pull/514))
 - fix(test): localize expected test strings for German locale ([#512](https://github.com/opening-hours/opening_hours.js/pull/512))
 - fix(test): correct two `sunrise` test expectations to match SunCalc output ([#513](https://github.com/opening-hours/opening_hours.js/pull/513))
+- fix: update script paths and use python for regex search execution ([#516](https://github.com/opening-hours/opening_hours.js/pull/516))
+- fix: update syntax in `regex_search.py` ([#516](https://github.com/opening-hours/opening_hours.js/pull/516))
 
 ### Removed
 

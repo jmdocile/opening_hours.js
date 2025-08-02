@@ -857,13 +857,11 @@ See also:
 [nominatim]: https://wiki.openstreetmap.org/wiki/Nominatim#Reverse_Geocoding_.2F_Address_lookup
 [suncalc]: https://github.com/mourner/suncalc
 [fossgis-project]: https://wiki.openstreetmap.org/wiki/FOSSGIS/Server/Projects/opening_hours.js
-[issue-report]: /../../issues
 [releases on github]: /../../releases
 [key:opening_hours]: https://wiki.openstreetmap.org/wiki/Key:opening_hours
 [oh:specification]: https://wiki.openstreetmap.org/wiki/Key:opening_hours/specification
 [oh:specification:fallback rule]: https://wiki.openstreetmap.org/wiki/Key:opening_hours/specification#fallback_rule_separator
 [oh:specification:additional rule]: https://wiki.openstreetmap.org/wiki/Key:opening_hours/specification#additional_rule_separator
-[oh:spec:any_rule_separator]: https://wiki.openstreetmap.org/wiki/Key:opening_hours/specification#any_rule_separator
 [oh:spec:separator_for_readability]: https://wiki.openstreetmap.org/wiki/Key:opening_hours/specification#separator_for_readability
 
 <!-- Can not use short links only referring to the section inside the README.md any more because this will not work on other pages like https://www.npmjs.org/package/opening_hours.
@@ -879,7 +877,6 @@ Edit: This does also work on npmjs in this short version … -->
 [ohlib.github]: https://github.com/opening-hours/opening_hours.js
 [hc]: https://gitlab.com/ypid/hc
 [evaluation tool]: https://openingh.openstreetmap.de/evaluation_tool/
-[schulferien.org]: https://www.schulferien.org/deutschland/ical/
 [ph-ar]: https://en.wikipedia.org/wiki/Public_holidays_in_Argentina
 [ph-at]: https://de.wikipedia.org/wiki/Feiertage_in_%C3%96sterreich
 [ph-au]: https://en.wikipedia.org/wiki/Public_holidays_in_Australia

@@ -107,7 +107,7 @@ work hours!
 
 - chore: change default git branch from `master` to `main` ([#495](https://github.com/opening-hours/opening_hours.js/pull/495))
 - chore: REUSE compliants, cleanup, part 1 ([#487](https://github.com/opening-hours/opening_hours.js/pull/487))
-- chore: update dependencies ([#500](https://github.com/opening-hours/opening_hours.js/pull/500), [#501](https://github.com/opening-hours/opening_hours.js/pull/501))
+- chore: update dependencies ([#500](https://github.com/opening-hours/opening_hours.js/pull/500), [#501](https://github.com/opening-hours/opening_hours.js/pull/501), [#517](https://github.com/opening-hours/opening_hours.js/pull/517))
 - docs: move Contributing section from README to CONTRIBUTING file and add "Branching Model" section ([#497](https://github.com/opening-hours/opening_hours.js/pull/497))
 - docs: switch CHANGELOG file from reStructuredText to Markdown ([#509](https://github.com/opening-hours/opening_hours.js/pull/509))
 - refactor: fix existing ESLint issues, add markdown linting, and enable new rules ([#506](https://github.com/opening-hours/opening_hours.js/pull/506))

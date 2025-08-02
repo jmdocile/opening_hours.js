@@ -1020,49 +1020,49 @@ With [1m[34mwarnings[39m[22m:
 "Fallback group rules, with some closed times" for "Mo,Tu,Th 09:00-12:00; Fr 14:00-17:30 || "Termine nach Vereinbarung"; We off": [1m[32mPASSED[39m[22m
 "Fallback group rules, with some closed times" for "Mo-Th 09:00-12:00; Fr 14:00-17:30 || "Termine nach Vereinbarung"; We off": [1m[32mPASSED[39m[22m
 "Fallback group rules, with some closed times" for "Mo-Th 09:00-12:00; Fr 14:00-17:30 || unknown "Termine nach Vereinbarung"; We off": [1m[32mPASSED[39m[22m
-"Week ranges" for "week 01,03 00:00-24:00": [1m[32mPASSED[39m[22m
-"Week ranges" for "week 01,03 00:00-24:00 || closed "should not change the test result"": [1m[32mPASSED[39m[22m
-"Week ranges" for "week 01,03: 00:00-24:00": [1m[32mPASSED[39m[22m
-"Week ranges" for "week 01,week 03: 00:00-24:00": [1m[32mPASSED[39m[22m
-"Week ranges" for "week 01: 00:00-24:00; week 03: 00:00-24:00": [1m[32mPASSED[39m[22m
-"Week ranges" for "week 01; week 03": [1m[32mPASSED[39m[22m
+"Week ranges: basic syntax patterns (weeks 01,03)" for "week 01,03 00:00-24:00": [1m[32mPASSED[39m[22m
+"Week ranges: basic syntax patterns (weeks 01,03)" for "week 01,03 00:00-24:00 || closed "should not change the test result"": [1m[32mPASSED[39m[22m
+"Week ranges: basic syntax patterns (weeks 01,03)" for "week 01,03: 00:00-24:00": [1m[32mPASSED[39m[22m
+"Week ranges: basic syntax patterns (weeks 01,03)" for "week 01,week 03: 00:00-24:00": [1m[32mPASSED[39m[22m
+"Week ranges: basic syntax patterns (weeks 01,03)" for "week 01: 00:00-24:00; week 03: 00:00-24:00": [1m[32mPASSED[39m[22m
+"Week ranges: basic syntax patterns (weeks 01,03)" for "week 01; week 03": [1m[32mPASSED[39m[22m
 With [1m[34mwarnings[39m[22m:
 	*week 01 <--- (This rule is not very explicit because there is no time selector being used. A time selector is the part specifying hours when the object is opened, for example "10:00-19:00". Please add a time selector to this rule or use a comment to make it more explicit.)
 	*week 01; week 03 <--- (This rule is not very explicit because there is no time selector being used. A time selector is the part specifying hours when the object is opened, for example "10:00-19:00". Please add a time selector to this rule or use a comment to make it more explicit.)
-"Week ranges" for "week 01-03/2 00:00-24:00": [1m[32mPASSED[39m[22m
-"Week ranges" for "week 02,04 00:00-24:00": [1m[32mPASSED[39m[22m
-"Week ranges" for "week 02-04/2 00:00-24:00": [1m[32mPASSED[39m[22m
-"Week range limit" for "week 02-53": [1m[32mPASSED[39m[22m
+"Week ranges: basic syntax patterns (weeks 01,03)" for "week 01-03/2 00:00-24:00": [1m[32mPASSED[39m[22m
+"Week ranges: even weeks with period notation (02,04)" for "week 02,04 00:00-24:00": [1m[32mPASSED[39m[22m
+"Week ranges: even weeks with period notation (02,04)" for "week 02-04/2 00:00-24:00": [1m[32mPASSED[39m[22m
+"Week range: weeks 02-53 (excluding first week)" for "week 02-53": [1m[32mPASSED[39m[22m
 With [1m[34mwarnings[39m[22m:
 	*week 02-53 <--- (This rule is not very explicit because there is no time selector being used. A time selector is the part specifying hours when the object is opened, for example "10:00-19:00". Please add a time selector to this rule or use a comment to make it more explicit.)
-"Week range limit" for "week 02-53 00:00-24:00": [1m[32mPASSED[39m[22m
-"Week range full range" for "week 01-53": [1m[32mPASSED[39m[22m
+"Week range: weeks 02-53 (excluding first week)" for "week 02-53 00:00-24:00": [1m[32mPASSED[39m[22m
+"Week range: full year coverage (weeks 01-53)" for "week 01-53": [1m[32mPASSED[39m[22m
 With [1m[34mwarnings[39m[22m:
 	*week 01-53 <--- (This rule is not very explicit because there is no time selector being used. A time selector is the part specifying hours when the object is opened, for example "10:00-19:00". Please add a time selector to this rule or use a comment to make it more explicit.)
-"Week range full range" for "week 01-53 00:00-24:00": [1m[32mPASSED[39m[22m
-"Week range second week" for "week 02 00:00-24:00": [1m[32mPASSED[39m[22m
-"Week range" for "week 01-53/2 00:00-24:00": [1m[32mPASSED[39m[22m
-"Week range" for "week 01-53/2 00:00-24:00": [1m[32mPASSED[39m[22m
-"Week range" for "week 02-53/2 We; week 01-53/2 Sa 00:00-24:00": [1m[32mPASSED[39m[22m
+"Week range: full year coverage (weeks 01-53)" for "week 01-53 00:00-24:00": [1m[32mPASSED[39m[22m
+"Week range: single week across multiple years (week 02)" for "week 02 00:00-24:00": [1m[32mPASSED[39m[22m
+"Week range: odd weeks with boundary start date (01-53/2)" for "week 01-53/2 00:00-24:00": [1m[32mPASSED[39m[22m
+"Week range: odd weeks with year start date (01-53/2)" for "week 01-53/2 00:00-24:00": [1m[32mPASSED[39m[22m
+"Week range: alternating weeks with weekdays (even=We, odd=Sa)" for "week 02-53/2 We; week 01-53/2 Sa 00:00-24:00": [1m[32mPASSED[39m[22m
 With [1m[34mwarnings[39m[22m:
 	*week 02-53/2 We <--- (This rule is not very explicit because there is no time selector being used. A time selector is the part specifying hours when the object is opened, for example "10:00-19:00". Please add a time selector to this rule or use a comment to make it more explicit.)
-"Week range (beginning in last year)" for "week 04-16": [1m[32mPASSED[39m[22m
+"Week range: winter to spring with pre-year start (04-16)" for "week 04-16": [1m[32mPASSED[39m[22m
 With [1m[34mwarnings[39m[22m:
 	*week 04-16 <--- (This rule is not very explicit because there is no time selector being used. A time selector is the part specifying hours when the object is opened, for example "10:00-19:00". Please add a time selector to this rule or use a comment to make it more explicit.)
-"Week range (beginning in matching year)" for "week 04-16": [1m[32mPASSED[39m[22m
+"Week range: winter to spring with year start (04-16)" for "week 04-16": [1m[32mPASSED[39m[22m
 With [1m[34mwarnings[39m[22m:
 	*week 04-16 <--- (This rule is not very explicit because there is no time selector being used. A time selector is the part specifying hours when the object is opened, for example "10:00-19:00". Please add a time selector to this rule or use a comment to make it more explicit.)
-"Week range first week" for "week 01": [1m[32mPASSED[39m[22m
+"Week range: first week single year (week 01)" for "week 01": [1m[32mPASSED[39m[22m
 With [1m[34mwarnings[39m[22m:
 	*week 01 <--- (This rule is not very explicit because there is no time selector being used. A time selector is the part specifying hours when the object is opened, for example "10:00-19:00". Please add a time selector to this rule or use a comment to make it more explicit.)
-"Week range first week" for "week 01": [1m[32mPASSED[39m[22m
+"Week range: first week multi-year with full days (week 01)" for "week 01": [1m[32mPASSED[39m[22m
 With [1m[34mwarnings[39m[22m:
 	*week 01 <--- (This rule is not very explicit because there is no time selector being used. A time selector is the part specifying hours when the object is opened, for example "10:00-19:00". Please add a time selector to this rule or use a comment to make it more explicit.)
-"Week range first week" for "week 01 open": [1m[32mPASSED[39m[22m
+"Week range: first week multi-year with full days (week 01)" for "week 01 open": [1m[32mPASSED[39m[22m
 With [1m[34mwarnings[39m[22m:
 	*week 01 open <--- (This rule is not very explicit because there is no time selector being used. A time selector is the part specifying hours when the object is opened, for example "10:00-19:00". Please add a time selector to this rule or use a comment to make it more explicit.)
-"Week range first week" for "week 01 00:00-24:00": [1m[32mPASSED[39m[22m
-"Week range first week" for "week 01 00:00-23:59": [1m[32mPASSED[39m[22m
+"Week range: first week multi-year with full days (week 01)" for "week 01 00:00-24:00": [1m[32mPASSED[39m[22m
+"Week range: first week multi-year with specific hours (week 01 00:00-23:59)" for "week 01 00:00-23:59": [1m[32mPASSED[39m[22m
 "Only in one month of the year" for "Apr 08:00-12:00": [1m[32mPASSED[39m[22m
 "Only in one month of the year" for "Apr: 08:00-12:00": [1m[32mPASSED[39m[22m
 "Month ranges" for "Nov-Feb 00:00-24:00": [1m[32mPASSED[39m[22m

@@ -2892,7 +2892,7 @@ test.addTest('Fallback group rules, with some closed times', [
 // }}}
 
 // week ranges {{{
-test.addTest('Week ranges', [
+test.addTest('Week ranges: basic syntax patterns (weeks 01,03)', [
         'week 01,03 00:00-24:00',
         'week 01,03 00:00-24:00 || closed "should not change the test result"',
         // because comments for closed states are not compared (not returned by the high-level API).
@@ -2907,7 +2907,7 @@ test.addTest('Week ranges', [
         [ '2012-12-31 00:00', '2013-01-01 00:00' ],
     ], 1000 * 60 * 60 * 24 * (2 * 7 + 1), 0, false, {}, 'not last test');
 
-test.addTest('Week ranges', [
+test.addTest('Week ranges: even weeks with period notation (02,04)', [
         'week 02,04 00:00-24:00',
         'week 02-04/2 00:00-24:00',
     ], '2012-01-01 0:00', '2013-01-01 0:00', [
@@ -2915,7 +2915,7 @@ test.addTest('Week ranges', [
         [ '2012-01-23 00:00', '2012-01-30 00:00' ],
     ], 1000 * 60 * 60 * 24 * (7 + 7), 0, false, {}, 'not only test');
 
-test.addTest('Week range limit', [
+test.addTest('Week range: weeks 02-53 (excluding first week)', [
         'week 02-53',
         'week 02-53 00:00-24:00',
     ], '2012-01-01 0:00', '2014-01-01 0:00', [
@@ -2924,14 +2924,14 @@ test.addTest('Week range limit', [
         [ '2013-01-07 00:00', '2013-12-30 00:00' ],
     ], 1000 * 60 * 60 * 24 * (365 * 2 - 2 * 7 - 2/* FIXME: ??? */ + /* 2012 is leap year */ 1), 0, false, {}, 'not only test');
 
-test.addTest('Week range full range', [
+test.addTest('Week range: full year coverage (weeks 01-53)', [
         'week 01-53',
         'week 01-53 00:00-24:00',
     ], '2012-01-01 0:00', '2014-01-01 0:00', [
         [ '2012-01-01 00:00', '2014-01-01 00:00' ],
     ], 1000 * 60 * 60 * 24 * (365 * 2 + /* 2012 is leap year */ 1), 0, true, {}, 'not last test');
 
-test.addTest('Week range second week', [
+test.addTest('Week range: single week across multiple years (week 02)', [
         'week 02 00:00-24:00',
     ], '2012-01-01 0:00', '2014-01-01 0:00', [
         [ '2012-01-09 00:00', '2012-01-16 00:00' ],
@@ -2946,18 +2946,19 @@ const week_range_result = [
         [ '2012-01-30 00:00', '2012-02-06 00:00' ],
         [ '2012-02-13 00:00', '2012-02-20 00:00' ],
     ], 1000 * 60 * 60 * 24 * 7 * 4, 0 ];
-test.addTest('Week range', [
+
+test.addTest('Week range: odd weeks with boundary start date (01-53/2)', [
         'week 01-53/2 00:00-24:00',
     ], '2011-12-30 0:00', '2012-02-22 0:00', week_range_result[0],
     week_range_result[1], week_range_result[2], false);
 
-test.addTest('Week range', [
+test.addTest('Week range: odd weeks with year start date (01-53/2)', [
         'week 01-53/2 00:00-24:00',
     ], '2012-01-01 0:00', '2012-02-22 0:00', week_range_result[0],
     week_range_result[1], week_range_result[2], false, {}, 'not only test');
 })();
 
-test.addTest('Week range', [
+test.addTest('Week range: alternating weeks with weekdays (even=We, odd=Sa)', [
         'week 02-53/2 We; week 01-53/2 Sa 00:00-24:00',
     ], '2012-01-01 0:00', '2014-01-01 0:00', [
         /* Long test on per day base {{{ */
@@ -3080,24 +3081,24 @@ const week_range_result = [
         // Checked against https://www.schulferien.org/deutschland/kalender/woche/2017/
     ], 1000 * 60 * 60 * (24 * 7 * 6 * (16 - 3) - /* daylight saving */ 6), 0 ];
 
-test.addTest('Week range (beginning in last year)', [
+test.addTest('Week range: winter to spring with pre-year start (04-16)', [
         'week 04-16',
     ], '2011-12-30 0:00', '2018-01-01 0:00', week_range_result[0],
     week_range_result[1], week_range_result[2], false, {}, 'not only test');
 
-test.addTest('Week range (beginning in matching year)', [
+test.addTest('Week range: winter to spring with year start (04-16)', [
         'week 04-16',
     ], '2012-01-01 0:00', '2018-01-01 0:00', week_range_result[0],
     week_range_result[1], week_range_result[2], false, {}, 'not last test');
 })();
 
-test.addTest('Week range first week', [
+test.addTest('Week range: first week single year (week 01)', [
         'week 01',
     ], '2014-12-01 0:00', '2015-02-01 0:00', [
         [ '2014-12-29 00:00', '2015-01-05 00:00' ],
     ], 1000 * 60 * 60 * 24 * 7, 0, false, {}, 'not only test');
 
-test.addTest('Week range first week', [
+test.addTest('Week range: first week multi-year with full days (week 01)', [
         'week 01',
         'week 01 open',
         'week 01 00:00-24:00',
@@ -3117,7 +3118,7 @@ test.addTest('Week range first week', [
         // Checked against https://www.schulferien.org/deutschland/kalender/woche/2024/
     ], 1000 * 60 * 60 * 24 * 7 * 12, 0, false, {}, 'not only test');
 
-test.addTest('Week range first week', [
+test.addTest('Week range: first week multi-year with specific hours (week 01 00:00-23:59)', [
         'week 01 00:00-23:59',
     ], '2012-12-01 0:00', '2024-02-01 0:00', [
         /* Long test on per day base {{{ */

@@ -10,23 +10,26 @@ const exit_code_new = 0;
 let exit_code_not_new = 1;
 
 /* Parameter handling {{{ */
-const optimist = require('optimist')
+const yargs = require('yargs/yargs');
+const { hideBin } = require('yargs/helpers');
+
+const argv = yargs(hideBin(process.argv))
     .usage('Usage: $0')
     .describe('h', 'Display the usage')
     .describe('E', 'Specify the exit code in case there is no new data. The default value is ' + exit_code_not_new + '.')
     .alias('h', 'help')
-    .alias('E', 'exit-code-not-new');
+    .alias('E', 'exit-code-not-new')
+    .argv;
 
-const argv = optimist.argv;
 if (argv.help) {
-    optimist.showHelp();
+    yargs.showHelp();
     process.exit(0);
 }
 
 if (typeof argv.E === 'number') {
     exit_code_not_new = argv.E;
 } else if (typeof argv.E !== 'undefined') {
-    optimist.showHelp();
+    yargs.showHelp();
     process.exit(0);
 }
 /* }}} */

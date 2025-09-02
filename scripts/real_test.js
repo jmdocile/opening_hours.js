@@ -108,7 +108,10 @@ test_framework.config = {
 /* }}} */
 
 /* Parameter handling {{{ */
-const optimist = require('optimist')
+const yargs = require('yargs/yargs');
+const { hideBin } = require('yargs/helpers');
+
+const argv = yargs(hideBin(process.argv))
     .usage('Usage: $0 export*.json [export*.json]')
     .describe('h', 'Display the usage')
     .describe('v', 'Verbose output')
@@ -126,12 +129,11 @@ const optimist = require('optimist')
     .alias('I', 'ignore-manual-values')
     .alias('i', 'ignore-bad-oh-values')
     .alias('p', 'punchcard')
-    .alias('m', 'map-bad-oh-values');
-
-const argv = optimist.argv;
+    .alias('m', 'map-bad-oh-values')
+    .argv;
 
 if (argv.help || argv._.length === 0) {
-    optimist.showHelp();
+    yargs.showHelp();
     process.exit(0);
 }
 /* }}} */

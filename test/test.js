@@ -3209,6 +3209,17 @@ test.addTest('Week range: first week multi-year with specific hours (week 01 00:
         /* }}} */
     ], 1000 * 60 * (60 * 24 * 7 * 12 - 7 * 12), 0, false, {}, 'not last test');
 
+test.addTest('Week range: periodic selector resumes mid-range (02-52/6 Fr)', [
+        'week 02-52/6 Fr 00:00-24:00',
+    ], '2025-08-01 0:00', '2026-04-01 0:00', [
+        [ '2025-08-08 00:00', '2025-08-09 00:00' ],
+        [ '2025-09-19 00:00', '2025-09-20 00:00' ],
+        [ '2025-10-31 00:00', '2025-11-01 00:00' ],
+        [ '2025-12-12 00:00', '2025-12-13 00:00' ],
+        [ '2026-01-09 00:00', '2026-01-10 00:00' ],
+        [ '2026-02-20 00:00', '2026-02-21 00:00' ],
+    ], 1000 * 60 * 60 * 24 * 6, 0, false, {}, 'not only test');
+
 (function() {
 // timekeeper makes the Date() Object nonReactive. Reset the timekeeper
 timekeeper.reset();

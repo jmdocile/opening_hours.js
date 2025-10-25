@@ -484,11 +484,11 @@ osm-tag-data-gen-stats-sort:
 ## }}}
 
 build/opening_hours.js: build/opening_hours.min.js
-build/opening_hours.min.js:
+build/opening_hours.min.js: src/index.js
 	DEPS=NO node_modules/.bin/rollup -c
 
 build/opening_hours+deps.js: build/opening_hours+deps.min.js
-build/opening_hours+deps.min.js:
+build/opening_hours+deps.min.js: src/index.js
 	DEPS=YES node_modules/.bin/rollup -c
 
 README.html:

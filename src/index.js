@@ -3071,7 +3071,15 @@ export default function(value, nominatim_object, optional_conf_parm) {
                             if (in_period) {
                                 return [true, getNextDateOfISOWeek(ourweek + 1, date)];
                             } else {
-                                return [false, getNextDateOfISOWeek(ourweek + period - 1, date)];
+                                // Calculate how many weeks we need to skip to land on the next period-aligned week
+                                const weeks_until_next_match = period - ((ourweek - week_from) % period);
+                                const next_matching_week = ourweek + weeks_until_next_match;
+                                if (next_matching_week <= week_to) {
+                                    return [false, getNextDateOfISOWeek(next_matching_week, date)];
+                                } else {
+                                    // No further match within the range; wrap to the first matching week in the next year
+                                    return [false, getNextDateOfISOWeek(week_from, date)];
+                                }
                             }
                         }
 

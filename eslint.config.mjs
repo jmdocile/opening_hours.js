@@ -21,6 +21,7 @@ export default defineConfig([
     },
     rules: {
       '@stylistic/quotes': [ 'error', 'single' ],
+      '@stylistic/no-trailing-spaces': 'error',
       'prefer-const': 'error',
       'no-var': 'error'
     },

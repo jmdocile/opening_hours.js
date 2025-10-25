@@ -88,7 +88,7 @@ timekeeper.travel(timekeeperTime); // Travel to that date.
 const test = new opening_hours_test();
 
 // Localized expected strings based on locale
-const EXPECTED_OPEN_END_MESSAGE = argv.locale === 'de' 
+const EXPECTED_OPEN_END_MESSAGE = argv.locale === 'de'
     ? 'Angegeben als "open end". Schließzeit wurde geraten.'
     : 'Specified as open end. Closing time was guessed.';
 
@@ -3226,22 +3226,22 @@ const isOddWeekStart = '01';
 test.addTest('Week range: odd weeks with native Date objects (01-53/2)', [
         'week ' + isOddWeekStart + '-53/2 Mo-Su 07:30-08:00',
     ], new Date(fixedBaseDate), new Date(toTime), [
-        [new Date(toTime.getFullYear(), toTime.getMonth(), toTime.getDate(), 7, 30), 
+        [new Date(toTime.getFullYear(), toTime.getMonth(), toTime.getDate(), 7, 30),
          new Date(toTime.getFullYear(), toTime.getMonth(), toTime.getDate(), 8, 0)],
     ], 1800000, 0, false);
 
 test.addTest('Week range: odd weeks with normalized Date objects (01-53/2)', [
         'week ' + isOddWeekStart + '-53/2 Mo-Su 07:30-08:00',
-    ], new Date(fixedBaseDate.getFullYear(), fixedBaseDate.getMonth(), fixedBaseDate.getDate(), 
+    ], new Date(fixedBaseDate.getFullYear(), fixedBaseDate.getMonth(), fixedBaseDate.getDate(),
                fixedBaseDate.getHours(), fixedBaseDate.getMinutes(), 0, 0), new Date(toTime), [
-        [new Date(toTime.getFullYear(), toTime.getMonth(), toTime.getDate(), 7, 30), 
+        [new Date(toTime.getFullYear(), toTime.getMonth(), toTime.getDate(), 7, 30),
          new Date(toTime.getFullYear(), toTime.getMonth(), toTime.getDate(), 8, 0)],
     ], 1800000, 0, false);
 
 test.addTest('Week range: odd weeks with copied Date objects (01-53/2)', [
         'week ' + isOddWeekStart + '-53/2 Mo-Su 07:30-08:00',
     ], new Date(fixedBaseDate), new Date(toTime), [
-        [new Date(toTime.getFullYear(), toTime.getMonth(), toTime.getDate(), 7, 30), 
+        [new Date(toTime.getFullYear(), toTime.getMonth(), toTime.getDate(), 7, 30),
          new Date(toTime.getFullYear(), toTime.getMonth(), toTime.getDate(), 8, 0)],
     ], 1800000, 0, false);
 

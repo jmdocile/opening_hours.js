@@ -36,7 +36,7 @@ const configWithoutDeps = {
     output: [
         // ESM build
         {
-            file: 'build/opening_hours.esm.js',
+            file: 'build/opening_hours.esm.mjs',
             format: 'esm',
             sourcemap: true,
         },

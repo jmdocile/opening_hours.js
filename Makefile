@@ -77,13 +77,13 @@ list:
 .PHONY: build
 build: build/opening_hours.js \
 		build/opening_hours.min.js \
-		build/opening_hours.esm.js \
+		build/opening_hours.esm.mjs \
 		build/opening_hours+deps.js \
 		build/opening_hours+deps.min.js
 
 build/opening_hours.js \
 build/opening_hours.min.js \
-build/opening_hours.esm.js \
+build/opening_hours.esm.mjs \
 build/opening_hours+deps.js \
 build/opening_hours+deps.min.js: src/index.js
 	node_modules/.bin/rollup -c

@@ -76,7 +76,17 @@ list:
 ## defaults {{{
 .PHONY: build
 build: build/opening_hours.js \
-		build/opening_hours+deps.js
+		build/opening_hours.min.js \
+		build/opening_hours.esm.js \
+		build/opening_hours+deps.js \
+		build/opening_hours+deps.min.js
+
+build/opening_hours.js \
+build/opening_hours.min.js \
+build/opening_hours.esm.js \
+build/opening_hours+deps.js \
+build/opening_hours+deps.min.js: src/index.js
+	node_modules/.bin/rollup -c
 
 .PHONY: check
 check: qa-quick check-fast check-package.json
@@ -482,14 +492,6 @@ osm-tag-data-gen-stats-sort:
 		mv "$$file.tmp" "$$file"; \
 	done
 ## }}}
-
-build/opening_hours.js: build/opening_hours.min.js
-build/opening_hours.min.js: src/index.js
-	DEPS=NO node_modules/.bin/rollup -c
-
-build/opening_hours+deps.js: build/opening_hours+deps.min.js
-build/opening_hours+deps.min.js: src/index.js
-	DEPS=YES node_modules/.bin/rollup -c
 
 README.html:
 

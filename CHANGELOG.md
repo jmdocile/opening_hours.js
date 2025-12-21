@@ -6,6 +6,39 @@ SPDX-License-Identifier: LGPL-3.0-only
 
 # Changelog
 
+All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
+
+## [3.10.0-rc.0](https://github.com/opening-hours/opening_hours.js/compare/v3.9.0...v3.10.0-rc.0) (2025-12-21)
+
+
+### Features
+
+* Add 24/12 as holiday in pl ([1a979cf](https://github.com/opening-hours/opening_hours.js/commit/1a979cf857b9b67cf432fa2a2f6d26240e175c9c))
+* add script to update German shool holidays ([d9113ff](https://github.com/opening-hours/opening_hours.js/commit/d9113ffe129af8e733089689e41900ca69c3dc6e))
+* **build:** add ESM build to npm package ([79428b4](https://github.com/opening-hours/opening_hours.js/commit/79428b4d9b38fd389547e4d06f32deb6364a00e2))
+* **DE:** update Frauentag states to include Mecklenburg-Vorpommern ([66e71c5](https://github.com/opening-hours/opening_hours.js/commit/66e71c5ffc31e6625c469acc4367a5346a61ca37))
+
+
+### Bug Fixes
+
+* add missing `country_code` to `xa.yaml` ([e869d1f](https://github.com/opening-hours/opening_hours.js/commit/e869d1fd8c9a932fd1222df0e637449569afd653))
+* handle markdown issues found by new linter plugin ([12a4e61](https://github.com/opening-hours/opening_hours.js/commit/12a4e61276599ca2e1e9b8d981c36bea863763a0))
+* localize expected test strings for German locale ([3f63c97](https://github.com/opening-hours/opening_hours.js/commit/3f63c9758ec74117688ebf545c44bb20852c00a0))
+* resume periodic week schedules mid-range ([84a4e23](https://github.com/opening-hours/opening_hours.js/commit/84a4e23d23ebc0609eff240452b658f04057e46c)), closes [#524](https://github.com/opening-hours/opening_hours.js/issues/524)
+* **test:** correct two `sunrise` test expectations to match SunCalc output ([c0309cf](https://github.com/opening-hours/opening_hours.js/commit/c0309cfbcd2013ab4b78ccd1fb27fc738e9fdd5c))
+* update `package-json-validator` command to use `pjv.js` ([fede2d4](https://github.com/opening-hours/opening_hours.js/commit/fede2d4e82ae2901453d365df2c464955e6acf5d))
+* update script paths and use python for regex search execution ([d12eab6](https://github.com/opening-hours/opening_hours.js/commit/d12eab6ffa3ad4bbbfc590899bf5b220063cd0cc))
+* update syntax in `regex_search.py` ([6fe31e5](https://github.com/opening-hours/opening_hours.js/commit/6fe31e5016ed065c65f26a2d48b5dcbd4b47299a))
+* use full date comparison for constrained weekday matching ([e1a91cd](https://github.com/opening-hours/opening_hours.js/commit/e1a91cd3517e27ae088fabe9da4093779aa8f3b2))
+
+<!--
+SPDX-FileCopyrightText: © 2016 Robin Schneider <ypid@riseup.net>
+
+SPDX-License-Identifier: LGPL-3.0-only
+-->
+
+# Changelog
+
 All notable changes to opening_hours.js will be documented in this file.
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) and [human-readable changelog](https://keepachangelog.com/en/0.3.0/).

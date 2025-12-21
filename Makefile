@@ -75,11 +75,7 @@ list:
 
 ## defaults {{{
 .PHONY: build
-build: build/opening_hours.js \
-		build/opening_hours.min.js \
-		build/opening_hours.esm.mjs \
-		build/opening_hours+deps.js \
-		build/opening_hours+deps.min.js
+build: build/opening_hours+deps.min.js
 
 build/opening_hours.js \
 build/opening_hours.min.js \

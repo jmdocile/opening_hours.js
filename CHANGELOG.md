@@ -31,17 +31,11 @@ All notable changes to this project will be documented in this file. See [commit
 * update syntax in `regex_search.py` ([6fe31e5](https://github.com/opening-hours/opening_hours.js/commit/6fe31e5016ed065c65f26a2d48b5dcbd4b47299a))
 * use full date comparison for constrained weekday matching ([e1a91cd](https://github.com/opening-hours/opening_hours.js/commit/e1a91cd3517e27ae088fabe9da4093779aa8f3b2))
 
-<!--
-SPDX-FileCopyrightText: © 2016 Robin Schneider <ypid@riseup.net>
+## Changelog of v3.9.0 and below
 
-SPDX-License-Identifier: LGPL-3.0-only
--->
-
-# Changelog
-
-All notable changes to opening_hours.js will be documented in this file.
-
-This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) and [human-readable changelog](https://keepachangelog.com/en/0.3.0/).
+For v3.9.0 and below, the changelog was written manually. The project adhered
+to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) and
+[human-readable changelog](https://keepachangelog.com/en/0.3.0/).
 
 Note that most of the v2.X.Z releases have not been added to the changelog yet.
 
@@ -122,55 +116,6 @@ Thanks very much to all contributors!
 
 Thanks for helping by allowing employees to work on the project during
 work hours!
-
-## [main](https://github.com/opening-hours/opening_hours.js/compare/v3.9.0...main) - unreleased
-
-### Added
-
-- chore: introduce commitlint ([#498](https://github.com/opening-hours/opening_hours.js/pull/498))
-- feat: prettified value support long day/month name ([#473](https://github.com/opening-hours/opening_hours.js/pull/473))
-- feat: script to update German school holidays [scripts/update_german_sh.mjs](scripts/update_german_sh.mjs) ([#492](https://github.com/opening-hours/opening_hours.js/pull/475))
-
-- Public holiday definitions added:
-  - Scotland and Northern Ireland ([#415](https://github.com/opening-hours/opening_hours.js/pull/415))
-- School holiday definitions added:
-  - Belgium ([#507](https://github.com/opening-hours/opening_hours.js/pull/507))
-
-### Changed
-
-- chore: change default git branch from `master` to `main` ([#495](https://github.com/opening-hours/opening_hours.js/pull/495))
-- chore: REUSE compliants, cleanup, part 1 ([#487](https://github.com/opening-hours/opening_hours.js/pull/487))
-- chore: update dependencies ([#500](https://github.com/opening-hours/opening_hours.js/pull/500), [#501](https://github.com/opening-hours/opening_hours.js/pull/501), [#517](https://github.com/opening-hours/opening_hours.js/pull/517))
-- docs: move Contributing section from README to CONTRIBUTING file and add "Branching Model" section ([#497](https://github.com/opening-hours/opening_hours.js/pull/497))
-- docs: switch CHANGELOG file from reStructuredText to Markdown ([#509](https://github.com/opening-hours/opening_hours.js/pull/509))
-- refactor: fix existing ESLint issues, add markdown linting, and enable new rules ([#506](https://github.com/opening-hours/opening_hours.js/pull/506))
-- refactor: optimize simple_index.html ([#502](https://github.com/opening-hours/opening_hours.js/pull/502))
-- refactor: overload getStateString for better return type ([#504](https://github.com/opening-hours/opening_hours.js/pull/504))
-- refactor: replace deprecated `optimist` with `yargs` for command line argument parsing ([#515](https://github.com/opening-hours/opening_hours.js/pull/515))
-- refactor: improve week range test descriptions for clarity ([#518](https://github.com/opening-hours/opening_hours.js/pull/518))
-- refactor: rework and enable week range tests with various Date object types ([#518](https://github.com/opening-hours/opening_hours.js/pull/518))
-
-- Public holiday definitions updated:
-  - France ([#470](https://github.com/opening-hours/opening_hours.js/pull/470))
-  - Germany
-    - "Frauentag" is a public holiday in Mecklenburg-Vorpommern since 2023 ([#511](https://github.com/opening-hours/opening_hours.js/pull/511))
-- School holiday definitions updated:
-  - Hungary ([#450](https://github.com/opening-hours/opening_hours.js/pull/450))
-
-### Fixed
-
-- fix: add missing `country_code` to `xa.yaml` ([#499](https://github.com/opening-hours/opening_hours.js/pull/499))
-- fix: use full date comparison for constrained weekday matching ([#514](https://github.com/opening-hours/opening_hours.js/pull/514))
-- fix(test): localize expected test strings for German locale ([#512](https://github.com/opening-hours/opening_hours.js/pull/512))
-- fix(test): correct two `sunrise` test expectations to match SunCalc output ([#513](https://github.com/opening-hours/opening_hours.js/pull/513))
-- fix: update script paths and use python for regex search execution ([#516](https://github.com/opening-hours/opening_hours.js/pull/516))
-- fix: update syntax in `regex_search.py` ([#516](https://github.com/opening-hours/opening_hours.js/pull/516))
-
-### Removed
-
-- chore: remove `bower.json` ([#496](https://github.com/opening-hours/opening_hours.js/pull/496))
-- chore: remove old Perl script for holiday definition upgrade ([#503](https://github.com/opening-hours/opening_hours.js/pull/503))
-- refactor: remove deprecated tag `opening_hours:covid19` ([#505](https://github.com/opening-hours/opening_hours.js/pull/505))
 
 ## [v3.9.0](https://github.com/opening-hours/opening_hours.js/compare/v3.8.0...v3.9.0) - 2025-05-31
 

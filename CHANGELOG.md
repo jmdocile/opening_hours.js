@@ -8,6 +8,13 @@ SPDX-License-Identifier: LGPL-3.0-only
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [3.10.0-rc.1](https://github.com/opening-hours/opening_hours.js/compare/v3.10.0-rc.0...v3.10.0-rc.1) (2025-12-21)
+
+
+### Bug Fixes
+
+* include opening_hours.js that is referenced as main in package.json ([bde66e9](https://github.com/opening-hours/opening_hours.js/commit/bde66e9b649dddd158092e4acd20b42e915f1cfe))
+
 ## [3.10.0-rc.0](https://github.com/opening-hours/opening_hours.js/compare/v3.9.0...v3.10.0-rc.0) (2025-12-21)
 
 

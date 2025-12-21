@@ -40,6 +40,7 @@
     "build/opening_hours.esm.mjs.map",
     "CHANGELOG.md",
     "LICENSES/",
+    "REUSE.toml",
     "site/js/",
     "src/locales/core.js",
     "types/index.d.ts"

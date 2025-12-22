@@ -7,7 +7,7 @@ We're excited you're interested in contributing! This document outlines our cont
 We use a branching model inspired by Gitflow:
 
 * **`main`**: This branch represents the latest stable release. Direct commits to `main` are forbidden. Pull requests to `main` are only made from the `develop` branch when a new release is ready.
-* **`develop`**: This is the main development branch and default git branch. All new feature development and bug fixes should be based on this branch. Pull requests for new features or fixes should target the `develop` branch.
+* **`develop`**: This is the primary development branch and default git branch. All new feature development and bug fixes should be based on this branch. Pull requests for new features or fixes should target the `develop` branch.
 
 ## Getting Started
 
@@ -16,7 +16,7 @@ We use a branching model inspired by Gitflow:
 3.  **Create a new branch** from `develop` for your work: `git switch -c feature/your-feature-name develop` or `git switch -c bugfix/issue-description develop`.
 4.  **Make your changes** and commit them with clear, descriptive messages.
 5.  **Push your branch** to your fork: `git push origin feature/your-feature-name`.
-6.  **Open a Pull Request** (PR) against the `develop` branch of the main repository.
+6.  **Open a Pull Request** (PR) against the `develop` branch of the [upstream repository][ohlib.github].
 
 ## Pull Request Process
 
@@ -117,4 +117,5 @@ Thank you for contributing!
 [ohlib.opening_hours.js]: /index.js
 [ohlib.test.js]: test/test.js
 [ohlib.testing]: README.md#testing
+[ohlib.github]: https://github.com/opening-hours/opening_hours.js
 [site/index.html]: site/index.html

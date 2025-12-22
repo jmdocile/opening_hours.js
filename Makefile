@@ -231,6 +231,7 @@ check-html:
 ## }}}
 
 ## release {{{
+# See CONTRIBUTING.md "Releasing"
 
 .PHONY: release-prepare
 release-prepare: package.json taginfo.json check-holidays doctoc check
@@ -248,8 +249,9 @@ release-local-resign-tag: package.json
 
 .PHONY: release-publish
 release-publish:
-	git push --follow-tags
+	git push --follow-tags origin
 	npm publish
+	@echo "Manually create release on https://github.com/opening-hours/opening_hours.js/releases"
 	# $(MAKE) $(MAKE_OPTIONS) publish-website-on-all-servers
 
 .PHONY: release

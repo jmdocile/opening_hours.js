@@ -8,6 +8,8 @@ SPDX-License-Identifier: LGPL-3.0-only
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [3.10.0](https://github.com/opening-hours/opening_hours.js/compare/v3.10.0-rc.1...v3.10.0) (2025-12-22)
+
 ## [3.10.0-rc.1](https://github.com/opening-hours/opening_hours.js/compare/v3.10.0-rc.0...v3.10.0-rc.1) (2025-12-21)
 
 

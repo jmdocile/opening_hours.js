@@ -75,11 +75,7 @@ list:
 
 ## defaults {{{
 .PHONY: build
-build: build/opening_hours.js \
-		build/opening_hours.min.js \
-		build/opening_hours.esm.mjs \
-		build/opening_hours+deps.js \
-		build/opening_hours+deps.min.js
+build: build/opening_hours+deps.min.js
 
 build/opening_hours.js \
 build/opening_hours.min.js \
@@ -236,19 +232,24 @@ check-html:
 
 ## release {{{
 
-# Run `npx commit-and-tag-version`.
+.PHONY: release-prepare
+release-prepare: package.json taginfo.json check-holidays doctoc check
 
 .PHONY: release-local
 release-local: package.json
-	git tag --sign --local-user "$(RELEASE_OPENPGP_FINGERPRINT)" --message "chore(release): $(shell jq --raw-output '.version' $<)" "v$(shell jq --raw-output '.version' $<)"
+	npx commit-and-tag-version
+	$(MAKE) $(MAKE_OPTIONS) release-local-resign-tag
+
+# Recreate git tag signed with release key because commit-and-tag-version cannot use a different key for signing the tag.
+.PHONY: release-local-resign-tag
+release-local-resign-tag: package.json
+	git tag --delete "v$(shell jq --raw-output '.version' $<)"
+	git tag --sign --local-user="$(RELEASE_OPENPGP_FINGERPRINT)" --message="chore(release): $(shell jq --raw-output '.version' $<)" "v$(shell jq --raw-output '.version' $<)"
 
 .PHONY: release-publish
-# First source file is referenced!
-# Might be better: https://docs.npmjs.com/cli/version
 release-publish:
 	git push --follow-tags
 	npm publish
-	@echo "Manually create release on https://github.com/opening-hours/opening_hours.js/releases"
 	# $(MAKE) $(MAKE_OPTIONS) publish-website-on-all-servers
 
 .PHONY: release

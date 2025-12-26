@@ -38,17 +38,15 @@ When the `develop` branch is deemed ready for a new release:
 
 ## Translation Contributions
 
-This project uses [i18next][i18next] for translation.
-
 ### Translating the evaluation tool and the map
 
-Translations can be made in the file [js/i18n-resources.js][ohlib.js/i18n-resources.js]. Just copy the whole English block, change the language code to the one you are adding and make your translation. You can open the [index.html][site/index.html] to see the result of your work. Week and month names are translated by the browser using the `Date.toLocaleString` function.
+The web-based evaluation tool and map use [i18next][i18next] for translation. Translations can be made in the file [js/i18n-resources.js][ohlib.js/i18n-resources.js]. Just copy the whole English block, change the language code to the one you are adding and make your translation. You can open the [index.html][site/index.html] to see the result of your work. Week and month names are translated by the browser using the `Date.toLocaleString` function.
 
 Note that this resource file does also provide the localization for the [opening_hours_map]. This can also be tested by cloning the project and linking your modified opening_hours.js working copy to the opening_hours.js directory (after renaming it) inside the opening_hours_map project. Or just follow the installation instructions from the [opening_hours_map].
 
 ### Translating Error Messages and Warnings
 
-Translations for error messages and warnings for the opening_hours.js library can be made in the file [locales/opening_hours_resources.yaml][ohlib.js/locales/opening_hours_resources.yaml]. You are encouraged to test your translations. Checkout the [Makefile][ohlib.makefile] and the [test framework][ohlib.test.js] for how this can be done.
+The core library uses a custom lightweight i18n implementation. Translations for error messages and warnings can be made in the file [locales/opening_hours_resources.yaml][ohlib.js/locales/opening_hours_resources.yaml]. You are encouraged to test your translations. Checkout the [Makefile][ohlib.makefile] and the [test framework][ohlib.test.js] for how this can be done.
 
 ## Holiday Data Contributions
 

@@ -24,7 +24,6 @@ const terserConfig = {
 };
 
 const globals = {
-    'i18next': 'i18next',
     'suncalc': 'SunCalc'
 };
 
@@ -32,7 +31,7 @@ const globals = {
 const configWithoutDeps = {
     input: './src/index.js',
     plugins: [yamlPlugin],
-    external: ['i18next', 'suncalc'],
+    external: ['suncalc'],
     output: [
         // ESM build
         {

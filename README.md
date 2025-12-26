@@ -318,7 +318,7 @@ function getReadableState(startString, endString, oh, past) {
     7: debug
     ```
 
-    - `locale (type: string, default: i18next.language || 'en')`: Defines the locale for errors and warnings.
+    - `locale (type: string, default: 'en')`: Defines the locale for errors and warnings. Currently, only 'en' (English) and 'de' (German) are supported.
 
     - additional_rule_separator (type boolean, default true)`: Allows to disable the "additional_rule_separator not used after time wrapping midnight" check giving rise to the warning "This rule overwrites parts of the previous rule. This happens because normal rules apply to the whole day and overwrite any definition made by previous rules. You can make this rule an additional rule by using a "," instead of the normal ";" to separate the rules. Note that the overwriting can also be desirable in which case you can ignore this warning."
 

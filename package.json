@@ -43,7 +43,7 @@
     "LICENSES/",
     "REUSE.toml",
     "site/js/",
-    "src/locales/core.js",
+    "src/locales/i18n.js",
     "types/index.d.ts"
   ],
   "directories": {

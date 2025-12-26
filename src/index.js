@@ -35,7 +35,7 @@ import word_error_correction from './locales/word_error_correction.yaml';
 import lang from './locales/lang.yaml';
 
 import SunCalc from 'suncalc';
-import i18next from './locales/core';
+import i18n from './locales/i18n';
 
 export default function(value, nominatim_object, optional_conf_parm) {
     // Short constants {{{
@@ -92,7 +92,7 @@ export default function(value, nominatim_object, optional_conf_parm) {
         'leave_weekday_sep_one_day_betw': true, // use the separator (either "," or "-" which is used to separate days which follow to each other like Sa,Su or Su-Mo
         'sep_one_day_between': ',',      // separator which should be used
         'zero_pad_month_and_week_numbers': true, // Format week (e.g. `week 01`) and month day numbers (e.g. `Jan 01`) with "%02d".
-        'locale': 'en',                  // use local language (needs i18next)
+        'locale': 'en',                  // locale for translations (currently 'en' and 'de' are supported)
         'date_format': 'short'           // Use short or long date format (for day and month names)
     };
 
@@ -130,31 +130,23 @@ export default function(value, nominatim_object, optional_conf_parm) {
     /* }}} */
 
     /* Translation function {{{ */
-    /* Roughly compatibly to i18next so we can replace everything by i18next with
-     * sprintf support.
-     */
     let locale = 'en'; // Default locale
-    if (typeof i18next === 'object') {
-        locale = i18next.language;
-    }
+    locale = i18n.language;
 
     const t = function(str, variables) {
-        if (
-                typeof i18next === 'object'
-                && typeof i18next.t === 'function'
-                && typeof locale === 'string'
-                && ['de'].indexOf(locale) !== -1
-            ) {
-
+        // Use i18n for German translations, fallback to built-in lang for others
+        if (typeof locale === 'string' && ['de'].indexOf(locale) !== -1) {
             let translatorFunction;
-            if (i18next.language !== locale) {
-                translatorFunction = i18next.getFixedT(locale);
+            if (i18n.language !== locale) {
+                translatorFunction = i18n.getFixedT(locale);
             } else {
-                translatorFunction = i18next.t;
+                translatorFunction = i18n.t;
             }
             const text = translatorFunction('opening_hours:texts.' + str, variables);
             return text;
         }
+
+        // Fallback for non-German locales
         let text = lang[str];
         if (typeof text === 'undefined') {
             text = str;
@@ -1286,10 +1278,10 @@ export default function(value, nominatim_object, optional_conf_parm) {
 
             if (typeof user_conf['locale'] === 'string' && user_conf['locale'] !== 'en') {
                 let translatorFunction;
-                if (i18next.language !== user_conf['locale']) {
-                    translatorFunction = i18next.getFixedT(user_conf['locale']);
+                if (i18n.language !== user_conf['locale']) {
+                    translatorFunction = i18n.getFixedT(user_conf['locale']);
                 } else {
-                    translatorFunction = i18next.t;
+                    translatorFunction = i18n.t.bind(i18n);
                 }
                 for (let i = 0; i < prettified_group_value.length; i++) {
                     const type = prettified_group_value[i][0][2];

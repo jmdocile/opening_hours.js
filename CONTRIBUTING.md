@@ -70,6 +70,72 @@ In case your holiday definition does only change the `holiday_definitions` varia
 Be sure to add one or more tests if you add new features or enhance error tolerance or the like.
 See under [testing][ohlib.testing].
 
+### Commit Message Convention
+
+We follow the [Conventional Commits](https://www.conventionalcommits.org/) specification. The minimum required format is:
+
+```text
+<type>[(optional scope)]: <subject>
+```
+
+Optionally with body and footer:
+
+```text
+<type>(<scope>): <subject>
+
+[optional body]
+
+[optional footer]
+```
+
+**Commit Types:**
+
+- `feat`: A new feature
+- `fix`: A bug fix
+- `data`: Updates to holiday/locale data files
+- `docs`: Documentation only changes
+- `style`: Code style changes (formatting, missing semicolons, etc.)
+- `refactor`: Code changes that neither fix bugs nor add features
+- `perf`: Performance improvements
+- `test`: Adding or updating tests
+- `build`: Changes to build system or dependencies
+- `ci`: Changes to CI configuration
+- `chore`: Other changes that don't modify src or test files
+
+**Scope (optional):**
+
+The scope indicates the part of the codebase being changed. Common scopes include:
+
+- `parser`: Parser/tokenizer changes
+- `holidays`: Holiday definition logic (not data updates)
+- `locales`: Translation/i18n changes
+- `build`: Build system (rollup, npm, etc.)
+- `test`: Test infrastructure
+- `deps`: Dependency updates
+- Country codes (`de`, `fr`, `us`, etc.): Country-specific changes
+
+**Examples:**
+
+```text
+feat(parser): add support for week ranges with step
+
+fix(holidays): correct Easter calculation for edge cases
+
+data(holidays): update Argentina 2026 public holidays
+
+data(de): update school holidays for Bavaria 2026
+
+docs(readme): add installation instructions for Deno
+
+build(rollup): migrate to ESM output format
+
+test: add coverage for periodic week schedules
+```
+
+**Note:** The scope is optional. When in doubt, omit it rather than guessing.
+
+The changelog is automatically generated from these commit messages. Only `feat`, `fix`, `data`, `docs`, and `refactor` commits appear in the changelog.
+
 ### Commit Hooks
 
 Note that there is a git pre-commit hook used to run and compare the test framework before each commit. Hooks are written as shell scripts using [husky][husky] and should be installed to git automatically when running `npm install`. If this does not happen, you can manually run `node --run postinstall`.

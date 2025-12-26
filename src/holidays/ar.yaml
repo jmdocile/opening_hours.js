@@ -7,8 +7,8 @@ _nominatim_url: 'https://nominatim.openstreetmap.org/reverse?format=json&lat=-34
 
 PH:
   - {'name': 'Año Nuevo', 'fixed_date': [1, 1]}
-  - {'name': 'Carnaval', 'variable_date': easter, 'offset': -48}
-  - {'name': 'Carnaval', 'variable_date': easter, 'offset': -47}
+  - {'name': 'Carnaval I', 'variable_date': easter, 'offset': -48}
+  - {'name': 'Carnaval II', 'variable_date': easter, 'offset': -47}
   - {'name': 'Feriado con fines turísticos', 'fixed_date': [3, 23]}
   - {'name': 'Día Nacional de la Memoria por la Verdad y la Justicia', 'fixed_date': [3, 24]}
   - {'name': 'Viernes Santo', 'variable_date': easter, 'offset': -2}

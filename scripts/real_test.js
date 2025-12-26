@@ -51,6 +51,7 @@ const test_framework = new opening_hours_test();
 
 colors.setTheme({
     result: [ 'green', 'bold' ],
+    warning: [ 'yellow', 'bold' ],
 });
 
 /* Also used by opening_hours_map/opening_hours_map.html */
@@ -503,9 +504,21 @@ function opening_hours_test() {
                 return;
             }
 
+            // Check if file is empty or contains invalid JSON
+            if (!data || data.trim().length === 0) {
+                console.warn('Warning:'.warning + ' File "' + filename + '" is empty, skipping.');
+                return;
+            }
+
             const taginfo_format = {};
 
-            data = JSON.parse(data);
+            try {
+                data = JSON.parse(data);
+            } catch (parseError) {
+                console.error('Error parsing JSON in file "' + filename + '": ' + parseError.message);
+                console.error('File content preview: ' + data.substring(0, 200));
+                return;
+            }
 
             if (info.export_format === 'overpass') {
                 let no_data_returned = true;

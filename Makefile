@@ -283,8 +283,11 @@ export.happy_hours.json:
 export.opening_hours.json:
 export.lit.json:
 
+# Downloads taginfo data for the specified key.
+# By default, all values are downloaded. To limit:
+# make osm-tag-data-taginfo-check MAX_VALUES=10000
 export.%.json:
-	wget $(WGET_OPTIONS) --output-document="$(shell echo "$@" | sed 's/\\//g' )" "$(API_URL_TAGINFO)/4/key/values?key=$(shell echo "$@" | sed 's/^export\.\(.*\)\.json/\1/;s/\\//g' )" 2>&1
+	@$(NODEJS) scripts/download_taginfo_data.mjs "$@" "$(shell echo "$@" | sed 's/^export\.\(.*\)\.json/\1/;s/\\//g' )" "$(MAX_VALUES)"
 ## }}}
 
 ## OSM data from the overpass API {{{

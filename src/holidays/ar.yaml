@@ -28,4 +28,3 @@ PH:
   - {'name': 'Feriado con fines turísticos', 'fixed_date': [12, 7]}
   - {'name': 'Inmaculada Concepción de María', 'fixed_date': [12, 8]}
   - {'name': 'Navidad', 'fixed_date': [12, 25]}
-  

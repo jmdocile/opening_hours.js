@@ -2846,18 +2846,73 @@ export default function(value, nominatim_object, optional_conf_parm) {
     }
     /* }}} */
 
+    /* Get date moved to Monday for movable fixed holidays (Argentina style). {{{
+     * Moves holidays that fall on Tuesday/Wednesday to previous Monday,
+     * or Thursday/Friday to next Monday. Checks for collisions with existing holidays.
+     *
+     * :param base_date: Original date of the holiday.
+     * :param existing_holidays: Set of timestamps of already processed holidays.
+     * :returns: Date object with the moved date, or original if no move needed or collision detected.
+     */
+    function getMondayMovedDate(base_date, existing_holidays) {
+        const weekday = base_date.getDay();
+        const moved_date = new Date(base_date);
+
+        // Tuesday (2) or Wednesday (3) -> Previous Monday
+        if (weekday === 2 || weekday === 3) {
+            const days_to_subtract = weekday - 1;
+            moved_date.setDate(base_date.getDate() - days_to_subtract);
+        }
+        // Thursday (4) or Friday (5) -> Next Monday
+        else if (weekday === 4 || weekday === 5) {
+            const days_to_add = 8 - weekday;
+            moved_date.setDate(base_date.getDate() + days_to_add);
+        }
+        // Monday, Saturday or Sunday -> no move
+        else {
+            return base_date;
+        }
+
+        // Check if moved date collides with another holiday
+        if (existing_holidays && existing_holidays.has(moved_date.getTime())) {
+            // If collision detected, return original date
+            return base_date;
+        }
+
+        return moved_date;
+    }
+    /* }}} */
+
     function getApplyingHolidaysForYear(applying_holidays, year, add_days) {
         const movableDays = getMovableEventsForYear(year);
 
         let sorted_holidays = [];
         let next_holiday;
+        const holiday_dates_set = new Set(); // Track used dates to detect collisions
+        let has_movable_fixed_date = false; // Track if we need second pass
 
+        /* First pass: Process all fixed and variable holidays to populate the Set.
+         * This ensures movable_fixed_date holidays can check for collisions
+         * with all other holidays regardless of processing order.
+         * Also detect if there are any movable_fixed_date holidays.
+         */
         applying_holidays.forEach(function (holiday_item) {
+            if ('movable_fixed_date' in holiday_item) {
+                has_movable_fixed_date = true;
+                return; // Skip processing in first pass
+            }
+
             if ('fixed_date' in holiday_item) {
                 next_holiday = new Date(year,
                         holiday_item.fixed_date[0] - 1,
                         holiday_item.fixed_date[1]
                     );
+
+                if (add_days[0]) {
+                    next_holiday.setDate(next_holiday.getDate() + add_days[0]);
+                }
+
+                holiday_dates_set.add(next_holiday.getTime());
             } else if ('variable_date' in holiday_item) {
                 const selected_movableDay = movableDays[holiday_item.variable_date];
                 if (!selected_movableDay) {
@@ -2875,16 +2930,106 @@ export default function(value, nominatim_object, optional_conf_parm) {
                     throw t('movable not in year', {
                         'name': holiday_item.variable_date, 'days': date_offset});
                 }
-            } else {
-                throw formatLibraryBugMessage('Unexpected object: ' + JSON.stringify(holiday_item, null, '    '));
-            }
 
-            if (add_days[0]) {
-                next_holiday.setDate(next_holiday.getDate() + add_days[0]);
-            }
+                if (add_days[0]) {
+                    next_holiday.setDate(next_holiday.getDate() + add_days[0]);
+                }
 
-            sorted_holidays.push([ next_holiday, holiday_item.name ]);
+                holiday_dates_set.add(next_holiday.getTime());
+            }
         });
+
+        /* Second pass: Only needed if there are movable_fixed_date holidays.
+         * Process all holidays including movable_fixed_date.
+         * Now movable_fixed_date holidays can safely check for collisions
+         * since all fixed and variable holidays are already in the Set.
+         */
+        if (has_movable_fixed_date) {
+            applying_holidays.forEach(function (holiday_item) {
+                if ('fixed_date' in holiday_item) {
+                    next_holiday = new Date(year,
+                            holiday_item.fixed_date[0] - 1,
+                            holiday_item.fixed_date[1]
+                        );
+                } else if ('movable_fixed_date' in holiday_item) {
+                    /* Movable fixed holidays (e.g. Argentina).
+                     * These holidays move to the nearest Monday based on specific rules:
+                     * - If Tuesday or Wednesday: move to previous Monday
+                     * - If Thursday or Friday: move to next Monday
+                     * - If already Monday, Saturday, or Sunday: don't move
+                     * Check for collisions with already processed holidays.
+                     */
+                    const base_date = new Date(year,
+                            holiday_item.movable_fixed_date[0] - 1,
+                            holiday_item.movable_fixed_date[1]
+                        );
+
+                    next_holiday = getMondayMovedDate(base_date, holiday_dates_set);
+                } else if ('variable_date' in holiday_item) {
+                    const selected_movableDay = movableDays[holiday_item.variable_date];
+                    if (!selected_movableDay) {
+                        throw t('movable no formula', {'name': holiday_item.name});
+                    }
+                    let date_offset = 0;
+                    if ('offset' in holiday_item) {
+                        date_offset = holiday_item.offset;
+                    }
+                    next_holiday = new Date(selected_movableDay.getFullYear(),
+                        selected_movableDay.getMonth(),
+                        selected_movableDay.getDate() + date_offset
+                    );
+                    if (year !== next_holiday.getFullYear()) {
+                        throw t('movable not in year', {
+                            'name': holiday_item.variable_date, 'days': date_offset});
+                    }
+                } else {
+                    throw formatLibraryBugMessage('Unexpected object: ' + JSON.stringify(holiday_item, null, '    '));
+                }
+
+                if (add_days[0]) {
+                    next_holiday.setDate(next_holiday.getDate() + add_days[0]);
+                }
+
+                sorted_holidays.push([ next_holiday, holiday_item.name ]);
+            });
+        } else {
+            /* No movable_fixed_date holidays found.
+             * Use the results from first pass directly.
+             */
+            applying_holidays.forEach(function (holiday_item) {
+                if ('fixed_date' in holiday_item) {
+                    next_holiday = new Date(year,
+                            holiday_item.fixed_date[0] - 1,
+                            holiday_item.fixed_date[1]
+                        );
+                } else if ('variable_date' in holiday_item) {
+                    const selected_movableDay = movableDays[holiday_item.variable_date];
+                    if (!selected_movableDay) {
+                        throw t('movable no formula', {'name': holiday_item.name});
+                    }
+                    let date_offset = 0;
+                    if ('offset' in holiday_item) {
+                        date_offset = holiday_item.offset;
+                    }
+                    next_holiday = new Date(selected_movableDay.getFullYear(),
+                        selected_movableDay.getMonth(),
+                        selected_movableDay.getDate() + date_offset
+                    );
+                    if (year !== next_holiday.getFullYear()) {
+                        throw t('movable not in year', {
+                            'name': holiday_item.variable_date, 'days': date_offset});
+                    }
+                } else {
+                    throw formatLibraryBugMessage('Unexpected object: ' + JSON.stringify(holiday_item, null, '    '));
+                }
+
+                if (add_days[0]) {
+                    next_holiday.setDate(next_holiday.getDate() + add_days[0]);
+                }
+
+                sorted_holidays.push([ next_holiday, holiday_item.name ]);
+            });
+        }
 
         sorted_holidays = sorted_holidays.sort(function(a,b){
             if (a[0].getTime() < b[0].getTime()) return -1;

@@ -717,7 +717,7 @@ var Day = function() {
 		this._intervals = [];
 		for(var i=0; i < intervals.length; i++) {
 			if(intervals[i] != undefined && intervals[i].getStartDay() == 0 && intervals[i].getEndDay() == 0) {
-				this._intervals.push($.extend(true, {}, intervals[i]));
+				this._intervals.push(structuredClone(intervals[i]));
 			}
 		}
 		
@@ -1045,7 +1045,7 @@ var Week = function() {
 		this._intervals = [];
 		for(var i=0; i < intervals.length; i++) {
 			if(intervals[i] != undefined) {
-				this._intervals.push($.extend(true, {}, intervals[i]));
+				this._intervals.push(structuredClone(intervals[i]));
 			}
 		}
 	};
@@ -2638,7 +2638,7 @@ var OpeningHoursParser = function() {
 		//Check added interval are OK for days
 		if(typical instanceof Day) {
 			if(weekdays.from != 0 || (weekdays.to != 0 && times.from <= times.to)) {
-				weekdays = $.extend({}, weekdays);
+				weekdays = Object.assign({}, weekdays);
 				weekdays.from = 0;
 				weekdays.to = (times.from <= times.to) ? 0 : 1;
 			}
@@ -2728,10 +2728,10 @@ var OpeningHoursParser = function() {
 	 */
 	OpeningHoursParser.prototype._tokenize = function(block) {
 		var result = block.trim().split(' ');
-		var position = $.inArray("", result);
+		var position = result.indexOf("");
 		while( ~position ) {
 			result.splice(position, 1);
-			position = $.inArray("", result);
+			position = result.indexOf("");
 		}
 		return result;
 	};

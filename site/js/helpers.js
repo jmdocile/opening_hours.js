@@ -1,4 +1,4 @@
-/* global $, , default_lat, default_lon, i18next, jQuery, mapCountryToLanguage, opening_hours, OpeningHoursTable, specification_url, YoHoursChecker */
+/* global default_lat, default_lon, i18next, mapCountryToLanguage, opening_hours, OpeningHoursTable, specification_url, YoHoursChecker */
 
 /* Constants {{{ */
 const nominatim_api_url = 'https://nominatim.openstreetmap.org/reverse';
@@ -66,17 +66,21 @@ function reverseGeocodeLocation(query, guessed_language_for_location, on_success
         nominatim_api_url_query += '&accept-language=' + guessed_language_for_location;
     }
 
-    $.getJSON(nominatim_api_url_query, function(nominatim_data) {
-        // console.log(JSON.stringify(nominatim_data, null, '\t'));
-        if (nominatim_data.address.country_code === guessed_language_for_location) {
-            on_success(nominatim_data);
-        } else {
-            nominatim_api_url_query += '&accept-language=' + mapCountryToLanguage(nominatim_data.address.country_code);
-            $.getJSON(nominatim_api_url_query, function(nominatim_data) {
+    fetch(nominatim_api_url_query)
+        .then(response => response.json())
+        .then(nominatim_data => {
+            // console.log(JSON.stringify(nominatim_data, null, '\t'));
+            if (nominatim_data.address.country_code === guessed_language_for_location) {
                 on_success(nominatim_data);
-            }).error(on_error);
-        }
-    }).error(on_error);
+            } else {
+                nominatim_api_url_query += '&accept-language=' + mapCountryToLanguage(nominatim_data.address.country_code);
+                fetch(nominatim_api_url_query)
+                    .then(response => response.json())
+                    .then(nominatim_data => on_success(nominatim_data))
+                    .catch(on_error);
+            }
+        })
+        .catch(on_error);
 }
 
 // eslint-disable-next-line no-unused-vars
@@ -291,14 +295,14 @@ function Evaluate (offset, reset) {
                   'locale': i18next.language
               }));
           } catch {
-              $('input#diff_value').css({'background-color' : evaluation_tool_colors.error})
+              document.getElementById('diff_value').style.backgroundColor = evaluation_tool_colors.error;
           }
           if (typeof is_equal_to === 'object') {
             if (is_equal_to[0]) {
-              $('input#diff_value').css({'background-color' : evaluation_tool_colors.ok})
+              document.getElementById('diff_value').style.backgroundColor = evaluation_tool_colors.ok;
             } else {
-              $('input#diff_value').css({'background-color' : evaluation_tool_colors.warn})
-              const human_readable_not_equal_output = jQuery.extend(true, {}, is_equal_to[1])
+              document.getElementById('diff_value').style.backgroundColor = evaluation_tool_colors.warn;
+              const human_readable_not_equal_output = structuredClone(is_equal_to[1])
               if (typeof human_readable_not_equal_output.deviation_for_time === 'object') {
                 human_readable_not_equal_output.deviation_for_time = {};
                 for (const time_code in is_equal_to[1].deviation_for_time) {
@@ -459,7 +463,7 @@ window.onload = function () {
 };
 /* }}} */
 
-$(document).ready(function () {
+document.addEventListener('DOMContentLoaded', () => {
     const permalink = document.getElementById('permalink');
     if (permalink) {
         const checkbox = document.createElement('input');

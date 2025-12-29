@@ -15,27 +15,6 @@ window.default_lat = 48.7769;
 window.default_lon = 9.1844;
 window.repo_url = 'https://github.com/opening-hours/opening_hours.js';
 
-// Initialize i18next first, before setting up any DOM listeners
-await i18next.init({
-    lng: detectLanguage(),
-    fallbackLng: 'en',
-    resources: resources,
-    debug: false
-});
-
-// Expose these for index.html access if needed
-const default_lat = window.default_lat;
-const default_lon = window.default_lon;
-const repo_url = window.repo_url;
-
-// Update specification_url after i18next is ready
-window.specification_url = `https://wiki.openstreetmap.org/wiki/${i18next.language === 'de' ? 'DE:' : ''}Key:opening_hours/specification`;
-
-// Set page title
-if (document.title !== i18next.t('texts.title')) {
-    document.title = i18next.t('texts.title');
-}
-
 // Helper function to generate time navigation buttons
 function generateTimeButtons() {
     const buttons = [
@@ -126,8 +105,8 @@ window.currentDateTime = {
     minute: 21
 };
 
-// Populate all dynamic content after DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
+// Populate all dynamic content with localized text
+function initializeUI() {
     // Page title
     document.getElementById('page-title').textContent = i18next.t('texts.title');
 
@@ -225,13 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
         i18next.t('texts.this website', { url: repo_url, hoster: 'GitHub' });
 
     document.body.parentElement.lang = i18next.language;
-
-    // Set up event listeners
-    setupEventListeners();
-
-    // Trigger initial evaluation
-    Evaluate();
-});
+}
 
 // Set up event listeners using event delegation (only for repetitive handlers)
 function setupEventListeners() {
@@ -402,3 +375,28 @@ function setupEventListeners() {
         }
     }, true);
 }
+
+/* Initialize application (ES6 modules execute after DOM parsing) */
+await i18next.init({
+    lng: detectLanguage(),
+    fallbackLng: 'en',
+    resources: resources,
+    debug: false
+});
+
+// Expose these for index.html access if needed
+const default_lat = window.default_lat;
+const default_lon = window.default_lon;
+const repo_url = window.repo_url;
+
+// Update specification_url after i18next is ready
+window.specification_url = `https://wiki.openstreetmap.org/wiki/${i18next.language === 'de' ? 'DE:' : ''}Key:opening_hours/specification`;
+
+// Set page title
+if (document.title !== i18next.t('texts.title')) {
+    document.title = i18next.t('texts.title');
+}
+
+initializeUI();
+setupEventListeners();
+Evaluate();

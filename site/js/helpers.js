@@ -142,31 +142,42 @@ function generateSelectorHTML(selectorType, selectorValue) {
            `<a target="_blank" class="specification" href="${specification_url}#${fragmentIdentifier}">${selectorValue}</a></span>`;
 }
 
+/**
+ * Generate HTML explanation for prettified opening hours value.
+ *
+ * Converts the internal rule structure into human-readable HTML with links
+ * to the specification for each selector type and rule separator.
+ *
+ * @param {Array} prettifiedValueArray - Array containing [rules, ruleSeparators]
+ * @returns {string} HTML string with formatted value explanation
+ */
 function generateValueExplanation(prettifiedValueArray) {
+    const [rules, ruleSeparators] = prettifiedValueArray;
     const parts = [
         `${i18next.t('texts.prettified value for displaying')}:<br />`,
         '<p class="value_explanation">'
     ];
 
-    for (let nrule = 0; nrule < prettifiedValueArray[0].length; nrule++) {
-        if (nrule !== 0) {
-            const ruleSeparator = prettifiedValueArray[1][nrule][1]
+    for (const [ruleIndex, selectors] of rules.entries()) {
+        if (ruleIndex !== 0) {
+            const separatorData = ruleSeparators[ruleIndex];
+            const ruleSeparator = separatorData[1]
                 ? ' ||'
-                : (prettifiedValueArray[1][nrule][0][0][1] === 'rule separator' ? ',' : ';');
+                : (separatorData[0][0][1] === 'rule separator' ? ',' : ';');
 
             parts.push(generateRuleSeparatorHTML(ruleSeparator));
         }
 
         parts.push('<span class="one_rule">');
 
-        const selectors = prettifiedValueArray[0][nrule];
-        for (let nselector = 0; nselector < selectors.length; nselector++) {
-            const selectorType = selectors[nselector][0][2];
-            const selectorValue = selectors[nselector][1];
+        for (const [selectorIndex, selector] of selectors.entries()) {
+            const [typeArray, selectorValue] = selector;
+            const selectorType = typeArray[2];
 
             parts.push(generateSelectorHTML(selectorType, selectorValue));
 
-            if (nselector + 1 < selectors.length) {
+            const isLastSelector = selectorIndex === selectors.length - 1;
+            if (!isLastSelector) {
                 parts.push(' ');
             }
         }

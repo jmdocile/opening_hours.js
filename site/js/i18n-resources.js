@@ -1510,8 +1510,8 @@ const resources = { // English is fallback language.
 // Functions which generate localized HTML sections {{{
 // eslint-disable-next-line no-unused-vars
 function getUserSelectTranslateHTMLCode() {
-    document.write('<span class="hd">');
-    let res = i18next.t('lang.choose')
+    let res = '<span class="hd">';
+    res += i18next.t('lang.choose')
             + (i18next.language !== 'en' ? ' ('+ i18next.t('lang.choose', { lng: 'en' }) +')' : '' )
             + ':</span> ';
     for (const lang in resources) {

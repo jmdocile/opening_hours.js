@@ -11,10 +11,13 @@
     </head>
     <body>
         <noscript>You don't have JavaScript enabled and that is a good thing but this tool makes heavy use of JavaScript so you need to enable it in order to use this tool. If you don't trust the code that is going to be executed that is good as well. I encourage you to read all the source code on <a href="https://github.com/opening-hours/opening_hours.js">GitHub</a>. Also note that every commit and all releases are GPG signed. You might want to check this out as well :) Stay safe.</noscript>
-        <h1 id="page-title"></h1>
-        <div id="language-selector"></div>
+        
+        <header>
+            <h1 id="page-title"></h1>
+            <div id="language-selector"></div>
+        </header>
 
-        <div id="user">
+        <main id="user">
             <form id="check" action="#">
                 <!-- User input -->
                 <p id="date-time-inputs"></p>
@@ -57,9 +60,10 @@
                 </div>
             </form>
 
-            <hr /><!-- Examples -->
-            <a href="#" id="examples-toggle"><h2 id="examples"></h2></a>
-            <div id="user_examples">
+            <section>
+                <hr /><!-- Examples -->
+                <a href="#" id="examples-toggle"><h2 id="examples"></h2></a>
+                <div id="user_examples">
                 <ol>
                     <li><a href="#check" class="example-link">Mo-Fr 10:00-20:00; PH off</a></li>
                     <li><a href="#check" class="example-link">Mo,Tu,Th,Fr 12:00-18:00; Sa,PH 12:00-17:00; Th[3],Th[-1] off</a></li>
@@ -140,9 +144,12 @@
                     <li><a href="#check" class="example-link">Mo-Su; We "only after registration"</a></li>
                     <li><a href="#check" class="example-link">Oct: We[1]</a></li>
                 </ol>
-            </div>
+                </div>
+            </section>
 
-        </div>
+            <footer id="footer"></footer>
+
+        </main>
 
     <script src="../build/opening_hours+deps.min.js"></script>
     <script src="../node_modules/i18next/dist/umd/i18next.min.js"></script>

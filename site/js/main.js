@@ -127,12 +127,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('permalink-checkbox-label').textContent = i18next.t('texts.include timestamp?');
 
     // Footer content
-    const userDiv = document.getElementById('user');
-    const footer = document.createElement('div');
-    footer.innerHTML = i18next.t('texts.more information',
+    document.getElementById('footer').innerHTML = i18next.t('texts.more information',
         { href: 'https://wiki.openstreetmap.org/wiki/Key:opening_hours' }) + '<br />' +
         i18next.t('texts.this website', { url: repo_url, hoster: 'GitHub' });
-    userDiv.appendChild(footer);
 
     document.body.parentElement.lang = i18next.language;
 
@@ -145,9 +142,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Set up event listeners using event delegation (only for repetitive handlers)
 function setupEventListeners() {
-    const userDiv = document.getElementById('user');
+    const main = document.getElementById('user');
 
-    userDiv.addEventListener('click', (e) => {
+    main.addEventListener('click', (e) => {
         // Examples toggle
         if (e.target.closest('#examples-toggle')) {
             e.preventDefault();

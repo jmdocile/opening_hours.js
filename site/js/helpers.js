@@ -12,7 +12,7 @@ const evaluation_tool_colors = {
 /* }}} */
 
 // load nominatim_data in JOSM {{{
-// Using a different way to load stuff in JOSM than https://github.com/rurseekatze/OpenLinkMap/blob/master/js/small.js
+// Using a different way to load stuff in JOSM than https://github.com/vibrog/OpenLinkMap/
 // prevent josm remote plugin of showing message
 // eslint-disable-next-line no-unused-vars
 function josm(url_param) {
@@ -29,6 +29,7 @@ function josm(url_param) {
 // }}}
 
 // add calculation for calendar week to date {{{
+// eslint-disable-next-line no-unused-vars
 function dateAtWeek(date, week) {
     const minutes_in_day = 60 * 24;
     const msec_in_day    = 1000 * 60 * minutes_in_day;
@@ -83,21 +84,6 @@ function reverseGeocodeLocation(query, guessed_language_for_location, on_success
         .catch(on_error);
 }
 
-// eslint-disable-next-line no-unused-vars
-function submitenter(myfield,e) {
-    Evaluate();
-    // let keycode;
-    // if (window.event) keycode = window.event.keyCode;
-    // else if (e) keycode = e.which;
-    // else return true;
-
-    // if (keycode === 13) {
-    //     Evaluate();
-    //     return false;
-    // } else
-    //     return true;
-}
-
 /* JS for toggling examples on and off {{{ */
 // eslint-disable-next-line no-unused-vars
 function toggle(control){
@@ -119,11 +105,7 @@ function copyToClipboard(text) {
 let lat, lon, string_lat, string_lon, nominatim;
 let date;
 
-function Evaluate (offset, reset) {
-    if (typeof offset === 'undefined') {
-        offset = 0;
-    }
-
+function Evaluate (offset = 0, reset) {
     if (document.forms.check.elements['lat'].value !== string_lat || document.forms.check.elements['lon'].value !== string_lon) {
         string_lat = document.forms.check.elements['lat'].value;
         string_lon = document.forms.check.elements['lon'].value;
@@ -162,23 +144,31 @@ function Evaluate (offset, reset) {
     date = reset
         ? new Date()
         : new Date(
-            document.forms.check.elements['yyyy'].value,
-            document.forms.check.elements['mm'].selectedIndex,
-            document.forms.check.elements['dd'].value,
-            document.forms.check.elements['HH'].value,
-            parseInt(document.forms.check.elements['MM'].value),
+            window.currentDateTime.year,
+            window.currentDateTime.month,
+            window.currentDateTime.day,
+            window.currentDateTime.hour,
+            window.currentDateTime.minute,
             offset
         );
 
+    // eslint-disable-next-line no-unused-vars
     function u2 (v) { return v>=0 && v<10 ? `0${v}` : v; }
 
-    document.forms.check.elements['yyyy'].value       = date.getFullYear();
-    document.forms.check.elements['mm'].selectedIndex = date.getMonth();
-    document.forms.check.elements['dd'].value         = u2(date.getDate());
-    document.forms.check.elements['HH'].value         = u2(date.getHours());
-    document.forms.check.elements['MM'].value         = u2(date.getMinutes());
-    document.forms.check.elements['wday'].value       = date.toLocaleString(i18next.language, {weekday: 'short'});
-    document.forms.check.elements['week'].value       = `W${u2(dateAtWeek(date, 0) + 1)}`;
+    // Update global state
+    window.currentDateTime = {
+        year: date.getFullYear(),
+        month: date.getMonth(),
+        day: date.getDate(),
+        hour: date.getHours(),
+        minute: date.getMinutes()
+    };
+
+    // Update time button labels with current values
+    if (typeof updateTimeButtonLabels === 'function') {
+        // eslint-disable-next-line no-undef
+        updateTimeButtonLabels(date);
+    }
 
     const show_time_table         = document.getElementById('show_time_table');
     const show_warnings_or_errors = document.getElementById('show_warnings_or_errors');
@@ -209,16 +199,36 @@ function Evaluate (offset, reset) {
         show_results.innerHTML    = '';
     }
 
+    // Populate actions section - JOSM link
     const josmUrl = 'import?url=' + encodeURIComponent('https://overpass-api.de/api/xapi_meta?*[opening_hours='
         + document.forms.check.elements['expression'].value + ']');
-    show_time_table.innerHTML = '<a href="#" class="josm-link" data-url="' + josmUrl + '">' + i18next.t('texts.load all with JOSM') + '</a><br />';
+    const actionJosm = document.getElementById('action-josm');
+    actionJosm.innerHTML = `
+        <div class="action-description">${i18next.t('texts.load osm objects')}</div>
+        <div><a href="#" class="josm-link" data-url="${josmUrl}">JOSM</a></div>
+    `;
+
+    // Populate actions section - YoHours link
+    const actionYoHours = document.getElementById('action-yohours');
+    if (!crashed && YoHoursChecker.canRead(value)) {
+        const yohoursUrl = `https://projets.pavie.info/yohours/?oh=${value}`;
+        actionYoHours.innerHTML = `
+            <div class="action-description">${i18next.t('texts.yohours description')}</div>
+            <div><a href="${yohoursUrl}" target="_blank">YoHours</a></div>
+        `;
+    } else {
+        actionYoHours.innerHTML = `
+            <div class="action-description">${i18next.t('texts.yohours description')}</div>
+            <div class="yohours-warning">${i18next.t('texts.yohours incompatible')}</div>
+        `;
+    }
+
     if (!crashed) {
         const prettified = oh.prettifyValue({});
         const prettified_value_array = oh.prettifyValue({
             // conf: { locale: i18next.language },
             get_internals: true,
         });
-        // let prettified_newline_sep = oh.prettifyValue({ conf: { locale: i18next.language, rule_sep_string: '\n', print_semicolon: false } });
         show_results.innerHTML = '<p><span class="hd">' + i18next.t('words.status') + ':</span>'
             + '<input class="nostyle" size="10" name="status" readonly="readonly" />'
             + '<input class="nostyle" size="60" name="comment" readonly="readonly" />'
@@ -281,11 +291,6 @@ function Evaluate (offset, reset) {
             value_explanation += '</span>';
         }
         value_explanation += '</p></div>';
-        if (YoHoursChecker.canRead(value)) {
-            value_explanation = i18next.t('texts.refer to yohours', { href: `https://projets.pavie.info/yohours/?oh=${value}` })
-            + '<br>'
-            + value_explanation;
-        }
 
         if (diff_value.length > 0) {
           let is_equal_to;
@@ -318,16 +323,12 @@ function Evaluate (offset, reset) {
                 + value_explanation;
             }
           }
+        } else {
+          // Reset background color when diff_value is empty
+          document.getElementById('diff_value').style.backgroundColor = '';
         }
 
         show_warnings_or_errors.innerHTML = value_explanation;
-
-        // if (prettified_newline_sep.split('\n').length > 1)
-            // show_results.innerHTML += '<p>' + i18next.t('texts.prettified value for displaying') + ':<br />'
-                // + '<textarea rows="' + prettified_newline_sep.split('\n').length
-                // + '" style="width: 100%" name="prettifiedValueNewlineSep" readonly="readonly">'
-                // + prettified_newline_sep + '</textarea></p>';
-
 
         document.forms.check.elements['comment'].value = typeof it.getComment() !== 'undefined'
             ? it.getComment() : i18next.t('words.no') + ' ' + i18next.t('words.comment');
@@ -359,7 +360,7 @@ function Evaluate (offset, reset) {
             </div>`;
         }
 
-        show_time_table.innerHTML += OpeningHoursTable.drawTableAndComments(oh, it);
+        show_time_table.innerHTML = OpeningHoursTable.drawTableAndComments(oh, it);
     }
 
     updatePermalinkHref();
@@ -388,17 +389,20 @@ function updatePermalinkHref() {
         mode: document.getElementById('mode').selectedIndex
     });
 
-    if (document.getElementById('permalink-include-timestamp').checked) {
-        params.set('DATE', date.getTime());
-    }
-
     const diffValue = document.getElementById('diff_value').value;
     if (diffValue !== '') {
         params.set('diff_value', diffValue);
     }
 
     const baseUrl = `${location.origin}${location.pathname}`;
-    document.getElementById('permalink-link').href = `${baseUrl}?${params}`;
+
+    // Permalink with timestamp
+    const paramsWithTimestamp = new URLSearchParams(params);
+    paramsWithTimestamp.set('DATE', date.getTime());
+    document.getElementById('permalink-link-with-timestamp').href = `${baseUrl}?${paramsWithTimestamp}`;
+
+    // Permalink without timestamp
+    document.getElementById('permalink-link-without-timestamp').href = `${baseUrl}?${params}`;
 }
 
 // eslint-disable-next-line no-unused-vars
@@ -443,21 +447,20 @@ window.onload = function () {
         document.forms.check.elements['mode'].value = decodeURIComponent(params['mode']);
     }
     if (typeof params['DATE'] !== 'undefined') {
-        let crashed = true;
         try {
-            date = new Date(parseInt(params['DATE']));
-            crashed = false;
+            const loadedDate = new Date(parseInt(params['DATE']));
+            window.currentDateTime = {
+                year: loadedDate.getFullYear(),
+                month: loadedDate.getMonth(),
+                day: loadedDate.getDate(),
+                hour: loadedDate.getHours(),
+                minute: loadedDate.getMinutes()
+            };
+            Evaluate(0, false);
         } catch (err) {
             console.error(err);
+            Evaluate(0, true);
         }
-        if (!crashed) {
-            document.forms.check.elements['yyyy'].value       = date.getFullYear();
-            document.forms.check.elements['mm'].selectedIndex = date.getMonth();
-            document.forms.check.elements['dd'].value         = date.getDate();
-            document.forms.check.elements['HH'].value         = date.getHours();
-            document.forms.check.elements['MM'].value         = date.getMinutes();
-        }
-        Evaluate(0, false);
     } else {
         Evaluate(0, true);
     }

@@ -8,61 +8,109 @@
         <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
         <link rel="stylesheet" href="css/main.css"/>
         <link rel="stylesheet" href="css/table.css"/>
+        <script src="js/theme.js"></script>
     </head>
     <body>
         <noscript>You don't have JavaScript enabled and that is a good thing but this tool makes heavy use of JavaScript so you need to enable it in order to use this tool. If you don't trust the code that is going to be executed that is good as well. I encourage you to read all the source code on <a href="https://github.com/opening-hours/opening_hours.js">GitHub</a>. Also note that every commit and all releases are GPG signed. You might want to check this out as well :) Stay safe.</noscript>
         
         <header>
-            <h1 id="page-title"></h1>
-            <div id="language-selector"></div>
+            <div class="header-left">
+                <img src="img/favicon.svg" alt="24/7 Logo" class="header-logo">
+                <h1 id="page-title"></h1>
+            </div>
+            <div class="header-right">
+                <button id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+                    <span class="theme-icon"></span>
+                </button>
+                <div id="language-selector"></div>
+            </div>
         </header>
 
         <main id="user">
             <form id="check" action="#">
                 <!-- User input -->
-                <p id="date-time-inputs"></p>
-                <p id="time-buttons"></p>
-                <p id="position-inputs"></p>
-                <p id="mode-selector"></p>
+                <section id="date-time-inputs"></section>
+                <section id="position-inputs"></section>
+                <section id="mode-selector"></section>
 
-                <div id="permalink" class="permalink">
-                    <a href="#" id="permalink-link">permalink</a>,
-                    <label for="permalink-include-timestamp">
-                        <input type="checkbox" id="permalink-include-timestamp" checked />
-                        <span id="permalink-checkbox-label"></span>
-                    </label>
-                </div>
-                <p>
-                    <span id="value-label" class="hd"></span>
-                    <input id="expression"
-                        onKeyUp="return submitenter(this,event)"
-                        name="expression"
-                        value="Mo-Fr 10:00-20:00; PH off"
-                        onblur="Evaluate()"
-                    />
+                <section id="value-input-section">
+                    <h2 id="value-section-heading"></h2>
+                    
+                    <div class="input-with-buttons">
+                        <h3 id="value-label"></h3>
+                        <div class="input-button-group">
+                            <input id="expression"
+                                onKeyUp="Evaluate()"
+                                name="expression"
+                                value="Mo-Fr 10:00-20:00; PH off"
+                                onblur="Evaluate()"
+                            />
+                            <button type="button" class="input-btn copy-input-btn" id="copy-expression-btn" data-i18n-title="copy">⎘</button>
+                            <button type="button" class="input-btn clear-input-btn" id="clear-expression-btn" data-i18n-title="clear">×</button>
+                        </div>
+                    </div>
+                </section>
 
-                    <span id="compare-label" class="hd"></span>
-                    <input
-                        id="diff_value"
-                        type="text"
-                        onKeyUp="return submitenter(this,event)"
-                        onblur="Evaluate()"
-                    />
-                </p>
+                <section id="actions-section">
+                    <h2 id="actions-heading"></h2>
+                    
+                    <div id="action-compare" class="action-item">
+                        <div class="action-description" id="compare-label"></div>
+                        <div class="input-button-group">
+                            <input
+                                id="diff_value"
+                                type="text"
+                                onKeyUp="Evaluate()"
+                                onblur="Evaluate()"
+                            />
+                            <button type="button" class="input-btn clear-input-btn" id="clear-diff-btn" data-i18n-title="clear">×</button>
+                        </div>
+                    </div>
 
-                <div id="show_warnings_or_errors">
-                </div>
+                    <div id="action-links">
+                        <div id="action-permalink" class="action-item">
+                            <div class="action-description" id="action-permalink-label"></div>
+                            <div class="permalink-variants">
+                                <div class="permalink-variant">
+                                    <div class="variant-label" id="permalink-with-timestamp-label"></div>
+                                    <div class="variant-actions">
+                                        <a href="#" id="permalink-link-with-timestamp">permalink</a>
+                                        <button class="copy-btn" data-target="permalink-link-with-timestamp" type="button" data-i18n-title="copy">⎘</button>
+                                    </div>
+                                </div>
+                                <div class="permalink-variant">
+                                    <div class="variant-label" id="permalink-without-timestamp-label"></div>
+                                    <div class="variant-actions">
+                                        <a href="#" id="permalink-link-without-timestamp">permalink</a>
+                                        <button class="copy-btn" data-target="permalink-link-without-timestamp" type="button" data-i18n-title="copy">⎘</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                <div id="show_time_table">
-                </div>
+                        <div id="action-josm" class="action-item"></div>
+                        
+                        <div id="action-yohours" class="action-item"></div>
+                    </div>
+                </section>
 
-                <div id="show_results">
-                </div>
-            </form>
+                <section id="results-section">
+                    <h2 id="results-heading"></h2>
+                    <div id="show_warnings_or_errors">
+                    </div>
+
+                    <div id="show_time_table">
+                    </div>
+
+                    <div id="show_results">
+                    </div>
+                </section>
 
             <section>
-                <hr /><!-- Examples -->
-                <a href="#" id="examples-toggle"><h2 id="examples"></h2></a>
+                <button type="button" id="examples-toggle" class="examples-toggle-btn">
+                    <span class="toggle-icon">▼</span>
+                    <h2 id="examples"></h2>
+                </button>
                 <div id="user_examples">
                 <ol>
                     <li><a href="#check" class="example-link">Mo-Fr 10:00-20:00; PH off</a></li>
@@ -146,7 +194,7 @@
                 </ol>
                 </div>
             </section>
-
+            </form>
             <footer id="footer"></footer>
 
         </main>

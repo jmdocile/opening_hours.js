@@ -1,7 +1,7 @@
-/* global i18next */
+// Import dependencies
+import i18next from '../../node_modules/i18next/dist/esm/i18next.bundled.js';
 
-// eslint-disable-next-line no-unused-vars
-const OpeningHoursTable = {
+export const OpeningHoursTable = {
 
     // JS functions for generating the table {{{
     // In English. Localization is done somewhere else (above).

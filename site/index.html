@@ -8,7 +8,6 @@
         <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
         <link rel="stylesheet" href="css/main.css"/>
         <link rel="stylesheet" href="css/table.css"/>
-        <script src="js/theme.js"></script>
     </head>
     <body>
         <noscript>You don't have JavaScript enabled and that is a good thing but this tool makes heavy use of JavaScript so you need to enable it in order to use this tool. If you don't trust the code that is going to be executed that is good as well. I encourage you to read all the source code on <a href="https://github.com/opening-hours/opening_hours.js">GitHub</a>. Also note that every commit and all releases are GPG signed. You might want to check this out as well :) Stay safe.</noscript>
@@ -40,10 +39,8 @@
                         <h3 id="value-label"></h3>
                         <div class="input-button-group">
                             <input id="expression"
-                                onKeyUp="Evaluate()"
                                 name="expression"
                                 value="Mo-Fr 10:00-20:00; PH off"
-                                onblur="Evaluate()"
                             />
                             <button type="button" class="input-btn copy-input-btn" id="copy-expression-btn" data-i18n-title="copy">📋</button>
                             <button type="button" class="input-btn clear-input-btn" id="clear-expression-btn" data-i18n-title="clear">×</button>
@@ -60,8 +57,6 @@
                             <input
                                 id="diff_value"
                                 type="text"
-                                onKeyUp="Evaluate()"
-                                onblur="Evaluate()"
                             />
                             <button type="button" class="input-btn clear-input-btn" id="clear-diff-btn" data-i18n-title="clear">×</button>
                         </div>
@@ -200,12 +195,7 @@
         </main>
 
     <script src="../build/opening_hours+deps.min.js"></script>
-    <script src="../node_modules/i18next/dist/umd/i18next.min.js"></script>
-    <script src="js/i18n-resources.js"></script>
-    <script src="js/opening_hours_table.js"></script>
-    <script src="js/helpers.js"></script>
-    <script src="js/countryToLanguageMapping.js"></script>
-    <script src="js/yohours_model.js"></script>
-    <script src="js/main.js"></script>
+    <script src="js/theme.js"></script>
+    <script type="module" src="js/main.js"></script>
     </body>
 </html>

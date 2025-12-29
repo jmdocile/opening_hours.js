@@ -1,22 +1,35 @@
-/* global i18next, getUserSelectTranslateHTMLCode, Evaluate, toggle, EX, josm, newValue, dateAtWeek */
+// Import all required modules
+import i18next from '../../node_modules/i18next/dist/esm/i18next.bundled.js';
+import { resources, detectLanguage, getUserSelectTranslateHTMLCode, changeLanguage } from './i18n-resources.js';
+import { Evaluate, EX, josm, toggle, dateAtWeek, newValue } from './helpers.js';
+import { YoHoursChecker } from './yohours_model.js';
 
-// Configuration constants (need to be global for use in inline scripts in index.html)
-// eslint-disable-next-line no-var
-var default_lat = 48.7769;
-// eslint-disable-next-line no-var
-var default_lon = 9.1844;
-// eslint-disable-next-line no-var
-var repo_url = 'https://github.com/opening-hours/opening_hours.js';
+window.YoHoursChecker = new YoHoursChecker();
+window.changeLanguage = changeLanguage;
+window.Evaluate = Evaluate;
+window.EX = EX;
+window.updateTimeButtonLabels = updateTimeButtonLabels;
 
-// Initialize YoHours (needs to be before yohours_model.js loads, used by yohours_model.js)
-// eslint-disable-next-line no-unused-vars, no-var
-var YoHours = function() {};
+// Configuration constants
+window.default_lat = 48.7769;
+window.default_lon = 9.1844;
+window.repo_url = 'https://github.com/opening-hours/opening_hours.js';
 
-// These will be set after other scripts load
-// eslint-disable-next-line no-var
-var YoHoursChecker = new YoHoursChecker();
-// eslint-disable-next-line no-unused-vars, no-var
-var specification_url = `https://wiki.openstreetmap.org/wiki/${i18next.language === 'de' ? 'DE:' : ''}Key:opening_hours/specification`;
+// Initialize i18next first, before setting up any DOM listeners
+await i18next.init({
+    lng: detectLanguage(),
+    fallbackLng: 'en',
+    resources: resources,
+    debug: false
+});
+
+// Expose these for index.html access if needed
+const default_lat = window.default_lat;
+const default_lon = window.default_lon;
+const repo_url = window.repo_url;
+
+// Update specification_url after i18next is ready
+window.specification_url = `https://wiki.openstreetmap.org/wiki/${i18next.language === 'de' ? 'DE:' : ''}Key:opening_hours/specification`;
 
 // Set page title
 if (document.title !== i18next.t('texts.title')) {
@@ -66,7 +79,7 @@ function generateTimeButtons() {
 
 // Helper function to update time button labels with current values
 
-function updateTimeButtonLabels(date) {
+export function updateTimeButtonLabels(date) {
     const yearLabel = document.getElementById('time-btn-value-year');
     const monthLabel = document.getElementById('time-btn-value-month');
     const dayLabel = document.getElementById('time-btn-value-day');
@@ -129,8 +142,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Position inputs
     document.getElementById('position-inputs').innerHTML = `
         <h2>${i18next.t('words.position')}</h2>
-        ${i18next.t('words.lat')} <input type="number" class="input__coordinate" id="lat" value="${default_lat}" onblur="Evaluate()" />
-        ${i18next.t('words.lon')} <input type="number" class="input__coordinate" id="lon" value="${default_lon}" onblur="Evaluate()" />
+        ${i18next.t('words.lat')} <input type="number" class="input__coordinate" id="lat" value="${default_lat}" />
+        ${i18next.t('words.lon')} <input type="number" class="input__coordinate" id="lon" value="${default_lon}" />
         ${i18next.t('words.country')} <input size="3" id="cc" readonly="readonly" />
         ${i18next.t('words.state')} <input size="20" id="state" readonly="readonly" /><br />
     `;
@@ -138,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Mode selector
     document.getElementById('mode-selector').innerHTML = `
         <h2>${i18next.t('words.mode')}</h2>
-        <select id="mode" name="mode" onchange="Evaluate()" style="max-width:100%;">
+        <select id="mode" name="mode" style="max-width:100%;">
             ${generateModeOptions()}
         </select>
     `;
@@ -223,6 +236,20 @@ document.addEventListener('DOMContentLoaded', () => {
 // Set up event listeners using event delegation (only for repetitive handlers)
 function setupEventListeners() {
     const main = document.getElementById('user');
+
+    // Input field listeners
+    document.getElementById('expression').addEventListener('keyup', () => Evaluate());
+    document.getElementById('expression').addEventListener('blur', () => Evaluate());
+    document.getElementById('diff_value').addEventListener('keyup', () => Evaluate());
+    document.getElementById('diff_value').addEventListener('blur', () => Evaluate());
+    document.getElementById('lat').addEventListener('blur', () => Evaluate());
+    document.getElementById('lon').addEventListener('blur', () => Evaluate());
+    document.getElementById('mode').addEventListener('change', () => Evaluate());
+
+    // Language selector
+    document.getElementById('language-select').addEventListener('change', function() {
+        changeLanguage(this.value);
+    });
 
     // Use mousedown instead of click for prettified value elements
     // This prevents interference with browser's text selection behavior

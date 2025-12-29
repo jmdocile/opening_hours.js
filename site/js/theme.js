@@ -32,12 +32,6 @@
     function setTheme(theme) {
         document.body.setAttribute('data-theme', theme);
         localStorage.setItem(STORAGE_KEY, theme);
-        updateIcon();
-    }
-
-    function updateIcon() {
-        // Icon is managed entirely via CSS ::before based on data-theme attribute
-        // No JavaScript manipulation needed
     }
 
     function toggleTheme() {
@@ -46,12 +40,18 @@
         setTheme(newTheme);
     }
 
-    // Initialize theme on page load
-    function initTheme() {
-        const theme = getThemePreference();
-        setTheme(theme);
+    // Initialize theme immediately to avoid FOUC
+    const theme = getThemePreference();
+    setTheme(theme);
 
-        // Add toggle event listener
+    // Set up toggle button when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initToggleButton);
+    } else {
+        initToggleButton();
+    }
+
+    function initToggleButton() {
         const toggleBtn = document.getElementById('theme-toggle');
         if (toggleBtn) {
             toggleBtn.addEventListener('click', toggleTheme);
@@ -67,18 +67,4 @@
             });
         }
     }
-
-    // Run immediately to avoid flash
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initTheme);
-    } else {
-        initTheme();
-    }
-
-    // Expose globally for debugging
-    window.themeManager = {
-        get: getThemePreference,
-        set: setTheme,
-        toggle: toggleTheme
-    };
 })();

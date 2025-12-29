@@ -1,4 +1,10 @@
-/* global default_lat, default_lon, i18next, mapCountryToLanguage, opening_hours, OpeningHoursTable, specification_url, YoHoursChecker */
+// Import dependencies
+import i18next from '../../node_modules/i18next/dist/esm/i18next.bundled.js';
+import { OpeningHoursTable } from './opening_hours_table.js';
+import { mapCountryToLanguage } from './countryToLanguageMapping.js';
+
+// Access global variables set by main.js or UMD scripts
+const { opening_hours, default_lat, default_lon, specification_url } = window;
 
 /* Constants {{{ */
 const nominatim_api_url = 'https://nominatim.openstreetmap.org/reverse';
@@ -16,8 +22,7 @@ const OSM_MAX_VALUE_LENGTH = 255;
 // load nominatim_data in JOSM {{{
 // Using a different way to load stuff in JOSM than https://github.com/vibrog/OpenLinkMap/
 // prevent josm remote plugin of showing message
-// eslint-disable-next-line no-unused-vars
-function josm(url_param) {
+export function josm(url_param) {
     fetch(`http://localhost:8111/${url_param}`)
         .then(response => {
             if (!response.ok) {
@@ -31,8 +36,7 @@ function josm(url_param) {
 // }}}
 
 // add calculation for calendar week to date {{{
-// eslint-disable-next-line no-unused-vars
-function dateAtWeek(date, week) {
+export function dateAtWeek(date, week) {
     const minutes_in_day = 60 * 24;
     const msec_in_day    = 1000 * 60 * minutes_in_day;
     const msec_in_week   = msec_in_day * 7;
@@ -87,8 +91,7 @@ function reverseGeocodeLocation(query, guessed_language_for_location, on_success
 }
 
 /* JS for toggling examples on and off {{{ */
-// eslint-disable-next-line no-unused-vars
-function toggle(control){
+export function toggle(control){
     const elem = document.getElementById(control);
 
     if (elem.style.display === 'none') {
@@ -99,11 +102,11 @@ function toggle(control){
 }
 /* }}} */
 
-// eslint-disable-next-line no-unused-vars
-function copyToClipboard(text) {
+export function copyToClipboard(text) {
     window.prompt('Copy to clipboard: Ctrl+C, Enter', text);
 }
 
+// Internal state for geocoding and date
 let lat, lon, string_lat, string_lon, nominatim;
 let date;
 
@@ -235,7 +238,8 @@ function generateJosmHTML(value) {
 }
 
 function generateYoHoursHTML(value, crashed) {
-    if (!crashed && YoHoursChecker.canRead(value)) {
+    // YoHoursChecker is set by main.js on window
+    if (!crashed && window.YoHoursChecker && window.YoHoursChecker.canRead(value)) {
         const yohoursUrl = `https://projets.pavie.info/yohours/?oh=${value}`;
         return `<div class="action-description">${i18next.t('texts.yohours description')}</div>` +
                `<div><a href="${yohoursUrl}" target="_blank">YoHours</a></div>`;
@@ -284,7 +288,7 @@ function generateValueTooLongHTML(prettified, value) {
 
 /* }}} */
 
-function Evaluate (offset = 0, reset) {
+export function Evaluate (offset = 0, reset) {
     if (document.forms.check.elements['lat'].value !== string_lat || document.forms.check.elements['lon'].value !== string_lon) {
         string_lat = document.forms.check.elements['lat'].value;
         string_lon = document.forms.check.elements['lon'].value;
@@ -332,9 +336,6 @@ function Evaluate (offset = 0, reset) {
             offset
         );
 
-    // eslint-disable-next-line no-unused-vars
-    function u2 (v) { return v>=0 && v<10 ? `0${v}` : v; }
-
     // Update global state
     window.currentDateTime = {
         year: date.getFullYear(),
@@ -345,9 +346,8 @@ function Evaluate (offset = 0, reset) {
     };
 
     // Update time button labels with current values
-    if (typeof updateTimeButtonLabels === 'function') {
-        // eslint-disable-next-line no-undef
-        updateTimeButtonLabels(date);
+    if (typeof window.updateTimeButtonLabels === 'function') {
+        window.updateTimeButtonLabels(date);
     }
 
     // Cache DOM elements
@@ -431,13 +431,12 @@ function Evaluate (offset = 0, reset) {
     updatePermalinkHref();
 }
 
-// eslint-disable-next-line no-unused-vars
-function EX (element) {
+export function EX (element) {
     newValue(element.innerHTML);
     return false;
 }
 
-function newValue(value) {
+export function newValue(value) {
     document.forms.check.elements['expression'].value = value;
     Evaluate();
 }
@@ -466,8 +465,7 @@ function updatePermalinkHref() {
     document.getElementById('permalink-link-without-timestamp').href = `${baseUrl}?${params}`;
 }
 
-// eslint-disable-next-line no-unused-vars
-function setCurrentPosition() {
+export function setCurrentPosition() {
     if(navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(onPositionUpdate);
     }

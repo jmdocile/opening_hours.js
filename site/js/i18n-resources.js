@@ -1,7 +1,8 @@
-/* global i18next */
+// Import i18next for use in helper functions
+import i18next from '../../node_modules/i18next/dist/esm/i18next.bundled.js';
 
 // localization {{{
-const resources = { // English is fallback language.
+export const resources = { // English is fallback language.
     // English (en) localization {{{
     en: {
         translation: {
@@ -1932,21 +1933,20 @@ const resources = { // English is fallback language.
 };
 
 // Functions which generate localized HTML sections {{{
-// eslint-disable-next-line no-unused-vars
-function changeLanguage(lang) {
+
+export function changeLanguage(lang) {
     localStorage.setItem('i18nextLng', lang);
     i18next.changeLanguage(lang, () => {
         window.location.reload();
     });
 }
 
-// eslint-disable-next-line no-unused-vars
-function getUserSelectTranslateHTMLCode() {
+export function getUserSelectTranslateHTMLCode() {
     let res = '<label for="language-select" class="hd">';
     res += i18next.t('lang.choose')
             + (i18next.language !== 'en' ? ' ('+ i18next.t('lang.choose', { lng: 'en' }) +')' : '' )
             + ':</label> ';
-    res += '<select id="language-select" onchange="changeLanguage(this.value)">';
+    res += '<select id="language-select">';
     for (const lang in resources) {
         if (Object.prototype.hasOwnProperty.call(resources, lang)) {
           const selected = i18next.language === lang ? ' selected' : '';
@@ -1963,31 +1963,16 @@ function getUserSelectTranslateHTMLCode() {
 }
 // }}}
 
-// Initialization code {{{
-if (!i18next.isInitialized) {
-    // Detect language: localStorage > browser language > fallback
-    const detectLanguage = () => {
-        const stored = localStorage.getItem('i18nextLng');
-        if (stored && resources[stored]) return stored;
+// Detect language: localStorage > browser language > fallback
+export function detectLanguage() {
+    const stored = localStorage.getItem('i18nextLng');
+    if (stored && resources[stored]) return stored;
 
-        for (const lang of navigator.languages) {
-            const shortLang = lang.split('-')[0];
-            if (resources[shortLang]) return shortLang;
-        }
-        return 'en';
-    };
-
-    i18next.init({
-        lng: detectLanguage(),
-        fallbackLng: 'en',
-        resources: resources,
-        debug: true
-    });
-} else {
-    // compat with an app that already initializes i18next
-    for (const lang in resources) {
-        i18next.addResourceBundle(lang, 'translation', resources[lang]['translation'], true);
+    for (const lang of navigator.languages) {
+        const shortLang = lang.split('-')[0];
+        if (resources[shortLang]) return shortLang;
     }
+    return 'en';
 }
 // }}}
 // }}}

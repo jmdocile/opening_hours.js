@@ -1,4 +1,4 @@
-/* global i18next, getUserSelectTranslateHTMLCode, Evaluate */
+/* global i18next, getUserSelectTranslateHTMLCode, Evaluate, permalink, toggle, EX */
 
 // Configuration constants (need to be global for use in inline scripts in index.html)
 // eslint-disable-next-line no-var
@@ -47,10 +47,11 @@ function generateTimeButtons() {
         if (buttons[i][1] !== 0) {
             for (let x = -1; x <= 1; x += 2) {
                 const step = x * buttons[i][1];
-                html += `<button type="button" onclick="Evaluate(${buttons[i][0] * step})">${step > 0 ? '+' : ''}${step} ${i18next.t(buttons[i][2])}</button>${x === 1 ? ' ' : ''}`;
+                const offset = buttons[i][0] * step;
+                html += `<button type="button" class="time-btn" data-offset="${offset}">${step > 0 ? '+' : ''}${step} ${i18next.t(buttons[i][2])}</button>${x === 1 ? ' ' : ''}`;
             }
         } else {
-            html += `<button type="button" onclick="Evaluate(0, true)">${i18next.t(buttons[i][2])}</button>`;
+            html += `<button type="button" class="time-btn time-btn-now">${i18next.t(buttons[i][2])}</button>`;
         }
     }
     return html;
@@ -84,12 +85,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (dateTimeInputs) {
         dateTimeInputs.innerHTML = `
             <span class="hd">${i18next.t('words.date')} ${i18next.t('words.and')} ${i18next.t('words.time.time')}:</span>
-            <input type="number" step="1" class="input__year" id="yyyy" name="yyyy" value="2013" onblur="Evaluate()" />-
-            <select id="mm" name="mm" onchange="Evaluate()">${generateMonthOptions()}</select>-
-            <input type="number" step="1" min="1" max="31" id="dd" size="3" name="dd" value="02" onblur="Evaluate()"/>
-            &#160;
+            <input type="number" step="1" class="input__year" id="yyyy" name="yyyy" value="2013" onblur="Evaluate()" />-<select id="mm" name="mm" onchange="Evaluate()">${generateMonthOptions()}</select>-<input type="number" step="1" min="1" max="31" id="dd" size="3" name="dd" value="02" onblur="Evaluate()"/>
+            &nbsp;
             <input type="number" step="1" min="0" max="23" name="HH" value="22" onblur="Evaluate()" />:<input type="number" step="1" min="0" max="59" name="MM" value="21" onblur="Evaluate()" />
-            &#160;
+            &nbsp;
             <input size="10" name="wday" readonly="readonly" />
             <input size="3"  name="week" readonly="readonly" />
         `;
@@ -118,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (modeSelector) {
         modeSelector.innerHTML = `
             <span class="hd">${i18next.t('words.mode')}: </span>
-            <select id="mode" name="name" onchange="Evaluate()" style="max-width:100%;">
+            <select id="mode" name="mode" onchange="Evaluate()" style="max-width:100%;">
                 ${generateModeOptions()}
             </select>
         `;
@@ -181,8 +180,43 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.parentElement.lang = i18next.language;
     }
 
+    // Set up event listeners
+    setupEventListeners();
+
     // Trigger initial evaluation only if the form exists
     if (document.forms.check) {
         Evaluate();
     }
 });
+
+// Set up event listeners using event delegation (only for repetitive handlers)
+function setupEventListeners() {
+    const userDiv = document.getElementById('user');
+
+    userDiv.addEventListener('click', (e) => {
+        // Examples toggle
+        if (e.target.closest('#examples-toggle')) {
+            e.preventDefault();
+            toggle('user_examples');
+        }
+        // Example links (60+ handlers → 1 listener)
+        else if (e.target.closest('.example-link')) {
+            e.preventDefault();
+            EX(e.target.closest('.example-link'));
+        }
+        // Time buttons
+        else if (e.target.closest('.time-btn')) {
+            const btn = e.target.closest('.time-btn');
+            if (btn.classList.contains('time-btn-now')) {
+                Evaluate(0, true);
+            } else {
+                Evaluate(parseInt(btn.dataset.offset, 10));
+            }
+        }
+        // Permalink
+        else if (e.target.closest('#permalink-link')) {
+            e.preventDefault();
+            permalink();
+        }
+    });
+}

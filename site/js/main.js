@@ -1,14 +1,7 @@
 // Import all required modules
 import i18next from '../../node_modules/i18next/dist/esm/i18next.bundled.js';
 import { resources, detectLanguage, getUserSelectTranslateHTMLCode, changeLanguage } from './i18n-resources.js';
-import { Evaluate, EX, josm, toggle, dateAtWeek, newValue } from './helpers.js';
-import { YoHoursChecker } from './yohours_model.js';
-
-window.YoHoursChecker = new YoHoursChecker();
-window.changeLanguage = changeLanguage;
-window.Evaluate = Evaluate;
-window.EX = EX;
-window.updateTimeButtonLabels = updateTimeButtonLabels;
+import { Evaluate, EX, josm, toggle, dateAtWeek, newValue, currentDateTime } from './helpers.js';
 
 // Configuration constants
 window.default_lat = 48.7769;
@@ -69,14 +62,14 @@ export function updateTimeButtonLabels(date) {
 
     function u2(v) { return v >= 0 && v < 10 ? `0${v}` : v; }
 
-    if (yearLabel) yearLabel.textContent = window.currentDateTime.year;
+    if (yearLabel) yearLabel.textContent = currentDateTime.year;
     if (monthLabel) {
-        monthLabel.textContent = new Date(2018, window.currentDateTime.month, 1)
+        monthLabel.textContent = new Date(2018, currentDateTime.month, 1)
             .toLocaleString(i18next.language, {month: 'short'});
     }
-    if (dayLabel) dayLabel.textContent = u2(window.currentDateTime.day);
-    if (hourLabel) hourLabel.textContent = u2(window.currentDateTime.hour);
-    if (minuteLabel) minuteLabel.textContent = u2(window.currentDateTime.minute);
+    if (dayLabel) dayLabel.textContent = u2(currentDateTime.day);
+    if (hourLabel) hourLabel.textContent = u2(currentDateTime.hour);
+    if (minuteLabel) minuteLabel.textContent = u2(currentDateTime.minute);
 
     if (weekLabel && date) {
         weekLabel.textContent = `W${u2(dateAtWeek(date, 0) + 1)}`;
@@ -96,15 +89,6 @@ function generateModeOptions() {
     return options;
 }
 
-// Initialize global date/time state
-window.currentDateTime = {
-    year: 2013,
-    month: 0,  // January (0-indexed)
-    day: 2,
-    hour: 22,
-    minute: 21
-};
-
 // Populate all dynamic content with localized text
 function initializeUI() {
     // Page title
@@ -121,8 +105,8 @@ function initializeUI() {
     // Position inputs
     document.getElementById('position-inputs').innerHTML = `
         <h2>${i18next.t('words.position')}</h2>
-        ${i18next.t('words.lat')} <input type="number" class="input__coordinate" id="lat" value="${default_lat}" />
-        ${i18next.t('words.lon')} <input type="number" class="input__coordinate" id="lon" value="${default_lon}" />
+        ${i18next.t('words.lat')} <input type="number" class="input__coordinate" id="lat" value="${window.default_lat}" />
+        ${i18next.t('words.lon')} <input type="number" class="input__coordinate" id="lon" value="${window.default_lon}" />
         ${i18next.t('words.country')} <input size="3" id="cc" readonly="readonly" />
         ${i18next.t('words.state')} <input size="20" id="state" readonly="readonly" /><br />
     `;
@@ -189,7 +173,7 @@ function initializeUI() {
 
     // Year ranges documentation link
     const yearRangesDocu = document.getElementById('year-ranges-docu');
-    yearRangesDocu.href = `${repo_url}/tree/main#year-ranges`;
+    yearRangesDocu.href = `${window.repo_url}/tree/main#year-ranges`;
     yearRangesDocu.textContent = i18next.t('words.docu');
 
     // Example hints
@@ -201,7 +185,7 @@ function initializeUI() {
     // Footer content
     document.getElementById('footer').innerHTML = i18next.t('texts.more information',
         { href: 'https://wiki.openstreetmap.org/wiki/Key:opening_hours' }) + '<br />' +
-        i18next.t('texts.this website', { url: repo_url, hoster: 'GitHub' });
+        i18next.t('texts.this website', { url: window.repo_url, hoster: 'GitHub' });
 
     document.body.parentElement.lang = i18next.language;
 }
@@ -277,17 +261,15 @@ function setupEventListeners() {
                 Evaluate(0, true);
             } else if (btn.hasAttribute('data-month-offset')) {
                 // Month: use Date to handle day overflow automatically
-                const dt = window.currentDateTime;
+                const dt = currentDateTime;
                 const targetMonth = dt.month + parseInt(btn.dataset.monthOffset, 10);
                 const lastDay = new Date(dt.year, targetMonth + 1, 0).getDate();
                 const newDate = new Date(dt.year, targetMonth, Math.min(dt.day, lastDay), dt.hour, dt.minute);
-                window.currentDateTime = {
-                    year: newDate.getFullYear(),
-                    month: newDate.getMonth(),
-                    day: newDate.getDate(),
-                    hour: newDate.getHours(),
-                    minute: newDate.getMinutes()
-                };
+                currentDateTime.year = newDate.getFullYear();
+                currentDateTime.month = newDate.getMonth();
+                currentDateTime.day = newDate.getDate();
+                currentDateTime.hour = newDate.getHours();
+                currentDateTime.minute = newDate.getMinutes();
                 Evaluate();
             } else {
                 Evaluate(parseInt(btn.dataset.offset, 10));
@@ -340,7 +322,7 @@ function setupEventListeners() {
             if (field === 'year') {
                 const year = parseInt(value, 10);
                 if (!isNaN(year) && year >= 1970 && year <= 2100) {
-                    window.currentDateTime.year = year;
+                    currentDateTime.year = year;
                     Evaluate();
                 } else {
                     updateTimeButtonLabels();
@@ -348,7 +330,7 @@ function setupEventListeners() {
             } else if (field === 'day') {
                 const day = parseInt(value, 10);
                 if (!isNaN(day) && day >= 1 && day <= 31) {
-                    window.currentDateTime.day = day;
+                    currentDateTime.day = day;
                     Evaluate();
                 } else {
                     updateTimeButtonLabels();
@@ -356,7 +338,7 @@ function setupEventListeners() {
             } else if (field === 'hour') {
                 const hour = parseInt(value, 10);
                 if (!isNaN(hour) && hour >= 0 && hour <= 23) {
-                    window.currentDateTime.hour = hour;
+                    currentDateTime.hour = hour;
                     Evaluate();
                 } else {
                     updateTimeButtonLabels();
@@ -364,7 +346,7 @@ function setupEventListeners() {
             } else if (field === 'minute') {
                 const minute = parseInt(value, 10);
                 if (!isNaN(minute) && minute >= 0 && minute <= 59) {
-                    window.currentDateTime.minute = minute;
+                    currentDateTime.minute = minute;
                     Evaluate();
                 } else {
                     updateTimeButtonLabels();
@@ -383,11 +365,6 @@ await i18next.init({
     resources: resources,
     debug: false
 });
-
-// Expose these for index.html access if needed
-const default_lat = window.default_lat;
-const default_lon = window.default_lon;
-const repo_url = window.repo_url;
 
 // Update specification_url after i18next is ready
 window.specification_url = `https://wiki.openstreetmap.org/wiki/${i18next.language === 'de' ? 'DE:' : ''}Key:opening_hours/specification`;

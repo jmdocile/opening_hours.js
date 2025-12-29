@@ -2,9 +2,20 @@
 import i18next from '../../node_modules/i18next/dist/esm/i18next.bundled.js';
 import { OpeningHoursTable } from './opening_hours_table.js';
 import { mapCountryToLanguage } from './countryToLanguageMapping.js';
+import { updateTimeButtonLabels } from './main.js';
+import { YoHoursChecker } from './yohours_model.js';
 
 // Access global variables set by main.js or UMD scripts
 const { opening_hours, default_lat, default_lon, specification_url } = window;
+
+// Export date/time state
+export let currentDateTime = {
+    year: 2013,
+    month: 0,  // January (0-indexed)
+    day: 2,
+    hour: 22,
+    minute: 21
+};
 
 /* Constants {{{ */
 const nominatim_api_url = 'https://nominatim.openstreetmap.org/reverse';
@@ -345,8 +356,8 @@ function generateJosmHTML(value) {
 }
 
 function generateYoHoursHTML(value, crashed) {
-    // YoHoursChecker is set by main.js on window
-    if (!crashed && window.YoHoursChecker && window.YoHoursChecker.canRead(value)) {
+    const yoHoursChecker = new YoHoursChecker();
+    if (!crashed && yoHoursChecker.canRead(value)) {
         const yohoursUrl = `https://projets.pavie.info/yohours/?oh=${value}`;
         return `<div class="action-description">${i18next.t('texts.yohours description')}</div>` +
                `<div><a href="${yohoursUrl}" target="_blank">YoHours</a></div>`;
@@ -435,16 +446,16 @@ export async function Evaluate (offset = 0, reset) {
     date = reset
         ? new Date()
         : new Date(
-            window.currentDateTime.year,
-            window.currentDateTime.month,
-            window.currentDateTime.day,
-            window.currentDateTime.hour,
-            window.currentDateTime.minute,
+            currentDateTime.year,
+            currentDateTime.month,
+            currentDateTime.day,
+            currentDateTime.hour,
+            currentDateTime.minute,
             offset
         );
 
-    // Update global state
-    window.currentDateTime = {
+    // Update module state
+    currentDateTime = {
         year: date.getFullYear(),
         month: date.getMonth(),
         day: date.getDate(),
@@ -453,9 +464,7 @@ export async function Evaluate (offset = 0, reset) {
     };
 
     // Update time button labels with current values
-    if (typeof window.updateTimeButtonLabels === 'function') {
-        window.updateTimeButtonLabels(date);
-    }
+    updateTimeButtonLabels(date);
 
     // Cache DOM elements
     const showTimeTable = document.getElementById('show_time_table');
@@ -615,7 +624,7 @@ window.onload = function () {
     if (typeof params['DATE'] !== 'undefined') {
         try {
             const loadedDate = new Date(parseInt(params['DATE']));
-            window.currentDateTime = {
+            currentDateTime = {
                 year: loadedDate.getFullYear(),
                 month: loadedDate.getMonth(),
                 day: loadedDate.getDate(),

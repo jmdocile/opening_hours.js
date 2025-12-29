@@ -14,17 +14,17 @@ const evaluation_tool_colors = {
 // load nominatim_data in JOSM {{{
 // Using a different way to load stuff in JOSM than https://github.com/rurseekatze/OpenLinkMap/blob/master/js/small.js
 // prevent josm remote plugin of showing message
-// FIXME: Warning in console. Encoding stuff.
 // eslint-disable-next-line no-unused-vars
 function josm(url_param) {
-    const xhr = new XMLHttpRequest();
-    xhr.open('GET', `http://localhost:8111/${url_param}`, true);      // true makes this call asynchronous
-    xhr.onreadystatechange = function () {    // need eventhandler since our call is async
-        if ( xhr.status !== 200 ) {
+    fetch(`http://localhost:8111/${url_param}`)
+        .then(response => {
+            if (!response.ok) {
+                alert(i18next.t('texts.JOSM remote conn error'));
+            }
+        })
+        .catch(() => {
             alert(i18next.t('texts.JOSM remote conn error'));
-        }
-    };
-    xhr.send(null);
+        });
 }
 // }}}
 

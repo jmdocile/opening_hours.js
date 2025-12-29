@@ -244,19 +244,19 @@ h1 {
         font-size: 0.9rem;
     }
 
-    /* Hero nicht sticky auf Mobile - nimmt zu viel Platz */
+    /* Hero section sticky disable on Mobile */
     #value-input-section {
         position: static;
     }
 
-    /* Touch-Targets vergrößern auf Mobile */
+    /* Touch-Targets larger on Mobile */
     .copy-btn,
     .input-btn {
         min-height: 44px;
         padding: 0.5rem 0.6rem;
     }
 
-    /* Date-Time Grid vertikal auf Mobile */
+    /* Date-Time Grid vertical on Mobile */
     #date-time-inputs {
         grid-auto-flow: row;
         grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
@@ -431,7 +431,12 @@ section {
     font-weight: 500;
 }
 
-.copy-btn:hover {
+.copy-permalink-btn {
+    background-color: var(--bg-input);
+}
+
+.copy-btn:hover,
+.copy-permalink-btn:hover {
     background: #6c94c4;
     color: #fff;
     transform: translateY(-1px);
@@ -499,7 +504,6 @@ div.warning_error_message {
 span.year    { background: #ff851b } /* Orange */
 span.week    { background: #ffdc00 } /* Yellow */
 span.month   { background: #88ff88 }
-span.weekday { background: #ff9999 }
 span.time    { background: #88ccff }
 span.rule_separator    { background: #3d9970 } /* Olive */
 /* span.one_rule { text-decoration: underline } */
@@ -553,6 +557,13 @@ h3 {
 #value-input-section .input-btn:hover {
     background: #fff;
     border-color: rgba(255, 255, 255, 0.9);
+}
+
+/* Override for copy button to have consistent hover color */
+#value-input-section .copy-input-btn:hover {
+    background: #6c94c4;
+    color: #fff;
+    border-color: #6c94c4;
 }
 
 #value-input-section .clear-input-btn:hover {
@@ -804,4 +815,369 @@ button:active {
 
 #time-btn-value-year {
     min-width: 4ch;
+}
+
+/* Matching rule card */
+.matching-rule-card {
+    background: var(--bg-section);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 1px 3px var(--shadow-sm);
+}
+
+.status-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+}
+
+.matching-rule-value {
+    font-family: 'Courier New', monospace;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+}
+
+/* Prettified value section */
+.prettified-value-section {
+    margin: 1rem 0;
+}
+
+.prettified-value-section p {
+    margin-bottom: 0.5rem;
+}
+
+.prettified-value-container {
+    display: flex;
+    align-items: stretch;
+    gap: 0.5rem;
+    background: var(--bg-section);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.prettified-value-display {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.95rem;
+    background: var(--bg-input);
+    cursor: pointer;
+    word-break: break-all;
+    transition: background-color 0.2s;
+}
+
+.prettified-value-display:hover {
+    background: var(--bg-action);
+}
+
+/* Copy button in prettified value section */
+.copy-prettified-btn {
+    padding: 0.75rem 1rem;
+    background: var(--bg-section);
+    border: none;
+    border-left: 1px solid var(--border-color);
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.copy-prettified-btn::after {
+    content: attr(title);
+    font-size: 0.85rem;
+    opacity: 0.8;
+}
+
+.copy-prettified-btn:hover {
+    background: #6c94c4;
+    color: #fff;
+}
+
+.copy-prettified-btn:hover::after {
+    opacity: 1;
+}
+
+/* Status info paragraphs */
+.status-info {
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 0.5rem 0;
+    border-left: 4px solid;
+    background: var(--bg-section);
+    font-size: 1.05rem;
+    line-height: 1.6;
+}
+
+/* Time jump button (for "Opens again", "Closes again") */
+.time-jump-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.8rem;
+    margin-left: 0.5rem;
+    background: var(--bg-action);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.time-jump-btn:hover {
+    background: #6c94c4;
+    color: #fff;
+    border-color: #6c94c4;
+    transform: translateX(2px);
+}
+
+.time-jump-btn::before {
+    content: '⏭';
+    font-size: 0.85rem;
+}
+
+.time-jump-btn::after {
+    content: '↗';
+    font-size: 0.75rem;
+    opacity: 0.7;
+}
+
+.status-info.open {
+    border-left-color: #28a745;
+    background: linear-gradient(to right, rgba(40, 167, 69, 0.08), var(--bg-section));
+}
+
+.status-info.closed {
+    border-left-color: #dc3545;
+    background: linear-gradient(to right, rgba(220, 53, 69, 0.08), var(--bg-section));
+}
+
+.status-info.unknown {
+    border-left-color: #ffc107;
+    background: linear-gradient(to right, rgba(255, 193, 7, 0.08), var(--bg-section));
+}
+
+.status-info a.time-jump {
+    color: var(--text-primary);
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    cursor: pointer;
+}
+
+.status-info a.time-jump:hover {
+    text-decoration-style: solid;
+}
+
+/* Status reason (comment/holiday) */
+.status-reason {
+    margin: -0.5rem 0 0.8rem 1rem;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    opacity: 0.85;
+}
+
+/* Next change highlight */
+.status-info.next-change {
+    margin-top: 0.8rem;
+    padding: 0.6rem 1rem;
+    background: var(--bg-section);
+    border-radius: 6px;
+    border-left: 3px solid;
+}
+
+.status-info.next-change.opened {
+    border-left-color: #28a745;
+}
+
+.status-info.next-change.closed {
+    border-left-color: #dc3545;
+}
+
+/* Upcoming Changes Timeline */
+.upcoming-changes {
+    margin: 1.5rem 0;
+    padding: 0;
+    background: var(--bg-section);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.upcoming-changes summary {
+    padding: 1rem 1.2rem;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--text-heading);
+    font-size: 0.95rem;
+    user-select: none;
+}
+
+.upcoming-changes summary:hover {
+    background: var(--bg-body);
+}
+
+.upcoming-changes[open] summary {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.upcoming-changes .timeline-hint {
+    margin: 0;
+    padding: 0.8rem 1.2rem;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    opacity: 0.7;
+    font-style: italic;
+    background: var(--bg-body);
+}
+
+.upcoming-changes .timeline {
+    list-style: none;
+    padding: 0.5rem 1.2rem 1.2rem;
+    margin: 0;
+}
+
+.timeline-item {
+    display: flex;
+    align-items: center;
+    padding: 0.6rem 0.8rem;
+    margin-bottom: 0.5rem;
+    background: var(--bg-body);
+    border-radius: 6px;
+    border-left: 3px solid;
+}
+
+.timeline-item:last-child {
+    margin-bottom: 0;
+}
+
+.timeline-item.opened {
+    border-left-color: #28a745;
+    background: linear-gradient(to right, rgba(40, 167, 69, 0.05), var(--bg-body));
+}
+
+.timeline-item.closed {
+    border-left-color: #dc3545;
+    background: linear-gradient(to right, rgba(220, 53, 69, 0.05), var(--bg-body));
+}
+
+/* Boundary-only items (no state change) are more subtle */
+.timeline-item.boundary-only {
+    opacity: 0.6;
+    border-left-style: dashed;
+}
+
+.timeline-icon {
+    font-size: 1rem;
+    margin-right: 0.8rem;
+    min-width: 20px;
+    text-align: center;
+}
+
+.timeline-time {
+    font-weight: 600;
+    color: var(--text-heading);
+    min-width: 120px;
+    margin-right: 0.8rem;
+}
+
+.timeline-arrow {
+    color: var(--text-primary);
+    opacity: 0.5;
+    margin-right: 0.8rem;
+}
+
+.timeline-state {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.timeline-comment {
+    margin-left: 0.5rem;
+    font-style: italic;
+    opacity: 0.8;
+    font-size: 0.95rem;
+}
+
+/* Responsive adjustments for timeline */
+@media (max-width: 768px) {
+    .timeline-item {
+        flex-wrap: wrap;
+        padding: 0.5rem;
+    }
+    
+    .timeline-time {
+        min-width: 100px;
+        font-size: 0.9rem;
+    }
+    
+    .timeline-comment {
+        width: 100%;
+        margin-left: 28px;
+        margin-top: 0.3rem;
+    }
+}
+
+/* Footer */
+#footer {
+    margin-top: 4rem;
+    padding: 2.5rem 2rem;
+    border-top: 3px solid var(--border-color);
+    background: linear-gradient(to bottom, var(--bg-section), var(--bg-body));
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    text-align: center;
+}
+
+#footer p {
+    margin: 0.8rem auto;
+    opacity: 0.85;
+    max-width: 900px;
+    line-height: 1.6;
+}
+
+#footer a {
+    color: var(--text-primary);
+    text-decoration: underline;
+    text-decoration-style: dotted;
+}
+
+#footer a:hover {
+    text-decoration-style: solid;
+    color: #6c94c4;
+}
+
+@media (prefers-color-scheme: dark) {
+    #footer {
+        border-top-color: var(--border-color);
+        background: linear-gradient(to bottom, var(--bg-section), var(--bg-body));
+    }
+
+    #show_warnings_or_errors {
+        background-color: var(--bg-section);
+        border-color: var(--border-color);
+        color: darkslategray;
+    }
+
+    .example-link {
+        color: #6c94c4;
+        text-decoration: underline;
+        text-decoration-style: dotted;
+        text-decoration-color: rgba(108, 148, 196, 0.4);
+    }
+
+    .example-link:hover {
+        color: #8bb4e0;
+        text-decoration-style: solid;
+        text-decoration-color: #8bb4e0;
+    }
 }

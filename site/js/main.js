@@ -162,8 +162,8 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.title = i18next.t('texts.' + key);
     });
 
-    // Copy button handlers for all copy buttons
-    document.querySelectorAll('.copy-btn').forEach(btn => {
+    // Copy button handlers for permalink copy buttons
+    document.querySelectorAll('.copy-permalink-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             const targetId = this.getAttribute('data-target');
             const targetLink = document.getElementById(targetId);
@@ -224,6 +224,39 @@ document.addEventListener('DOMContentLoaded', () => {
 function setupEventListeners() {
     const main = document.getElementById('user');
 
+    // Use mousedown instead of click for prettified value elements
+    // This prevents interference with browser's text selection behavior
+    main.addEventListener('mousedown', (e) => {
+        // Prettified value display (code element)
+        if (e.target.closest('.prettified-value-display')) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            const code = e.target.closest('.prettified-value-display');
+            newValue(code.dataset.value);
+        }
+        // Copy button for prettified value
+        else if (e.target.closest('.copy-prettified-btn')) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            const btn = e.target.closest('.copy-prettified-btn');
+            navigator.clipboard.writeText(btn.dataset.value).catch(() => {});
+        }
+        // Copy prettified value link
+        else if (e.target.closest('.copy-prettified-value')) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            const link = e.target.closest('.copy-prettified-value');
+            newValue(link.dataset.value);
+        }
+        // Time jump links/buttons (from opening_hours_table.js)
+        else if (e.target.closest('.time-jump, .time-jump-btn')) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            const link = e.target.closest('.time-jump, .time-jump-btn');
+            Evaluate(parseInt(link.dataset.offset, 10), false);
+        }
+    });
+
     main.addEventListener('click', (e) => {
         // Examples toggle
         if (e.target.closest('#examples-toggle')) {
@@ -265,17 +298,6 @@ function setupEventListeners() {
             e.preventDefault();
             const link = e.target.closest('.josm-link');
             josm(link.dataset.url);
-        }
-        // Time jump links (from opening_hours_table.js)
-        else if (e.target.closest('.time-jump')) {
-            e.preventDefault();
-            const link = e.target.closest('.time-jump');
-            Evaluate(parseInt(link.dataset.offset, 10), false);
-        }
-        // Prettified value input
-        else if (e.target.closest('.prettified-value')) {
-            const input = e.target.closest('.prettified-value');
-            newValue(input.dataset.value);
         }
     });
 

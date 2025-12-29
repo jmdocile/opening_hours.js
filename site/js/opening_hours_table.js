@@ -8,6 +8,10 @@ const OpeningHoursTable = {
     months:   ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'],
     weekdays: ['su', 'mo', 'tu', 'we', 'th', 'fr', 'sa'],
 
+    getLocalizedWeekday(date) {
+        return date.toLocaleString(i18next.language, { weekday: 'short' });
+    },
+
     formatdate (now, nextchange, from) {
         const now_daystart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         const nextdays = (nextchange.getTime() - now_daystart.getTime()) / 1000 / 60 / 60 / 24;
@@ -99,34 +103,35 @@ const OpeningHoursTable = {
             this.pad(date.getSeconds())}`;
     },
 
-    drawTable (it, date_today, has_next_change) {
+    drawTable (it, date_today, has_next_change, evalDate) {
         date_today = new Date(date_today);
         date_today.setHours(0, 0, 0, 0);
 
         const date = new Date(date_today);
-        // date.setDate(date.getDate() - date.getDay() + 7);
         date.setDate(date.getDate() - date.getDay() - 1); // start at begin of the week
 
-        const table = [];
+        // Calculate current time position for "now" marker (percentage of day)
+        // Use evalDate instead of new Date() to show the evaluation time, not browser time
+        const now = evalDate || new Date();
+        const nowPercent = ((now.getHours() * 60 + now.getMinutes()) / (24 * 60)) * 100;
+
+        const tableData = [];
 
         for (let row = 0; row < 7; row++) {
             date.setDate(date.getDate() + 1);
-            // if (date.getDay() === date_today.getDay()) {
-            //     date.setDate(date.getDate()-7);
-            // }
 
             it.setDate(date);
             let is_open      = it.getState();
             let unknown      = it.getUnknown();
-            let state_string = it.getStateString(false);
+            let state_string = it.getStateString(true);
             let prevdate = date;
             let curdate  = date;
-            // console.log(state_string, is_open, unknown, date.toString());
 
-            table[row] = {
+            const rowData = {
                 date: new Date(date),
-                times: '',
-                text: []
+                times: [],
+                text: [],
+                isToday: date.getDay() === date_today.getDay()
             };
 
             while (has_next_change && it.advance() && curdate.getTime() - date.getTime() < 24 * 60 * 60 * 1000) {
@@ -142,55 +147,89 @@ const OpeningHoursTable = {
                 fr *= 100 / 1000 / 60 / 60 / 24;
                 to *= 100 / 1000 / 60 / 60 / 24;
 
-                table[row].times += `<div class="timebar ${is_open ? 'open' : unknown ? 'unknown' : 'closed'
-                    }" style="width:${to - fr}%"></div>`;
-                if (is_open || unknown) {
-                    let text = `${i18next.t(`words.${state_string}`)} ${
-                        i18next.t('words.from')} ${this.printTime(prevdate)
-                        } ${i18next.t('words.to')} `;
-                    if (prevdate.getDay() !== curdate.getDay()) {
-                        text += '24:00';
-                    } else {
-                        text += this.printTime(curdate);
-                    }
+                const stateClass = is_open ? 'open' : (unknown ? 'unknown' : 'closed');
+                // Always use 24h format with HH:MM
+                const timeFrom = `${String(prevdate.getHours()).padStart(2, '0')}:${String(prevdate.getMinutes()).padStart(2, '0')}`;
+                const timeToDate = prevdate.getDay() !== curdate.getDay() ? null : curdate;
+                const timeTo = timeToDate
+                    ? `${String(timeToDate.getHours()).padStart(2, '0')}:${String(timeToDate.getMinutes()).padStart(2, '0')}`
+                    : '24:00';
 
-                    table[row].text.push(text);
+                // Use current state_string for this period (before advancing)
+                const currentStateString = state_string;
+                const tooltip = `${i18next.t(`words.${currentStateString}`)}: ${timeFrom} - ${timeTo}`;
+
+                rowData.times.push(
+                    `<div class="timebar ${stateClass}" style="width:${to - fr}%" title="${tooltip}"></div>`
+                );
+
+                if (is_open || unknown) {
+                    const text = `${i18next.t(`words.${currentStateString}`)} ${i18next.t('words.from')} ${timeFrom} ${i18next.t('words.to')} ${timeTo}`;
+                    rowData.text.push(text);
                 }
 
                 prevdate = curdate;
                 is_open      = it.getState();
                 unknown      = it.getUnknown();
-                state_string = it.getStateString(false);
+                state_string = it.getStateString(true);
             }
 
-            if (!has_next_change && table[row].text.length === 0) { // 24/7
-                table[row].times += `<div class="timebar ${is_open ? 'open' : unknown ? 'unknown' : 'closed'
-                    }" style="width:100%"></div>`;
+            if (!has_next_change && rowData.text.length === 0) { // 24/7
+                const stateClass = is_open ? 'open' : (unknown ? 'unknown' : 'closed');
+                const tooltip = is_open ? `${i18next.t('words.open')}: 00:00 - 24:00` : '';
+                rowData.times.push(
+                    `<div class="timebar ${stateClass}" style="width:100%" title="${tooltip}"></div>`
+                );
                 if (is_open) {
-                    table[row].text.push(`${i18next.t('words.open')} 00:00 ${i18next.t('words.to')} 24:00`);
+                    rowData.text.push(`${i18next.t('words.open')} 00:00 ${i18next.t('words.to')} 24:00`);
                 }
             }
+
+            tableData.push(rowData);
         }
 
-        let output = '';
-        output += '<table>';
-        for (const row in table) {
-            const today = table[row].date.getDay() === date_today.getDay();
-            const endweek = (table[row].date.getDay() + 1) % 7 === date_today.getDay();
-            const cl = today ? ' class="today"' : (endweek ? ' class="endweek"' : '');
+        // Build table HTML
+        const headerRow = `
+            <tr class="time-scale">
+                <td></td>
+                <td>
+                    <div class="scale-labels">
+                        <span>0h</span>
+                        <span>6h</span>
+                        <span>12h</span>
+                        <span>18h</span>
+                        <span>24h</span>
+                    </div>
+                </td>
+                <td></td>
+            </tr>`;
 
-            // if (today && date_today.getDay() !== 1)
-            //     output += '<tr class="separator"><td colspan="3"></td></tr>';
-            output += `<tr${cl}><td class="day ${table[row].date.getDay() % 6 === 0 ? 'weekend' : 'workday'}">`;
-            output += this.printDate(table[row].date);
-            output += '</td><td class="times">';
-            output += table[row].times;
-            output += '</td><td>';
-            output += table[row].text.join(', ') || '&nbsp;';
-            output += '</td></tr>';
-        }
-        output += '</table>';
-        return output;
+        const rows = tableData.map(row => {
+            const isToday = row.date.getDay() === date_today.getDay();
+            const isEndWeek = (row.date.getDay() + 1) % 7 === date_today.getDay();
+            const rowClass = isToday ? ' class="today"' : (isEndWeek ? ' class="endweek"' : '');
+            const dayClass = row.date.getDay() % 6 === 0 ? 'weekend' : 'workday';
+            const weekdayName = this.getLocalizedWeekday(row.date);
+
+            // Add "now" marker for today
+            const nowMarker = isToday
+                ? `<div class="now-marker" style="left:${nowPercent}%" title="${i18next.t('words.time.now')}"></div>`
+                : '';
+
+            return `<tr${rowClass}>
+                <td class="day ${dayClass}">
+                    <span class="weekday">${weekdayName}</span>
+                    <span class="date">${this.printDate(row.date)}</span>
+                </td>
+                <td class="times">
+                    ${row.times.join('')}
+                    ${nowMarker}
+                </td>
+                <td class="description">${row.text.join(', ') || '&nbsp;'}</td>
+            </tr>`;
+        }).join('');
+
+        return `<table class="opening-hours-table">${headerRow}${rows}</table>`;
     },
 
     getReadableState (startString, endString, oh, past) {
@@ -201,43 +240,78 @@ const OpeningHoursTable = {
         return `${startString + output + endString}.`;
     },
 
-    drawTableAndComments (oh, it) {
+    drawTableAndComments (oh, it, evalDate) {
         const prevdate          = it.getDate();
         const unknown           = it.getUnknown();
+        const currentState      = it.getState();
         const state_string_past = it.getStateString(true);
         const comment           = it.getComment();
         const has_next_change   = it.advance();
 
         let output = '';
 
-        output += `<p class="${state_string_past}">${
+        // 1. Current status
+        output += `<p class="${state_string_past} status-info">${
             i18next.t(`texts.${state_string_past} ${has_next_change ? 'now' : 'always'}`)}`;
-        if (typeof comment !== 'undefined') {
-            if (unknown) {
-                output += i18next.t('texts.depends on', {comment: `"${comment}"`});
-            } else {
-                output += `, ${i18next.t('words.comment')}: "${comment}"`;
-            }
+        if (unknown) {
+            output += i18next.t('texts.depends on', {comment: `"${comment}"`});
         }
         output += '</p>';
 
-        if (has_next_change) {
-            let time_diff = it.getDate().getTime() - prevdate.getTime();
-            time_diff /= 1000;
-            time_diff += 60; // go one second after
-            output += `<p class="${it.getStateString(true)}">${
-                i18next.t(`texts.will ${it.getStateString(false)}`, {
-                    timestring: this.formatdate(prevdate, it.getDate(), true),
-                    href: `#" class="time-jump" data-offset="${time_diff}`,
-                    comment: typeof it.getComment() === 'string' || typeof comment === 'string'
-                        ? `, ${i18next.t('words.comment')}: ${typeof it.getComment() === 'string'
-                            ? `"${it.getComment()}"`
-                            : i18next.t('words.undefined')}`
-                        : ''
-                })}</p>`;
+        // 2. Show reason (comment) if present and not unknown
+        if (typeof comment !== 'undefined' && !unknown) {
+            output += `<p class="status-reason">↳ ${i18next.t('texts.reason')}: ${comment}</p>`;
         }
 
-        output += this.drawTable(it, prevdate, has_next_change);
+        // 3. Find next REAL state change (not just interval boundary)
+        if (has_next_change) {
+            let nextRealChangeDate = null;
+            let nextRealStateString = null;
+            let time_diff = 0;
+
+            // Check if immediate next change is a real state change
+            if (it.getState() !== currentState) {
+                nextRealChangeDate = it.getDate();
+                nextRealStateString = it.getStateString(false);
+                time_diff = (nextRealChangeDate.getTime() - prevdate.getTime()) / 1000 + 60;
+            } else {
+                // Keep advancing until we find a real state change
+                // Limit iterations to prevent infinite loops with complex values
+                const maxIterations = 1000;
+                let iterations = 0;
+                while (it.advance() && iterations < maxIterations) {
+                    iterations++;
+                    if (it.getState() !== currentState) {
+                        nextRealChangeDate = it.getDate();
+                        nextRealStateString = it.getStateString(false);
+                        time_diff = (nextRealChangeDate.getTime() - prevdate.getTime()) / 1000 + 60;
+                        break;
+                    }
+                }
+            }
+
+            if (nextRealChangeDate) {
+                const timeString = this.formatdate(prevdate, nextRealChangeDate, true);
+                // Use "opens again" or "closes again" based on what will happen
+                const translationKey = nextRealStateString === 'open' ? 'texts.opens again' : 'texts.closes again';
+                const statusText = i18next.t(translationKey);
+                const buttonText = i18next.t('texts.jump to time');
+
+                const nextStateClass = nextRealStateString === 'open' ? 'opened' : 'closed';
+                output += `<p class="${nextStateClass} status-info next-change">
+                    ${statusText}: ${timeString}
+                    <a href="#" class="time-jump-btn" data-offset="${time_diff}" title="${buttonText}">
+                        ${buttonText}
+                    </a>
+                </p>`;
+            }
+        }
+
+        // Add upcoming changes timeline
+        const upcomingChanges = this.generateUpcomingChanges(oh, evalDate, 5);
+        output += this.generateUpcomingChangesHTML(upcomingChanges, evalDate);
+
+        output += this.drawTable(it, prevdate, has_next_change, evalDate);
 
         if (oh.isWeekStable()) {
             output += `<p><b>${i18next.t('texts.week stable')}</b></p>`;
@@ -247,5 +321,94 @@ const OpeningHoursTable = {
 
         return output;
     },
+
+    // Generate upcoming changes timeline {{{
+    generateUpcomingChanges(oh, currentDate, maxChanges = 5) {
+        const changes = [];
+        const it = oh.getIterator(currentDate);
+        const currentState = it.getState();
+        let previousState = currentState;
+
+        // Collect next changes (all interval boundaries, not just state changes)
+        let count = 0;
+        while (count < maxChanges && it.advance()) {
+            const changeDate = it.getDate();
+            const newState = it.getState();
+            const comment = it.getComment();
+            const stateString = it.getStateString(true); // Use past form for consistency
+
+            changes.push({
+                date: changeDate,
+                state: newState,
+                stateString: stateString,
+                comment: comment,
+                isActualStateChange: previousState !== newState
+            });
+
+            previousState = newState;
+            count++;
+        }
+
+        return changes;
+    },
+
+    formatUpcomingChangeTime(currentDate, changeDate) {
+        const now_daystart = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
+        const change_daystart = new Date(changeDate.getFullYear(), changeDate.getMonth(), changeDate.getDate());
+        const daysDiff = Math.round((change_daystart.getTime() - now_daystart.getTime()) / (1000 * 60 * 60 * 24));
+
+        // Always use 24h format with HH:MM
+        const hours = String(changeDate.getHours()).padStart(2, '0');
+        const minutes = String(changeDate.getMinutes()).padStart(2, '0');
+        const timeStr = `${hours}:${minutes}`;
+
+        if (daysDiff === 0) {
+            return `${i18next.t('words.today')} ${timeStr}`;
+        } else if (daysDiff === 1) {
+            return `${i18next.t('words.tomorrow')} ${timeStr}`;
+        } else if (daysDiff === -1) {
+            return `${i18next.t('words.yesterday')} ${timeStr}`;
+        } else {
+            // For dates further away, show date + time
+            const dateStr = changeDate.toLocaleString(i18next.language, {
+                day: 'numeric',
+                month: 'numeric',
+                year: changeDate.getFullYear() !== currentDate.getFullYear() ? 'numeric' : undefined
+            });
+            return `${dateStr} ${timeStr}`;
+        }
+    },
+
+    generateUpcomingChangesHTML(changes, currentDate) {
+        if (changes.length === 0) return '';
+
+        let html = `<details class="upcoming-changes">
+            <summary>${i18next.t('texts.interval boundaries')}</summary>
+            <p class="timeline-hint">${i18next.t('texts.interval boundaries hint')}</p>
+            <ul class="timeline">`;
+
+        for (const change of changes) {
+            const timeStr = this.formatUpcomingChangeTime(currentDate, change.date);
+            const stateClass = change.state ? 'opened' : 'closed';
+            // Visual distinction: filled circle for real changes, empty for boundaries
+            const changeIcon = change.isActualStateChange ? '●' : '○';
+            const changeType = change.isActualStateChange ? 'state-change' : 'boundary-only';
+            const stateText = i18next.t(`words.${change.stateString}`);
+            const commentText = typeof change.comment === 'string'
+                ? ` <span class="timeline-comment">(${change.comment})</span>`
+                : '';
+
+            html += `<li class="timeline-item ${stateClass} ${changeType}">
+                <span class="timeline-icon">${changeIcon}</span>
+                <span class="timeline-time">${timeStr}</span>
+                <span class="timeline-arrow">→</span>
+                <span class="timeline-state">${stateText}</span>${commentText}
+            </li>`;
+        }
+
+        html += '</ul></details>';
+        return html;
+    },
+    // }}}
     // }}}
 };

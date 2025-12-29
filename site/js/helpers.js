@@ -9,6 +9,8 @@ const evaluation_tool_colors = {
     'warn': '#FFA500',
     'error': '#DEB887',
 };
+
+const OSM_MAX_VALUE_LENGTH = 255;
 /* }}} */
 
 // load nominatim_data in JOSM {{{
@@ -105,6 +107,183 @@ function copyToClipboard(text) {
 let lat, lon, string_lat, string_lon, nominatim;
 let date;
 
+/* Helper functions for Evaluate {{{ */
+
+function getFragmentIdentifier(selectorType) {
+    switch(selectorType) {
+        case '24/7':
+            return 'selector_sequence';
+        case 'state':
+            return 'section:rule_modifier';
+        case 'comment':
+            return 'comment';
+        default:
+            return `selector:${selectorType}`;
+    }
+}
+
+function generateRuleSeparatorHTML(ruleSeparator) {
+    return `<span title="${i18next.t('texts.rule separator ' + ruleSeparator)}" class="rule_separator">` +
+           `<a target="_blank" class="specification" href="${specification_url}#section:rule_separators">${ruleSeparator}</a></span><br>`;
+}
+
+function generateSelectorHTML(selectorType, selectorValue) {
+    const fragmentIdentifier = getFragmentIdentifier(selectorType);
+    const translationKey = selectorType.match(/(?:state|comment)/) ? 'modifier' : 'selector';
+
+    return `<span title="${i18next.t(`words.${translationKey}`, { name: selectorType })}" class="${selectorType}">` +
+           `<a target="_blank" class="specification" href="${specification_url}#${fragmentIdentifier}">${selectorValue}</a></span>`;
+}
+
+function generateValueExplanation(prettifiedValueArray) {
+    const parts = [
+        `${i18next.t('texts.prettified value for displaying')}:<br />`,
+        '<p class="value_explanation">'
+    ];
+
+    for (let nrule = 0; nrule < prettifiedValueArray[0].length; nrule++) {
+        if (nrule !== 0) {
+            const ruleSeparator = prettifiedValueArray[1][nrule][1]
+                ? ' ||'
+                : (prettifiedValueArray[1][nrule][0][0][1] === 'rule separator' ? ',' : ';');
+
+            parts.push(generateRuleSeparatorHTML(ruleSeparator));
+        }
+
+        parts.push('<span class="one_rule">');
+
+        const selectors = prettifiedValueArray[0][nrule];
+        for (let nselector = 0; nselector < selectors.length; nselector++) {
+            const selectorType = selectors[nselector][0][2];
+            const selectorValue = selectors[nselector][1];
+
+            parts.push(generateSelectorHTML(selectorType, selectorValue));
+
+            if (nselector + 1 < selectors.length) {
+                parts.push(' ');
+            }
+        }
+
+        parts.push('</span>');
+    }
+
+    parts.push('</p></div>');
+    return parts.join('');
+}
+
+function generateResultsHTML() {
+    return `
+        <div class="matching-rule-card">
+            <div class="status-label">${i18next.t('texts.MatchingRule')}</div>
+            <div class="matching-rule-value" id="matching-rule-display"></div>
+        </div>
+    `;
+}
+
+function handleDiffComparison(oh, diffValue, mode, valueExplanation) {
+    const diffValueElement = document.getElementById('diff_value');
+
+    if (diffValue.length === 0) {
+        diffValueElement.style.backgroundColor = '';
+        return valueExplanation;
+    }
+
+    let isEqualTo;
+    try {
+        isEqualTo = oh.isEqualTo(new opening_hours(diffValue, nominatim, {
+            'mode': mode,
+            'warnings_severity': 7,
+            'locale': i18next.language
+        }));
+    } catch {
+        diffValueElement.style.backgroundColor = evaluation_tool_colors.error;
+        return valueExplanation;
+    }
+
+    if (typeof isEqualTo !== 'object') {
+        return valueExplanation;
+    }
+
+    if (isEqualTo[0]) {
+        diffValueElement.style.backgroundColor = evaluation_tool_colors.ok;
+    } else {
+        diffValueElement.style.backgroundColor = evaluation_tool_colors.warn;
+        const humanReadableOutput = structuredClone(isEqualTo[1]);
+
+        if (typeof humanReadableOutput.deviation_for_time === 'object') {
+            humanReadableOutput.deviation_for_time = {};
+            for (const timeCode in isEqualTo[1].deviation_for_time) {
+                const timeString = new Date(parseInt(timeCode)).toLocaleString();
+                humanReadableOutput.deviation_for_time[timeString] =
+                    isEqualTo[1].deviation_for_time[timeCode];
+            }
+        }
+
+        return `${JSON.stringify(humanReadableOutput, null, '    ')}<br>${valueExplanation}`;
+    }
+
+    return valueExplanation;
+}
+
+function generateJosmHTML(value) {
+    const josmUrl = 'import?url=' + encodeURIComponent(
+        `https://overpass-api.de/api/xapi_meta?*[opening_hours=${value}]`
+    );
+
+    return `<div class="action-description">${i18next.t('texts.load osm objects')}</div>` +
+           `<div><a href="#" class="josm-link" data-url="${josmUrl}">JOSM</a></div>`;
+}
+
+function generateYoHoursHTML(value, crashed) {
+    if (!crashed && YoHoursChecker.canRead(value)) {
+        const yohoursUrl = `https://projets.pavie.info/yohours/?oh=${value}`;
+        return `<div class="action-description">${i18next.t('texts.yohours description')}</div>` +
+               `<div><a href="${yohoursUrl}" target="_blank">YoHours</a></div>`;
+    }
+
+    return `<div class="action-description">${i18next.t('texts.yohours description')}</div>` +
+           `<div class="yohours-warning">${i18next.t('texts.yohours incompatible')}</div>`;
+}
+
+function generatePrettifiedValueHTML(prettified) {
+    const escapedValue = prettified.replace(/"/g, '&quot;');
+
+    // Build translation with placeholder for the link
+    const translatedText = i18next.t('texts.prettified value', { copyFunc: '__COPY_LINK__' });
+    const linkHtml = `<a href="#" class="copy-prettified-value" data-value="${escapedValue}">`;
+    const finalText = translatedText.replace('<a href="__COPY_LINK__">', linkHtml);
+
+    const copyTooltip = i18next.t('texts.copy');
+
+    return `<div class="prettified-value-section">
+        <p>${finalText}:</p>
+        <div class="prettified-value-container">
+            <code class="prettified-value-display" data-value="${escapedValue}">${prettified}</code>
+            <button type="button" class="copy-btn copy-prettified-btn" data-value="${escapedValue}" title="${copyTooltip}">📋</button>
+        </div>
+    </div>`;
+}
+
+function generateWarningsHTML(warnings) {
+    if (warnings.length === 0) return '';
+
+    return `<div class="warning">${i18next.t('texts.filter.error')}` +
+           `<div class="warning_error_message">${warnings.join('\n')}</div></div>`;
+}
+
+function generateValueTooLongHTML(prettified, value) {
+    if (prettified.length <= OSM_MAX_VALUE_LENGTH) return '';
+
+    return `<div class="warning">${i18next.t('texts.filter.error')}` +
+           `<div class="warning_error_message">${i18next.t('texts.value to long for osm', {
+               pretLength: prettified.length,
+               valLength: value.length,
+               maxLength: OSM_MAX_VALUE_LENGTH
+           })}</div></div>`;
+}
+
+/* }}} */
+
 function Evaluate (offset = 0, reset) {
     if (document.forms.check.elements['lat'].value !== string_lat || document.forms.check.elements['lon'].value !== string_lon) {
         string_lat = document.forms.check.elements['lat'].value;
@@ -139,6 +318,7 @@ function Evaluate (offset = 0, reset) {
                 Evaluate();
             }
         );
+        return;
     }
 
     date = reset
@@ -170,18 +350,23 @@ function Evaluate (offset = 0, reset) {
         updateTimeButtonLabels(date);
     }
 
-    const show_time_table         = document.getElementById('show_time_table');
-    const show_warnings_or_errors = document.getElementById('show_warnings_or_errors');
-    const show_results            = document.getElementById('show_results');
+    // Cache DOM elements
+    const showTimeTable = document.getElementById('show_time_table');
+    const showWarningsOrErrors = document.getElementById('show_warnings_or_errors');
+    const showResults = document.getElementById('show_results');
+    const actionJosm = document.getElementById('action-josm');
+    const actionYoHours = document.getElementById('action-yohours');
 
-    show_warnings_or_errors.innerHTML = '';
+    showWarningsOrErrors.innerHTML = '';
 
+    // Parse opening hours value
     let crashed = false;
     const value = document.forms.check.elements['expression'].value;
-    const diff_value = document.forms.check.elements['diff_value'].value;
+    const diffValue = document.forms.check.elements['diff_value'].value;
     const mode = parseInt(document.getElementById('mode').selectedIndex);
     let oh;
     let it;
+
     try {
         oh = new opening_hours(value, nominatim, {
             'mode': mode,
@@ -191,176 +376,56 @@ function Evaluate (offset = 0, reset) {
         it = oh.getIterator(date);
     } catch (err) {
         crashed = err;
-        show_warnings_or_errors.innerHTML = `
-            <div class="error"> ${i18next.t('texts.filter.error')}
-                <div class="warning_error_message"> ${crashed} </div>
-            </div>`;
-        show_time_table.innerHTML = '';
-        show_results.innerHTML    = '';
+        showWarningsOrErrors.innerHTML =
+            `<div class="error">${i18next.t('texts.filter.error')}` +
+            `<div class="warning_error_message">${crashed}</div></div>`;
+        showTimeTable.innerHTML = '';
+        showResults.innerHTML = '';
     }
 
-    // Populate actions section - JOSM link
-    const josmUrl = 'import?url=' + encodeURIComponent('https://overpass-api.de/api/xapi_meta?*[opening_hours='
-        + document.forms.check.elements['expression'].value + ']');
-    const actionJosm = document.getElementById('action-josm');
-    actionJosm.innerHTML = `
-        <div class="action-description">${i18next.t('texts.load osm objects')}</div>
-        <div><a href="#" class="josm-link" data-url="${josmUrl}">JOSM</a></div>
-    `;
-
-    // Populate actions section - YoHours link
-    const actionYoHours = document.getElementById('action-yohours');
-    if (!crashed && YoHoursChecker.canRead(value)) {
-        const yohoursUrl = `https://projets.pavie.info/yohours/?oh=${value}`;
-        actionYoHours.innerHTML = `
-            <div class="action-description">${i18next.t('texts.yohours description')}</div>
-            <div><a href="${yohoursUrl}" target="_blank">YoHours</a></div>
-        `;
-    } else {
-        actionYoHours.innerHTML = `
-            <div class="action-description">${i18next.t('texts.yohours description')}</div>
-            <div class="yohours-warning">${i18next.t('texts.yohours incompatible')}</div>
-        `;
-    }
+    // Populate action links
+    actionJosm.innerHTML = generateJosmHTML(value);
+    actionYoHours.innerHTML = generateYoHoursHTML(value, crashed);
 
     if (!crashed) {
         const prettified = oh.prettifyValue({});
-        const prettified_value_array = oh.prettifyValue({
-            // conf: { locale: i18next.language },
+        const prettifiedValueArray = oh.prettifyValue({
             get_internals: true,
         });
-        show_results.innerHTML = '<p><span class="hd">' + i18next.t('words.status') + ':</span>'
-            + '<input class="nostyle" size="10" name="status" readonly="readonly" />'
-            + '<input class="nostyle" size="60" name="comment" readonly="readonly" />'
-            + '</p>' + '<p><span class="hd">'
-            + i18next.t('texts.MatchingRule') + ':</span>'
-            + '<input class="nostyle w100" name="MatchingRule" readonly="readonly" />'
-            + '</p>';
-        const used_selectors = { };
-        let value_explanation =
-            i18next.t('texts.prettified value for displaying') + ':<br />'
-            + '<p class="value_explanation">';
-        // console.log(JSON.stringify(prettified_value_array, null, '    '));
-        // console.log(JSON.stringify(prettified_value_array, null, '    '));
-        for (let nrule = 0; nrule < prettified_value_array[0].length; nrule++) {
-            if (nrule !== 0) {
-                const rule_separator = (
-                    prettified_value_array[1][nrule][1]
-                        ? ' ||'
-                        : (
-                            prettified_value_array[1][nrule][0][0][1] === 'rule separator'
-                            ? ','
-                            : ';'
-                        )
-                );
-                value_explanation +=
-                    '<span title="'
-                    + i18next.t('texts.rule separator ' + rule_separator) + '"'
-                    + ' class="rule_separator"><a target="_blank" class="specification" href="'
-                    + specification_url + '#section:rule_separators'
-                    + '">' + rule_separator + '</a></span><br>';
-            }
-            value_explanation += '<span class="one_rule">';
-            for (let nselector = 0, sl = prettified_value_array[0][nrule].length; nselector < sl; nselector++) {
-                const selector_type  = prettified_value_array[0][nrule][nselector][0][2];
-                const selector_value = prettified_value_array[0][nrule][nselector][1];
-                let fragment_identifier;
-                switch(selector_type) {
-                    case '24/7':
-                        fragment_identifier = 'selector_sequence';
-                        break;
-                    case 'state':
-                        fragment_identifier = 'section:rule_modifier';
-                        break;
-                    case 'comment':
-                        fragment_identifier = 'comment';
-                        break;
-                    default:
-                        fragment_identifier = 'selector:' + selector_type;
-                }
-                value_explanation += '<span title="'
-                    + i18next.t('words.' + (selector_type.match(/(?:state|comment)/) ? 'modifier' : 'selector'), { name: selector_type }) + '"'
-                    + ' class="' + selector_type + '"><a target="_blank" class="specification" href="'
-                    + specification_url + '#' + fragment_identifier
-                    + '">' + selector_value + '</a></span>';
-                if (nselector + 1 < sl)
-                    value_explanation += ' ';
-                used_selectors[selector_type] = true;
-            }
-            // console.log(value_explanation);
-            value_explanation += '</span>';
-        }
-        value_explanation += '</p></div>';
 
-        if (diff_value.length > 0) {
-          let is_equal_to;
-          try {
-              is_equal_to = oh.isEqualTo(new opening_hours(diff_value, nominatim, {
-                  'mode': mode,
-                  'warnings_severity': 7,
-                  'locale': i18next.language
-              }));
-          } catch {
-              document.getElementById('diff_value').style.backgroundColor = evaluation_tool_colors.error;
-          }
-          if (typeof is_equal_to === 'object') {
-            if (is_equal_to[0]) {
-              document.getElementById('diff_value').style.backgroundColor = evaluation_tool_colors.ok;
-            } else {
-              document.getElementById('diff_value').style.backgroundColor = evaluation_tool_colors.warn;
-              const human_readable_not_equal_output = structuredClone(is_equal_to[1])
-              if (typeof human_readable_not_equal_output.deviation_for_time === 'object') {
-                human_readable_not_equal_output.deviation_for_time = {};
-                for (const time_code in is_equal_to[1].deviation_for_time) {
-                  console.log(time_code);
-                  const time_string = new Date(parseInt(time_code)).toLocaleString();
-                  human_readable_not_equal_output.deviation_for_time[time_string] =
-                    is_equal_to[1].deviation_for_time[time_code];
-                }
-              }
-              value_explanation = JSON.stringify(human_readable_not_equal_output, null, '    ')
-                + '<br>'
-                + value_explanation;
-            }
-          }
-        } else {
-          // Reset background color when diff_value is empty
-          document.getElementById('diff_value').style.backgroundColor = '';
+        // Generate and display results
+        showResults.innerHTML = generateResultsHTML();
+
+        // Generate value explanation
+        let valueExplanation = generateValueExplanation(prettifiedValueArray);
+
+        // Handle diff comparison
+        valueExplanation = handleDiffComparison(oh, diffValue, mode, valueExplanation);
+
+        // Display value explanation
+        showWarningsOrErrors.innerHTML = valueExplanation;
+
+        // Update matching rule
+        const ruleIndex = it.getMatchingRule();
+        const ruleDisplay = document.getElementById('matching-rule-display');
+        if (ruleDisplay) {
+            ruleDisplay.textContent = typeof ruleIndex === 'undefined' ? i18next.t('words.none') : oh.prettifyValue({ 'rule_index': ruleIndex });
         }
 
-        show_warnings_or_errors.innerHTML = value_explanation;
-
-        document.forms.check.elements['comment'].value = typeof it.getComment() !== 'undefined'
-            ? it.getComment() : i18next.t('words.no') + ' ' + i18next.t('words.comment');
-        document.forms.check.elements['status'].value = (it.getState() ? i18next.t('words.open')
-            : (it.getUnknown() ? i18next.t('words.unknown') : i18next.t('words.closed')));
-        const rule_index    = it.getMatchingRule();
-        document.forms.check.elements['MatchingRule'].value = typeof rule_index === 'undefined'
-            ? i18next.t('words.none') : oh.prettifyValue({ 'rule_index': rule_index });
-
+        // Show prettified value if different from input
         if (prettified !== value) {
-            show_warnings_or_errors.innerHTML = '<p>' + i18next.t('texts.prettified value',
-                { copyFunc: '#' }) + ':<br />'
-                + '<input style="width: 100%" class="prettified-value" id="prettifiedValue" name="prettifiedValue" value="' + prettified.replace(/"/g, '&quot;') + '" data-value="' + prettified.replace(/"/g, '&quot;') + '" readonly /></p>';
+            showWarningsOrErrors.innerHTML = generatePrettifiedValueHTML(prettified);
         }
 
+        // Append warnings if any
         const warnings = oh.getWarnings();
-        if (warnings.length > 0) {
-            show_warnings_or_errors.innerHTML += `
-            <div class="warning"> ${i18next.t('texts.filter.error')}
-                <div class="warning_error_message"> ${warnings.join('\n')} </div>
-            </div>`;
-        }
+        showWarningsOrErrors.innerHTML += generateWarningsHTML(warnings);
 
-        if (prettified.length > 255) {
-            show_warnings_or_errors.innerHTML += `
-            <div class="warning"> ${i18next.t('texts.filter.error')}
-                <div class="warning_error_message"> ${i18next.t('texts.value to long for osm',
-                    { pretLength: prettified.length, valLength: value.length, maxLength: 255 })} </div>
-            </div>`;
-        }
+        // Check value length
+        showWarningsOrErrors.innerHTML += generateValueTooLongHTML(prettified, value);
 
-        show_time_table.innerHTML = OpeningHoursTable.drawTableAndComments(oh, it);
+        // Generate time table
+        showTimeTable.innerHTML = OpeningHoursTable.drawTableAndComments(oh, it, date);
     }
 
     updatePermalinkHref();
@@ -373,10 +438,6 @@ function EX (element) {
 }
 
 function newValue(value) {
-    if (typeof document.forms.check.elements['prettifiedValue'] === 'object') {
-        document.forms.check.elements['prettifiedValue'].focus();
-        document.forms.check.elements['prettifiedValue'].focus();
-    }
     document.forms.check.elements['expression'].value = value;
     Evaluate();
 }

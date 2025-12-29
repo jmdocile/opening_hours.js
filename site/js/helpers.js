@@ -47,47 +47,51 @@ export function dateAtWeek(date, week) {
 }
 // }}}
 
-/*
+/**
+ * Reverse geocode coordinates to get localized place names from Nominatim.
+ *
  * The names of countries and states are localized in OSM and opening_hours.js
  * (holidays) so we need to get the localized names from Nominatim as well.
+ *
+ * @param {number} lat - Latitude
+ * @param {number} lon - Longitude
+ * @param {string} preferredLanguage - Preferred language code (e.g., 'de', 'en')
+ * @returns {Promise<Object>} Nominatim response with address data
  */
-function reverseGeocodeLocation(query, guessed_language_for_location, on_success, on_error) {
-    if (typeof on_error === 'undefined') {
-        on_error = function() { };
+async function reverseGeocodeLocation(lat, lon, preferredLanguage) {
+    // Cached response for default coordinates to avoid queries on initial load
+    if (lat === 48.7769 && lon === 9.1844) {
+        return { place_id: '159221147', licence: 'Data © OpenStreetMap contributors, ODbL 1.0. https://www.openstreetmap.org/copyright', osm_type: 'relation', osm_id: '62611', lat: '48.6296972', lon: '9.1949534', display_name: 'Baden-Württemberg, Deutschland', address: { state: 'Baden-Württemberg', country: 'Deutschland', country_code: 'de' }, boundingbox: ['47.5324787', '49.7912941', '7.5117461', '10.4955731'] };
     }
 
-    if (query === '&lat=48.7769&lon=9.1844') {
-        /* Cached response to avoid two queries for each usage of the tool. */
-        return on_success({'place_id':'159221147','licence':'Data © OpenStreetMap contributors, ODbL 1.0. https://www.openstreetmap.org/copyright','osm_type':'relation','osm_id':'62611','lat':'48.6296972','lon':'9.1949534','display_name':'Baden-Württemberg, Deutschland','address':{'state':'Baden-Württemberg','country':'Deutschland','country_code':'de'},'boundingbox':['47.5324787','49.7912941','7.5117461','10.4955731']});
+    const params = new URLSearchParams({
+        format: 'json',
+        lat: String(lat),
+        lon: String(lon),
+        zoom: '5',
+        addressdetails: '1',
+        email: 'ypid23@aol.de',
+        'accept-language': preferredLanguage
+    });
+
+    async function fetchNominatim() {
+        const response = await fetch(`${nominatim_api_url}?${params}`);
+        if (!response.ok) {
+            throw new Error(`Nominatim request failed: ${response.status}`);
+        }
+        return response.json();
     }
 
-    const nominatim_api_url_template_query = nominatim_api_url
-        + '?format=json'
-        + query
-        + '&zoom=5'
-        + '&addressdetails=1'
-        + '&email=ypid23@aol.de';
+    let data = await fetchNominatim();
 
-    let nominatim_api_url_query = nominatim_api_url_template_query;
-    if (typeof accept_lanaguage === 'string') {
-        nominatim_api_url_query += '&accept-language=' + guessed_language_for_location;
+    // Refetch with localized language if country differs from preferred language
+    const countryCode = data.address?.country_code;
+    if (countryCode && countryCode !== preferredLanguage) {
+        params.set('accept-language', mapCountryToLanguage(countryCode));
+        data = await fetchNominatim();
     }
 
-    fetch(nominatim_api_url_query)
-        .then(response => response.json())
-        .then(nominatim_data => {
-            // console.log(JSON.stringify(nominatim_data, null, '\t'));
-            if (nominatim_data.address.country_code === guessed_language_for_location) {
-                on_success(nominatim_data);
-            } else {
-                nominatim_api_url_query += `&accept-language=${mapCountryToLanguage(nominatim_data.address.country_code)}`;
-                fetch(nominatim_api_url_query)
-                    .then(response => response.json())
-                    .then(nominatim_data => on_success(nominatim_data))
-                    .catch(on_error);
-            }
-        })
-        .catch(on_error);
+    return data;
 }
 
 /* JS for toggling examples on and off {{{ */
@@ -288,7 +292,7 @@ function generateValueTooLongHTML(prettified, value) {
 
 /* }}} */
 
-export function Evaluate (offset = 0, reset) {
+export async function Evaluate (offset = 0, reset) {
     if (document.forms.check.elements['lat'].value !== string_lat || document.forms.check.elements['lon'].value !== string_lon) {
         string_lat = document.forms.check.elements['lat'].value;
         string_lon = document.forms.check.elements['lon'].value;
@@ -304,24 +308,24 @@ export function Evaluate (offset = 0, reset) {
             console.log('Please enter numbers for latitude and longitude.');
             return;
         }
-        reverseGeocodeLocation(
-            `&lat=${lat}&lon=${lon}`,
-            mapCountryToLanguage(i18next.language),
-            function(nominatim_data) {
-                nominatim = nominatim_data;
-                document.forms.check.elements['cc'].value    = nominatim.address.country_code;
-                document.forms.check.elements['state'].value = nominatim.address.state;
-                Evaluate();
-            },
-            function() {
-                /* Set fallback Nominatim answer to allow using the evaluation tool even without Nominatim. */
-                alert('Reverse geocoding of the coordinates using Nominatim was not successful. The evaluation of features of the opening_hours specification which depend this information will be unreliable. Otherwise, this tool will work as expected using a fallback answer. You might want to check your browser settings to fix this.');
-                nominatim = {'place_id':'44651229','licence':'Data \u00a9 OpenStreetMap contributors, ODbL 1.0. https://www.openstreetmap.org/copyright','osm_type':'way','osm_id':'36248375','lat':'49.5400039','lon':'9.7937133','display_name':'K 2847, Lauda-K\u00f6nigshofen, Main-Tauber-Kreis, Regierungsbezirk Stuttgart, Baden-W\u00fcrttemberg, Germany, European Union','address':{'road':'K 2847','city':'Lauda-K\u00f6nigshofen','county':'Main-Tauber-Kreis','state_district':'Regierungsbezirk Stuttgart','state':'Baden-W\u00fcrttemberg','country':'Germany','country_code':'de','continent':'European Union'}};
-                document.forms.check.elements['cc'].value    = nominatim.address.country_code;
-                document.forms.check.elements['state'].value = nominatim.address.state;
-                Evaluate();
-            }
-        );
+        try {
+            nominatim = await reverseGeocodeLocation(
+                lat,
+                lon,
+                mapCountryToLanguage(i18next.language)
+            );
+            document.forms.check.elements['cc'].value = nominatim.address.country_code;
+            document.forms.check.elements['state'].value = nominatim.address.state;
+            Evaluate();
+        } catch (error) {
+            /* Set fallback Nominatim answer to allow using the evaluation tool even without Nominatim. */
+            console.error('Reverse geocoding failed:', error);
+            alert('Reverse geocoding of the coordinates using Nominatim was not successful. The evaluation of features of the opening_hours specification which depend this information will be unreliable. Otherwise, this tool will work as expected using a fallback answer. You might want to check your browser settings to fix this.');
+            nominatim = {'place_id':'44651229','licence':'Data \u00a9 OpenStreetMap contributors, ODbL 1.0. https://www.openstreetmap.org/copyright','osm_type':'way','osm_id':'36248375','lat':'49.5400039','lon':'9.7937133','display_name':'K 2847, Lauda-K\u00f6nigshofen, Main-Tauber-Kreis, Regierungsbezirk Stuttgart, Baden-W\u00fcrttemberg, Germany, European Union','address':{'road':'K 2847','city':'Lauda-K\u00f6nigshofen','county':'Main-Tauber-Kreis','state_district':'Regierungsbezirk Stuttgart','state':'Baden-W\u00fcrttemberg','country':'Germany','country_code':'de','continent':'European Union'}};
+            document.forms.check.elements['cc'].value = nominatim.address.country_code;
+            document.forms.check.elements['state'].value = nominatim.address.state;
+            Evaluate();
+        }
         return;
     }
 

@@ -356,6 +356,11 @@ section {
     width: 98%;
 }
 
+/* Ensure diff_value input has black text when colored background is applied */
+#diff_value {
+    color: #000 !important;
+}
+
 #action-links {
     display: flex;
     flex-wrap: wrap;
@@ -501,6 +506,42 @@ div.warning_error_message {
     border-left: 4px solid #ff851b;
     border-radius: 4px;
 }
+
+.diff-deviation {
+    margin: 0.75rem 0;
+    padding: 0.75rem;
+    background-color: var(--bg-section);
+    border-left: 4px solid #FFA500; /* Orange for diff/warning */
+    border-radius: 4px;
+}
+
+.diff-times {
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.diff-raw {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background-color: var(--bg-input);
+    border-radius: 3px;
+    font-size: 0.85rem;
+    opacity: 0.8;
+}
+
+.diff-raw code {
+    font-family: 'Courier New', monospace;
+    color: var(--text-primary);
+    word-break: break-all;
+}
+
+.diff-rules {
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    opacity: 0.9;
+}
+
 span.year    { background: #ff851b } /* Orange */
 span.week    { background: #ffdc00 } /* Yellow */
 span.month   { background: #88ff88 }
@@ -1165,7 +1206,7 @@ button:active {
     #show_warnings_or_errors {
         background-color: var(--bg-section);
         border-color: var(--border-color);
-        color: darkslategray;
+        color: var(--text-primary);
     }
 
     .example-link {

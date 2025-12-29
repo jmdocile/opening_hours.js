@@ -199,65 +199,140 @@ function generateResultsHTML() {
 }
 
 /**
+ * Generate HTML display for deviation information between two opening hours values.
+ *
+ * @param {Object} oh1 - The first opening_hours instance
+ * @param {Object} oh2 - The second opening_hours instance
+ * @param {Object} deviationInfo - Deviation data from isEqualTo comparison
+ * @returns {string} HTML string with formatted deviation information
+ */
+function generateDeviationHTML(oh1, oh2, deviationInfo) {
+    const parts = ['<div class="diff-deviation">'];
+
+    // Show which rules are matching
+    if (typeof deviationInfo.matching_rule !== 'undefined' || typeof deviationInfo.matching_rule_other !== 'undefined') {
+        parts.push('<div class="diff-rules">');
+        parts.push(`<strong>${i18next.t('texts.Affected rules')}:</strong> `);
+        if (typeof deviationInfo.matching_rule !== 'undefined') {
+            parts.push(`${i18next.t('texts.Original')}: ${i18next.t('texts.Rule')} ${deviationInfo.matching_rule + 1}`);
+        }
+        if (typeof deviationInfo.matching_rule_other !== 'undefined') {
+            parts.push(` / ${i18next.t('texts.Comparison')}: ${i18next.t('texts.Rule')} ${deviationInfo.matching_rule_other + 1}`);
+        }
+        parts.push('</div>');
+    }
+
+    // Show time-based deviations with actual values
+    if (deviationInfo.deviation_for_time && typeof deviationInfo.deviation_for_time === 'object') {
+        for (const [timeCode, deviations] of Object.entries(deviationInfo.deviation_for_time)) {
+            const deviationDate = new Date(parseInt(timeCode));
+            const timeString = deviationDate.toLocaleString(i18next.language, {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            });
+
+            // Build readable comparison lines
+            const line1Parts = [];
+            const line2Parts = [];
+
+            if (deviations.includes('getState') || deviations.includes('getDate')) {
+                const state1 = oh1.getState(deviationDate);
+                const state2 = oh2.getState(deviationDate);
+                const unknown1 = oh1.getUnknown(deviationDate);
+                const unknown2 = oh2.getUnknown(deviationDate);
+
+                const stateText1 = unknown1 ? i18next.t('words.unknown') : i18next.t(`words.${state1 ? 'open' : 'closed'}`);
+                const stateText2 = unknown2 ? i18next.t('words.unknown') : i18next.t(`words.${state2 ? 'open' : 'closed'}`);
+
+                line1Parts.push(stateText1);
+                line2Parts.push(stateText2);
+            }
+
+            if (deviations.includes('getComment')) {
+                const comment1 = oh1.getComment(deviationDate);
+                const comment2 = oh2.getComment(deviationDate);
+
+                if (comment1) line1Parts.push(`"${comment1}"`);
+                if (comment2) line2Parts.push(`"${comment2}"`);
+            }
+
+            const comparisonHTML = `
+                <div class="diff-times">
+                    <strong>${i18next.t('texts.Deviation at')} ${timeString}</strong><br>
+                    ${i18next.t('texts.Original')}: ${line1Parts.join(', ')}<br>
+                    ${i18next.t('texts.Comparison')}: ${line2Parts.join(', ')}
+                </div>
+            `;
+
+            parts.push(comparisonHTML);
+        }
+    }
+
+    // Show raw JSON for developers
+    const deviationJson = JSON.stringify(deviationInfo);
+    parts.push(`<div class="diff-raw"><code>${deviationJson}</code></div>`);
+
+    parts.push('</div>');
+    return parts.join('');
+}
+
+/**
  * Compare opening hours value with a diff value and update UI accordingly.
  *
  * Compares the current opening hours object with another value and sets
  * the background color of the diff input field to indicate the result:
  * - Green (ok): Values are equivalent
- * - Orange (warn): Values differ, shows deviation details
+ * - Orange (warn): Values differ, shows deviation details in #compare-result
  * - Brown (error): Diff value failed to parse
  *
  * @param {Object} oh - The opening_hours instance to compare
  * @param {string} diffValue - The opening hours value to compare against
  * @param {number} mode - The parsing mode for opening hours
- * @param {string} valueExplanation - The existing HTML explanation
- * @returns {string} The value explanation, possibly prepended with deviation info
+ * @param {Date} startDate - The date to start comparison from
  */
-function handleDiffComparison(oh, diffValue, mode, valueExplanation) {
+function handleDiffComparison(oh, diffValue, mode, startDate) {
     const diffValueElement = document.getElementById('diff_value');
+    const compareResult = document.getElementById('compare-result');
 
     if (diffValue.length === 0) {
         diffValueElement.style.backgroundColor = '';
-        return valueExplanation;
+        compareResult.innerHTML = '';
+        return;
     }
 
+    let comparisonOh;
     let comparisonResult;
     try {
-        comparisonResult = oh.isEqualTo(new opening_hours(diffValue, nominatim, {
+        comparisonOh = new opening_hours(diffValue, nominatim, {
             'mode': mode,
             'warnings_severity': 7,
             'locale': i18next.language
-        }));
+        });
+        comparisonResult = oh.isEqualTo(comparisonOh, startDate);
     } catch {
         diffValueElement.style.backgroundColor = evaluation_tool_colors.error;
-        return valueExplanation;
+        compareResult.innerHTML = '';
+        return;
     }
 
     if (!Array.isArray(comparisonResult)) {
-        return valueExplanation;
+        compareResult.innerHTML = '';
+        return;
     }
 
     const [isEqual, deviationInfo] = comparisonResult;
 
     if (isEqual) {
         diffValueElement.style.backgroundColor = evaluation_tool_colors.ok;
-        return valueExplanation;
+        compareResult.innerHTML = '';
+    } else {
+        diffValueElement.style.backgroundColor = evaluation_tool_colors.warn;
+        compareResult.innerHTML = generateDeviationHTML(oh, comparisonOh, deviationInfo);
     }
-
-    diffValueElement.style.backgroundColor = evaluation_tool_colors.warn;
-    const humanReadableOutput = structuredClone(deviationInfo);
-
-    if (deviationInfo.deviation_for_time && typeof deviationInfo.deviation_for_time === 'object') {
-        const formattedDeviations = {};
-        for (const [timeCode, deviation] of Object.entries(deviationInfo.deviation_for_time)) {
-            const timeString = new Date(parseInt(timeCode)).toLocaleString();
-            formattedDeviations[timeString] = deviation;
-        }
-        humanReadableOutput.deviation_for_time = formattedDeviations;
-    }
-
-    const deviationJson = JSON.stringify(humanReadableOutput, null, 4);
-    return `${deviationJson}<br>${valueExplanation}`;
 }
 
 function generateJosmHTML(value) {
@@ -429,10 +504,10 @@ export async function Evaluate (offset = 0, reset) {
         showResults.innerHTML = generateResultsHTML();
 
         // Generate value explanation
-        let valueExplanation = generateValueExplanation(prettifiedValueArray);
+        const valueExplanation = generateValueExplanation(prettifiedValueArray);
 
         // Handle diff comparison
-        valueExplanation = handleDiffComparison(oh, diffValue, mode, valueExplanation);
+        handleDiffComparison(oh, diffValue, mode, date);
 
         // Display value explanation
         showWarningsOrErrors.innerHTML = valueExplanation;

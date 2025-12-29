@@ -198,6 +198,21 @@ function generateResultsHTML() {
     `;
 }
 
+/**
+ * Compare opening hours value with a diff value and update UI accordingly.
+ *
+ * Compares the current opening hours object with another value and sets
+ * the background color of the diff input field to indicate the result:
+ * - Green (ok): Values are equivalent
+ * - Orange (warn): Values differ, shows deviation details
+ * - Brown (error): Diff value failed to parse
+ *
+ * @param {Object} oh - The opening_hours instance to compare
+ * @param {string} diffValue - The opening hours value to compare against
+ * @param {number} mode - The parsing mode for opening hours
+ * @param {string} valueExplanation - The existing HTML explanation
+ * @returns {string} The value explanation, possibly prepended with deviation info
+ */
 function handleDiffComparison(oh, diffValue, mode, valueExplanation) {
     const diffValueElement = document.getElementById('diff_value');
 
@@ -206,9 +221,9 @@ function handleDiffComparison(oh, diffValue, mode, valueExplanation) {
         return valueExplanation;
     }
 
-    let isEqualTo;
+    let comparisonResult;
     try {
-        isEqualTo = oh.isEqualTo(new opening_hours(diffValue, nominatim, {
+        comparisonResult = oh.isEqualTo(new opening_hours(diffValue, nominatim, {
             'mode': mode,
             'warnings_severity': 7,
             'locale': i18next.language
@@ -218,29 +233,31 @@ function handleDiffComparison(oh, diffValue, mode, valueExplanation) {
         return valueExplanation;
     }
 
-    if (typeof isEqualTo !== 'object') {
+    if (!Array.isArray(comparisonResult)) {
         return valueExplanation;
     }
 
-    if (isEqualTo[0]) {
+    const [isEqual, deviationInfo] = comparisonResult;
+
+    if (isEqual) {
         diffValueElement.style.backgroundColor = evaluation_tool_colors.ok;
-    } else {
-        diffValueElement.style.backgroundColor = evaluation_tool_colors.warn;
-        const humanReadableOutput = structuredClone(isEqualTo[1]);
-
-        if (typeof humanReadableOutput.deviation_for_time === 'object') {
-            humanReadableOutput.deviation_for_time = {};
-            for (const timeCode in isEqualTo[1].deviation_for_time) {
-                const timeString = new Date(parseInt(timeCode)).toLocaleString();
-                humanReadableOutput.deviation_for_time[timeString] =
-                    isEqualTo[1].deviation_for_time[timeCode];
-            }
-        }
-
-        return `${JSON.stringify(humanReadableOutput, null, '    ')}<br>${valueExplanation}`;
+        return valueExplanation;
     }
 
-    return valueExplanation;
+    diffValueElement.style.backgroundColor = evaluation_tool_colors.warn;
+    const humanReadableOutput = structuredClone(deviationInfo);
+
+    if (deviationInfo.deviation_for_time && typeof deviationInfo.deviation_for_time === 'object') {
+        const formattedDeviations = {};
+        for (const [timeCode, deviation] of Object.entries(deviationInfo.deviation_for_time)) {
+            const timeString = new Date(parseInt(timeCode)).toLocaleString();
+            formattedDeviations[timeString] = deviation;
+        }
+        humanReadableOutput.deviation_for_time = formattedDeviations;
+    }
+
+    const deviationJson = JSON.stringify(humanReadableOutput, null, 4);
+    return `${deviationJson}<br>${valueExplanation}`;
 }
 
 function generateJosmHTML(value) {

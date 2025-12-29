@@ -209,8 +209,9 @@ function Evaluate (offset, reset) {
         show_results.innerHTML    = '';
     }
 
-    show_time_table.innerHTML = '<a href="javascript:josm(\'import?url=' + encodeURIComponent('https://overpass-api.de/api/xapi_meta?*[opening_hours='
-        + document.forms.check.elements['expression'].value + ']') + '\')">' + i18next.t('texts.load all with JOSM') + '</a><br />';
+    const josmUrl = 'import?url=' + encodeURIComponent('https://overpass-api.de/api/xapi_meta?*[opening_hours='
+        + document.forms.check.elements['expression'].value + ']');
+    show_time_table.innerHTML = '<a href="#" class="josm-link" data-url="' + josmUrl + '">' + i18next.t('texts.load all with JOSM') + '</a><br />';
     if (!crashed) {
         const prettified = oh.prettifyValue({});
         const prettified_value_array = oh.prettifyValue({
@@ -338,8 +339,8 @@ function Evaluate (offset, reset) {
 
         if (prettified !== value) {
             show_warnings_or_errors.innerHTML = '<p>' + i18next.t('texts.prettified value',
-                { copyFunc: 'javascript:newValue(\'' + prettified.replace(/"/g, '&quot;') + '\')' }) + ':<br />'
-                + '<input style="width: 100%" onclick="javascript:newValue(\'' + prettified.replace(/"/g, '&quot;') + '\')" id="prettifiedValue" name="prettifiedValue" value="' + prettified.replace(/"/g, '&quot;') + '" /></p>';
+                { copyFunc: '#' }) + ':<br />'
+                + '<input style="width: 100%" class="prettified-value" id="prettifiedValue" name="prettifiedValue" value="' + prettified.replace(/"/g, '&quot;') + '" data-value="' + prettified.replace(/"/g, '&quot;') + '" readonly /></p>';
         }
 
         const warnings = oh.getWarnings();

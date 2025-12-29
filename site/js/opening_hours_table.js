@@ -201,7 +201,7 @@ const OpeningHoursTable = {
         return `${startString + output + endString}.`;
     },
 
-    drawTableAndComments (oh, it, value) {
+    drawTableAndComments (oh, it) {
         const prevdate          = it.getDate();
         const unknown           = it.getUnknown();
         const state_string_past = it.getStateString(true);
@@ -228,7 +228,7 @@ const OpeningHoursTable = {
             output += `<p class="${it.getStateString(true)}">${
                 i18next.t(`texts.will ${it.getStateString(false)}`, {
                     timestring: this.formatdate(prevdate, it.getDate(), true),
-                    href: `javascript:Evaluate(${time_diff}, false, '${value}')`,
+                    href: `#" class="time-jump" data-offset="${time_diff}`,
                     comment: typeof it.getComment() === 'string' || typeof comment === 'string'
                         ? `, ${i18next.t('words.comment')}: ${typeof it.getComment() === 'string'
                             ? `"${it.getComment()}"`

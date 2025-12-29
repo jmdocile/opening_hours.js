@@ -1,4 +1,4 @@
-/* global i18next, getUserSelectTranslateHTMLCode, Evaluate, permalink, toggle, EX */
+/* global i18next, getUserSelectTranslateHTMLCode, Evaluate, permalink, toggle, EX, josm, newValue */
 
 // Configuration constants (need to be global for use in inline scripts in index.html)
 // eslint-disable-next-line no-var
@@ -217,6 +217,23 @@ function setupEventListeners() {
         else if (e.target.closest('#permalink-link')) {
             e.preventDefault();
             permalink();
+        }
+        // JOSM link
+        else if (e.target.closest('.josm-link')) {
+            e.preventDefault();
+            const link = e.target.closest('.josm-link');
+            josm(link.dataset.url);
+        }
+        // Time jump links (from opening_hours_table.js)
+        else if (e.target.closest('.time-jump')) {
+            e.preventDefault();
+            const link = e.target.closest('.time-jump');
+            Evaluate(parseInt(link.dataset.offset, 10), false);
+        }
+        // Prettified value input
+        else if (e.target.closest('.prettified-value')) {
+            const input = e.target.closest('.prettified-value');
+            newValue(input.dataset.value);
         }
     });
 }

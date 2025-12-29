@@ -1509,34 +1509,52 @@ const resources = { // English is fallback language.
 
 // Functions which generate localized HTML sections {{{
 // eslint-disable-next-line no-unused-vars
+function changeLanguage(lang) {
+    localStorage.setItem('i18nextLng', lang);
+    i18next.changeLanguage(lang, () => {
+        window.location.reload();
+    });
+}
+
+// eslint-disable-next-line no-unused-vars
 function getUserSelectTranslateHTMLCode() {
-    let res = '<span class="hd">';
+    let res = '<label for="language-select" class="hd">';
     res += i18next.t('lang.choose')
             + (i18next.language !== 'en' ? ' ('+ i18next.t('lang.choose', { lng: 'en' }) +')' : '' )
-            + ':</span> ';
+            + ':</label> ';
+    res += '<select id="language-select" onchange="changeLanguage(this.value)">';
     for (const lang in resources) {
         if (Object.prototype.hasOwnProperty.call(resources, lang)) {
-          res += '<button type="button" onclick="location.href=\'?lng='
-                + lang +'\'">' + i18next.t('lang.' + lang)
+          const selected = i18next.language === lang ? ' selected' : '';
+          res += '<option value="' + lang + '"' + selected + '>'
+                + i18next.t('lang.' + lang)
                 + (i18next.language !== 'en' ? ' ('+ i18next.t('lang.' +lang, { lng: 'en' }) +')' : '' )
-                + '</button>';
+                + '</option>';
         }
     }
+    res += '</select>';
     return res;
 }
 // }}}
 
 // Initialization code {{{
 if (!i18next.isInitialized) {
-    // window.i18nextBrowserLanguageDetector comes from i18next-browser-languagedetector npm package
-    i18next.use(window.i18nextBrowserLanguageDetector).init({
+    // Detect language: localStorage > browser language > fallback
+    const detectLanguage = () => {
+        const stored = localStorage.getItem('i18nextLng');
+        if (stored && resources[stored]) return stored;
+
+        for (const lang of navigator.languages) {
+            const shortLang = lang.split('-')[0];
+            if (resources[shortLang]) return shortLang;
+        }
+        return 'en';
+    };
+
+    i18next.init({
+        lng: detectLanguage(),
         fallbackLng: 'en',
         resources: resources,
-        useCookie: true,
-        detection: {
-            order: ['querystring', 'cookie', 'header'],
-            lookupQuerystring: 'lng',
-        },
         debug: true
     });
 } else {

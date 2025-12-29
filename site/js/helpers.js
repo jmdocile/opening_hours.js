@@ -18,7 +18,7 @@ const evaluation_tool_colors = {
 // eslint-disable-next-line no-unused-vars
 function josm(url_param) {
     const xhr = new XMLHttpRequest();
-    xhr.open('GET', 'http://localhost:8111/' + url_param, true);      // true makes this call asynchronous
+    xhr.open('GET', `http://localhost:8111/${url_param}`, true);      // true makes this call asynchronous
     xhr.onreadystatechange = function () {    // need eventhandler since our call is async
         if ( xhr.status !== 200 ) {
             alert(i18next.t('texts.JOSM remote conn error'));
@@ -73,7 +73,7 @@ function reverseGeocodeLocation(query, guessed_language_for_location, on_success
             if (nominatim_data.address.country_code === guessed_language_for_location) {
                 on_success(nominatim_data);
             } else {
-                nominatim_api_url_query += '&accept-language=' + mapCountryToLanguage(nominatim_data.address.country_code);
+                nominatim_api_url_query += `&accept-language=${mapCountryToLanguage(nominatim_data.address.country_code)}`;
                 fetch(nominatim_api_url_query)
                     .then(response => response.json())
                     .then(nominatim_data => on_success(nominatim_data))
@@ -140,7 +140,7 @@ function Evaluate (offset, reset) {
             return;
         }
         reverseGeocodeLocation(
-            '&lat=' + lat + '&lon=' + lon,
+            `&lat=${lat}&lon=${lon}`,
             mapCountryToLanguage(i18next.language),
             function(nominatim_data) {
                 nominatim = nominatim_data;
@@ -170,7 +170,7 @@ function Evaluate (offset, reset) {
             offset
         );
 
-    function u2 (v) { return v>=0 && v<10 ? '0'+v : v; }
+    function u2 (v) { return v>=0 && v<10 ? `0${v}` : v; }
 
     document.forms.check.elements['yyyy'].value       = date.getFullYear();
     document.forms.check.elements['mm'].selectedIndex = date.getMonth();
@@ -178,7 +178,7 @@ function Evaluate (offset, reset) {
     document.forms.check.elements['HH'].value         = u2(date.getHours());
     document.forms.check.elements['MM'].value         = u2(date.getMinutes());
     document.forms.check.elements['wday'].value       = date.toLocaleString(i18next.language, {weekday: 'short'});
-    document.forms.check.elements['week'].value       = 'W'+u2(dateAtWeek(date, 0) + 1);
+    document.forms.check.elements['week'].value       = `W${u2(dateAtWeek(date, 0) + 1)}`;
 
     const show_time_table         = document.getElementById('show_time_table');
     const show_warnings_or_errors = document.getElementById('show_warnings_or_errors');
@@ -281,7 +281,7 @@ function Evaluate (offset, reset) {
         }
         value_explanation += '</p></div>';
         if (YoHoursChecker.canRead(value)) {
-            value_explanation = i18next.t('texts.refer to yohours', { href: 'https://projets.pavie.info/yohours/?oh=' + value })
+            value_explanation = i18next.t('texts.refer to yohours', { href: `https://projets.pavie.info/yohours/?oh=${value}` })
             + '<br>'
             + value_explanation;
         }

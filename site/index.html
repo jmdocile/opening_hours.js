@@ -29,12 +29,10 @@
             }
 
             // default values {{{
-            var default_lat = 48.7769;
-            var default_lon = 9.1844;
-            var repo_url = 'https://github.com/opening-hours/opening_hours.js';
-            var specification_url = 'https://wiki.openstreetmap.org/wiki/'
-                + (i18next.language === 'de' ? 'DE:' : '')
-                + 'Key:opening_hours/specification';
+            const default_lat = 48.7769;
+            const default_lon = 9.1844;
+            const repo_url = 'https://github.com/opening-hours/opening_hours.js';
+            const specification_url = `https://wiki.openstreetmap.org/wiki/${i18next.language === 'de' ? 'DE:' : ''}Key:opening_hours/specification`;
             // }}}
         </script>
         <!-- }}} -->
@@ -42,7 +40,7 @@
     <body><!-- {{{ -->
         <noscript>You don‘t have JavaScript enabled and that is a good thing but this tool makes heavy use of JavaScript so you need to enable it in order to use this tool. If you don’t trust the code that is going to be executed that is good as well. I encourage you to read all the source code on <a href="https://github.com/opening-hours/opening_hours.js">GitHub</a>. Also note that every commit and all releases are GPG signed. You might want to check this out as well :) Stay safe.</noscript>
         <script>
-            document.write('<h1>' + i18next.t('texts.title') + '</h1>');
+            document.write(`<h1>${i18next.t('texts.title')}</h1>`);
             document.write(getUserSelectTranslateHTMLCode());
         </script>
 
@@ -51,11 +49,11 @@
                 <!-- User input {{{ -->
                 <p>
                     <script>
-                        document.write('<span class="hd">' + i18next.t('words.date') + ' ' + i18next.t('words.and') + ' ' + i18next.t('words.time.time') + ':</span>');
+                        document.write(`<span class="hd">${i18next.t('words.date')} ${i18next.t('words.and')} ${i18next.t('words.time.time')}:</span>`);
                         document.write('<input type="number" step="1" class="input__year" id="yyyy" name="yyyy" value="2013" onblur="Evaluate()" />-');
                         document.write('<select id="mm" name="mm" onchange="Evaluate()">');
                         for (let i = 0; i < 12; i++) {
-                            document.write('<option value="monthNumber' + i + '">' + new Date(2018, i, 1).toLocaleString(i18next.language, {month: 'short'}) + '</option>');
+                            document.write(`<option value="monthNumber${i}">${new Date(2018, i, 1).toLocaleString(i18next.language, {month: 'short'})}</option>`);
                         }
                         document.write('</select>-');
                         document.write('<input type="number" step="1" min="1" max="31" id="dd" size="3" name="dd" value="02" onblur="Evaluate()"/>');
@@ -68,7 +66,7 @@
                     <input size="3"  name="week" readonly="readonly" />
                 </p>
                 <p><script>
-                    let buttons = [
+                    const buttons = [
                         [ 3600 * 24 * 365, 1, 'words.time.year'    ],
                         [ 3600 * 24 *   7, 1, 'words.time.week'    ],
                         [ 3600 * 24      , 1, 'words.time.day'     ],
@@ -79,10 +77,8 @@
                     for (let i = 0; i < buttons.length; i++) {
                         if (buttons[i][1] !== 0) {
                             for (let x = -1; x <= 1; x += 2) {
-                                let step = x * buttons[i][1]
-                                document.write('<button type="button" onclick="Evaluate(' + buttons[i][0] * step
-                                    + ')">' + (step > 0 ? '+' : '') + step + ' ' + i18next.t(buttons[i][2]) + '</button>'
-                                    + (x === 1 ? ' ' : ''));
+                                const step = x * buttons[i][1];
+                                document.write(`<button type="button" onclick="Evaluate(${buttons[i][0] * step})">${step > 0 ? '+' : ''}${step} ${i18next.t(buttons[i][2])}</button>${x === 1 ? ' ' : ''}`);
                             }
                         } else {
                             document.write('<button type="button" onclick="Evaluate(0, true'
@@ -94,20 +90,20 @@
 
                 <p>
                     <script>
-                        document.write('<span class="hd">' + i18next.t('words.position') + ':</span>');
-                        document.write(i18next.t('words.lat') + ': <input type="number" class="input__coordinate" id="lat" value="' + default_lat + '" onblur="Evaluate()" /> ');
-                        document.write(i18next.t('words.lon') + ': <input type="number" class="input__coordinate" id="lon" value="' + default_lon + '" onblur="Evaluate()" /> ');
-                        document.write(i18next.t('words.country') + ': <input size="3" id="cc" readonly="readonly" /> ');
-                        document.write(i18next.t('words.state') + ': <input size="20" id="state" readonly="readonly" /><br />');
+                        document.write(`<span class="hd">${i18next.t('words.position')}:</span>`);
+                        document.write(`${i18next.t('words.lat')}: <input type="number" class="input__coordinate" id="lat" value="${default_lat}" onblur="Evaluate()" /> `);
+                        document.write(`${i18next.t('words.lon')}: <input type="number" class="input__coordinate" id="lon" value="${default_lon}" onblur="Evaluate()" /> `);
+                        document.write(`${i18next.t('words.country')}: <input size="3" id="cc" readonly="readonly" /> `);
+                        document.write(`${i18next.t('words.state')}: <input size="20" id="state" readonly="readonly" /><br />`);
                         // document.write('<button type="button" onclick="setCurrentPosition()">' + i18next.t('texts.get my position') + '</button>');
                     </script>
                 </p>
 
                 <p>
                     <script>
-                        document.write('<span class="hd">' + i18next.t('words.mode') + ': </span><select id="mode" name="mode" onchange="Evaluate()" style="max-width:100%;">');
+                        document.write(`<span class="hd">${i18next.t('words.mode')}: </span><select id="mode" name="mode" onchange="Evaluate()" style="max-width:100%;">`);
                         for (let i = 0; i <= 2; i++) {
-                            document.write('<option value="' + i + '">' + i18next.t('texts.mode ' + i) + '</option>');
+                            document.write(`<option value="${i}">${i18next.t(`texts.mode ${i}`)}</option>`);
                         }
                         document.write('</select>');
                     </script>
@@ -118,8 +114,7 @@
                 </div>
                 <p>
                     <script>
-                        document.write('<span class="hd">' + i18next.t('texts.value for') + ' <q>opening_hours</q>:'
-                                + '</span>');
+                        document.write(`<span class="hd">${i18next.t('texts.value for')} <q>opening_hours</q>:</span>`);
                     </script>
                     <input id="expression"
                         onKeyUp="return submitenter(this,event)"
@@ -129,7 +124,7 @@
                     />
 
                     <script>
-                        document.write('<span class="hd">' + i18next.t('texts.value to compare') + ':</span>');
+                        document.write(`<span class="hd">${i18next.t('texts.value to compare')}:</span>`);
                     </script>
                     <input
                         id="diff_value"

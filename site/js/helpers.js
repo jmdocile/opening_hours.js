@@ -595,35 +595,29 @@ function onPositionUpdate(position) {
     Evaluate();
     console.log('Current position: ' + lat + ' ' + lng);
 }
-window.onload = function () {
-    const prmarr = window.location.search.replace( '?', '' ).split('&');
-    const params = {};
-    let customCoords = false;
 
-    for ( let i = 0; i < prmarr.length; i++) {
-        const tmparr = prmarr[i].split('=');
-        params[tmparr[0]] = tmparr[1];
+window.onload = function () {
+    const params = new URLSearchParams(location.search);
+    const customCoords = params.has('lat') || params.has('lon');
+
+    if (params.has('EXP')) {
+        document.forms.check.elements['expression'].value = params.get('EXP');
     }
-    if (typeof params['EXP'] !== 'undefined') {
-        document.forms.check.elements['expression'].value = decodeURIComponent(params['EXP']);
+    if (params.has('diff_value')) {
+        document.forms.check.elements['diff_value'].value = params.get('diff_value');
     }
-    if (typeof params['diff_value'] !== 'undefined') {
-        document.forms.check.elements['diff_value'].value = decodeURIComponent(params['diff_value']);
+    if (params.has('lat')) {
+        document.forms.check.elements['lat'].value = params.get('lat');
     }
-    if (typeof params['lat'] !== 'undefined') {
-        document.forms.check.elements['lat'].value = decodeURIComponent(params['lat']);
-        customCoords = true;
+    if (params.has('lon')) {
+        document.forms.check.elements['lon'].value = params.get('lon');
     }
-    if (typeof params['lon'] !== 'undefined') {
-        document.forms.check.elements['lon'].value = decodeURIComponent(params['lon']);
-        customCoords = true;
+    if (params.has('mode')) {
+        document.forms.check.elements['mode'].value = params.get('mode');
     }
-    if (typeof params['mode'] !== 'undefined') {
-        document.forms.check.elements['mode'].value = decodeURIComponent(params['mode']);
-    }
-    if (typeof params['DATE'] !== 'undefined') {
+    if (params.has('DATE')) {
         try {
-            const loadedDate = new Date(parseInt(params['DATE']));
+            const loadedDate = new Date(parseInt(params.get('DATE')));
             currentDateTime = {
                 year: loadedDate.getFullYear(),
                 month: loadedDate.getMonth(),
@@ -641,6 +635,6 @@ window.onload = function () {
     }
     if (navigator.geolocation && !customCoords) {
         navigator.geolocation.getCurrentPosition(onPositionUpdate);
-    };
+    }
 };
 /* }}} */

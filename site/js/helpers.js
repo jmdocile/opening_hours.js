@@ -361,6 +361,8 @@ function Evaluate (offset, reset) {
 
         show_time_table.innerHTML += OpeningHoursTable.drawTableAndComments(oh, it);
     }
+
+    updatePermalinkHref();
 }
 
 // eslint-disable-next-line no-unused-vars
@@ -378,24 +380,25 @@ function newValue(value) {
     Evaluate();
 }
 
-// eslint-disable-next-line no-unused-vars
-function permalink () {
-    const exp = document.getElementById('expression').value;
-    const diff_value = document.getElementById('diff_value').value;
-    const lat = document.getElementById('lat').value;
-    const lon = document.getElementById('lon').value;
-    const mode = document.getElementById('mode').selectedIndex;
-
-    let permalink_url_query='?EXP='+encodeURIComponent(exp)+'&lat='+lat+'&lon='+lon+'&mode='+mode;
+function updatePermalinkHref() {
+    const params = new URLSearchParams({
+        EXP: document.getElementById('expression').value,
+        lat: document.getElementById('lat').value,
+        lon: document.getElementById('lon').value,
+        mode: document.getElementById('mode').selectedIndex
+    });
 
     if (document.getElementById('permalink-include-timestamp').checked) {
-        permalink_url_query += '&DATE='+date.getTime();
-    }
-    if (diff_value !== '') {
-        permalink_url_query += '&diff_value='+encodeURIComponent(diff_value);
+        params.set('DATE', date.getTime());
     }
 
-    location = location.protocol+'//'+location.host+location.pathname+permalink_url_query;
+    const diffValue = document.getElementById('diff_value').value;
+    if (diffValue !== '') {
+        params.set('diff_value', diffValue);
+    }
+
+    const baseUrl = `${location.origin}${location.pathname}`;
+    document.getElementById('permalink-link').href = `${baseUrl}?${params}`;
 }
 
 // eslint-disable-next-line no-unused-vars
@@ -463,22 +466,3 @@ window.onload = function () {
     };
 };
 /* }}} */
-
-document.addEventListener('DOMContentLoaded', () => {
-    const permalink = document.getElementById('permalink');
-    if (permalink) {
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.name = 'name';
-        checkbox.value = 'value';
-        checkbox.id = 'permalink-include-timestamp';
-        checkbox.checked = true;
-
-        const label = document.createElement('label')
-        label.htmlFor = 'permalink-include-timestamp';
-        label.appendChild(document.createTextNode(i18next.t('texts.include timestamp?')));
-
-        permalink.appendChild(label);
-        permalink.appendChild(checkbox);
-    }
-});

@@ -1,4 +1,4 @@
-/* global i18next, getUserSelectTranslateHTMLCode, Evaluate, permalink, toggle, EX, josm, newValue */
+/* global i18next, getUserSelectTranslateHTMLCode, Evaluate, toggle, EX, josm, newValue, updatePermalinkHref */
 
 // Configuration constants (need to be global for use in inline scripts in index.html)
 // eslint-disable-next-line no-var
@@ -168,6 +168,12 @@ document.addEventListener('DOMContentLoaded', () => {
         hintShPh.textContent = `(${i18next.t('texts.SH,PH or PH,SH')})`;
     }
 
+    // Permalink checkbox label
+    const permalinkCheckboxLabel = document.getElementById('permalink-checkbox-label');
+    if (permalinkCheckboxLabel) {
+        permalinkCheckboxLabel.textContent = i18next.t('texts.include timestamp?');
+    }
+
     // Footer content
     const userDiv = document.getElementById('user');
     if (userDiv) {
@@ -213,11 +219,6 @@ function setupEventListeners() {
                 Evaluate(parseInt(btn.dataset.offset, 10));
             }
         }
-        // Permalink
-        else if (e.target.closest('#permalink-link')) {
-            e.preventDefault();
-            permalink();
-        }
         // JOSM link
         else if (e.target.closest('.josm-link')) {
             e.preventDefault();
@@ -236,4 +237,10 @@ function setupEventListeners() {
             newValue(input.dataset.value);
         }
     });
+
+    // Permalink timestamp checkbox
+    const permalinkCheckbox = document.getElementById('permalink-include-timestamp');
+    if (permalinkCheckbox) {
+        permalinkCheckbox.addEventListener('change', updatePermalinkHref);
+    }
 }

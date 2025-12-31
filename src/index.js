@@ -2348,56 +2348,7 @@ export default function(value, nominatim_object, optional_conf_parm) {
                     // This makes implementation easier because only one holiday is assumed to be moved to the next year.
                     const add_days = getMoveDays(tokens, at+1, 1, 'public holiday');
 
-                    const selector = function(applying_holidays, add_days) { return function(date) {
-
-                        const holidays = getApplyingHolidaysForYear(applying_holidays, date.getFullYear(), add_days);
-                        // Needs to be calculated each time because of movable days.
-
-                        const date_num = getValueForDate(date, true);
-
-                        for (let i = 0; i < holidays.length; i++) {
-                            const next_holiday_date_num = getValueForDate(holidays[i][0], true);
-
-                            if (date_num < next_holiday_date_num) {
-
-                                if (add_days[0] > 0) {
-                                    // Calculate the last holiday from previous year to tested against it.
-                                    const holidays_last_year = getApplyingHolidaysForYear(applying_holidays, date.getFullYear() - 1, add_days);
-                                    const last_holiday_last_year = holidays_last_year[holidays_last_year.length - 1];
-                                    const last_holiday_last_year_num = getValueForDate(last_holiday_last_year[0], true);
-
-                                    if (date_num < last_holiday_last_year_num ) {
-                                        return [ false, last_holiday_last_year[0] ];
-                                    } else if (date_num === last_holiday_last_year_num) {
-                                        return [true, dateAtDayMinutes(last_holiday_last_year[0], minutes_in_day),
-                                            'Day after ' +last_holiday_last_year[1] ];
-                                    }
-                                }
-
-                                return [ false, holidays[i][0] ];
-                            } else if (date_num === next_holiday_date_num) {
-                                return [true, new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1),
-                                    (add_days[0] > 0 ? 'Day after ' : (add_days[0] < 0 ? 'Day before ' : '')) + holidays[i][1] ];
-                            }
-                        }
-
-                        if (add_days[0] < 0) {
-                            // Calculate the first holiday from next year to tested against it.
-                            const holidays_next_year = getApplyingHolidaysForYear(applying_holidays, date.getFullYear() + 1, add_days);
-                            const first_holidays_next_year = holidays_next_year[0];
-                            const first_holidays_next_year_num = getValueForDate(first_holidays_next_year[0], true);
-                            if (date_num === first_holidays_next_year_num) {
-                                return [true, dateAtDayMinutes(first_holidays_next_year[0], minutes_in_day),
-                                    'Day before ' + first_holidays_next_year[1] ];
-                            }
-                        }
-
-                        // continue next year
-                        return [ false, new Date(holidays[0][0].getFullYear() + 1,
-                                holidays[0][0].getMonth(),
-                                holidays[0][0].getDate()) ];
-
-                    }}(applying_holidays, add_days);
+                    const selector = createPublicHolidaySelector(applying_holidays, add_days);
 
                     if (push_to_weekday)
                         rule.weekday.push(selector);
@@ -2602,6 +2553,64 @@ export default function(value, nominatim_object, optional_conf_parm) {
             const b_from = getDateNumber(b.from_month, b.from_day);
             return a_from - b_from;
         });
+    }
+    /* }}} */
+
+    /* Create a selector function for public holidays (PH). {{{
+     *
+     * :param applying_holidays: Array of holiday definition objects.
+     * :param add_days: Array [days_to_add, token_count] from getMoveDays().
+     * :returns: Selector function that checks if a date matches a public holiday.
+     */
+    function createPublicHolidaySelector(applying_holidays, add_days) {
+        return function(date) {
+            const holidays = getApplyingHolidaysForYear(applying_holidays, date.getFullYear(), add_days);
+            // Needs to be calculated each time because of movable days.
+
+            const date_num = getValueForDate(date, true);
+
+            for (let i = 0; i < holidays.length; i++) {
+                const next_holiday_date_num = getValueForDate(holidays[i][0], true);
+
+                if (date_num < next_holiday_date_num) {
+
+                    if (add_days[0] > 0) {
+                        // Calculate the last holiday from previous year to tested against it.
+                        const holidays_last_year = getApplyingHolidaysForYear(applying_holidays, date.getFullYear() - 1, add_days);
+                        const last_holiday_last_year = holidays_last_year[holidays_last_year.length - 1];
+                        const last_holiday_last_year_num = getValueForDate(last_holiday_last_year[0], true);
+
+                        if (date_num < last_holiday_last_year_num ) {
+                            return [ false, last_holiday_last_year[0] ];
+                        } else if (date_num === last_holiday_last_year_num) {
+                            return [true, dateAtDayMinutes(last_holiday_last_year[0], minutes_in_day),
+                                'Day after ' +last_holiday_last_year[1] ];
+                        }
+                    }
+
+                    return [ false, holidays[i][0] ];
+                } else if (date_num === next_holiday_date_num) {
+                    return [true, new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1),
+                        (add_days[0] > 0 ? 'Day after ' : (add_days[0] < 0 ? 'Day before ' : '')) + holidays[i][1] ];
+                }
+            }
+
+            if (add_days[0] < 0) {
+                // Calculate the first holiday from next year to tested against it.
+                const holidays_next_year = getApplyingHolidaysForYear(applying_holidays, date.getFullYear() + 1, add_days);
+                const first_holidays_next_year = holidays_next_year[0];
+                const first_holidays_next_year_num = getValueForDate(first_holidays_next_year[0], true);
+                if (date_num === first_holidays_next_year_num) {
+                    return [true, dateAtDayMinutes(first_holidays_next_year[0], minutes_in_day),
+                        'Day before ' + first_holidays_next_year[1] ];
+                }
+            }
+
+            // continue next year
+            return [ false, new Date(holidays[0][0].getFullYear() + 1,
+                    holidays[0][0].getMonth(),
+                    holidays[0][0].getDate()) ];
+        };
     }
     /* }}} */
 

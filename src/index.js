@@ -2359,81 +2359,16 @@ export default function(value, nominatim_object, optional_conf_parm) {
                 } else if (tokens[at][0] === 'SH') {
                     const applying_holidays = getMatchingHoliday(tokens[at][0]);
 
-                    const selector = function(applying_holidays) { return function(date) {
-                        const date_num = getValueForDate(date);
-                        const year = date.getFullYear();
-
-                        // Collect all holiday ranges from all holiday types for this year,
-                        // sorted chronologically by start date.
-                        const all_ranges = collectSHRangesForYear(applying_holidays, year);
-                        sortRangesByStartDate(all_ranges);
-
-                        // Check for holidays from last year spanning into this year
-                        for (let i = 0; i < applying_holidays.length; i++) {
-                            const last_year_holiday = getSHForYear(applying_holidays[i], year - 1, false);
-                            if (typeof last_year_holiday === 'object') {
-                                // Check the last range of this holiday type from last year
-                                const last_idx = last_year_holiday.length - 4;
-                                const last_year_holiday_from = getDateNumber(last_year_holiday[last_idx], last_year_holiday[last_idx + 1]);
-                                const last_year_holiday_to = getDateNumber(last_year_holiday[last_idx + 2], last_year_holiday[last_idx + 3]);
-
-                                // If holiday spans into next year and we're still in that period
-                                if (last_year_holiday_from > last_year_holiday_to && date_num <= last_year_holiday_to) {
-                                    return [true, new Date(year,
-                                        last_year_holiday[last_idx + 2] - 1,
-                                        last_year_holiday[last_idx + 3] + 1),
-                                        applying_holidays[i].name];
-                                }
-                            }
-                        }
-
-                        // Check each holiday range
-                        for (let r = 0; r < all_ranges.length; r++) {
-                            const range = all_ranges[r];
-                            const holiday_from = getDateNumber(range.from_month, range.from_day);
-                            const holiday_to = getDateNumber(range.to_month, range.to_day);
-                            const holiday_ends_next_year = holiday_to < holiday_from;
-
-                            if (date_num < holiday_from) {
-                                // Date is before this holiday range - return false with next holiday start
-                                return [false, new Date(year, range.from_month - 1, range.from_day)];
-                            } else if (holiday_from <= date_num && (date_num <= holiday_to || holiday_ends_next_year)) {
-                                // Date is within this holiday range
-                                return [true, new Date(year + holiday_ends_next_year, range.to_month - 1, range.to_day + 1),
-                                    range.name];
-                            }
-                            // Date is after this holiday range - check next range
-                        }
-
-                        // Date is after all holidays this year - check next year's first holiday
-                        const next_year_ranges = [];
-                        for (let i = 0; i < applying_holidays.length; i++) {
-                            const holiday = getSHForYear(applying_holidays[i], year + 1, false);
-                            if (typeof holiday === 'undefined') {
-                                continue;
-                            }
-                            next_year_ranges.push({
-                                from_month: holiday[0],
-                                from_day: holiday[1],
-                                name: applying_holidays[i].name
-                            });
-                        }
-                        if (next_year_ranges.length > 0) {
-                            sortRangesByStartDate(next_year_ranges);
-                            return [false, new Date(year + 1, next_year_ranges[0].from_month - 1, next_year_ranges[0].from_day)];
-                        }
-
-                        throw formatLibraryBugMessage(t('no SH definition', {
-                            'name': '',
-                            'year': year,
-                        }), 'library bug PR only');
-                    }}(applying_holidays);
+                    const selector = createSchoolHolidaySelector(applying_holidays);
 
                     if (push_to_weekday)
                         rule.weekday.push(selector);
                     else
                         rule.holiday.push(selector);
-                    at += 1; // FIXME: test
+
+                    // Note: SH does not support move days (e.g., "SH +1 day") unlike PH.
+                    // School holidays are date ranges, not single-day events that can be shifted.
+                    at += 1;
                 }
             } else if (matchTokens(tokens, at, 'weekday')) {
                 return parseWeekdayRange(tokens, at, rule, true, nrule);
@@ -2553,6 +2488,84 @@ export default function(value, nominatim_object, optional_conf_parm) {
             const b_from = getDateNumber(b.from_month, b.from_day);
             return a_from - b_from;
         });
+    }
+    /* }}} */
+
+    /* Create a school holiday selector function for checking if a date falls within school holidays. {{{
+     *
+     * :param applying_holidays: Array of school holiday definition objects.
+     * :returns: Selector function that checks if a date is within school holiday ranges.
+     */
+    function createSchoolHolidaySelector(applying_holidays) {
+        return function(date) {
+            const date_num = getValueForDate(date);
+            const year = date.getFullYear();
+
+            // Collect all holiday ranges from all holiday types for this year,
+            // sorted chronologically by start date.
+            const all_ranges = collectSHRangesForYear(applying_holidays, year);
+            sortRangesByStartDate(all_ranges);
+
+            // Check for holidays from last year spanning into this year
+            for (let i = 0; i < applying_holidays.length; i++) {
+                const last_year_holiday = getSHForYear(applying_holidays[i], year - 1, false);
+                if (typeof last_year_holiday === 'object') {
+                    // Check the last range of this holiday type from last year
+                    const last_idx = last_year_holiday.length - 4;
+                    const last_year_holiday_from = getDateNumber(last_year_holiday[last_idx], last_year_holiday[last_idx + 1]);
+                    const last_year_holiday_to = getDateNumber(last_year_holiday[last_idx + 2], last_year_holiday[last_idx + 3]);
+
+                    // If holiday spans into next year and we're still in that period
+                    if (last_year_holiday_from > last_year_holiday_to && date_num <= last_year_holiday_to) {
+                        return [true, new Date(year,
+                            last_year_holiday[last_idx + 2] - 1,
+                            last_year_holiday[last_idx + 3] + 1),
+                            applying_holidays[i].name];
+                    }
+                }
+            }
+
+            // Check each holiday range
+            for (let r = 0; r < all_ranges.length; r++) {
+                const range = all_ranges[r];
+                const holiday_from = getDateNumber(range.from_month, range.from_day);
+                const holiday_to = getDateNumber(range.to_month, range.to_day);
+                const holiday_ends_next_year = holiday_to < holiday_from;
+
+                if (date_num < holiday_from) {
+                    // Date is before this holiday range - return false with next holiday start
+                    return [false, new Date(year, range.from_month - 1, range.from_day)];
+                } else if (holiday_from <= date_num && (date_num <= holiday_to || holiday_ends_next_year)) {
+                    // Date is within this holiday range
+                    return [true, new Date(year + holiday_ends_next_year, range.to_month - 1, range.to_day + 1),
+                        range.name];
+                }
+                // Date is after this holiday range - check next range
+            }
+
+            // Date is after all holidays this year - check next year's first holiday
+            const next_year_ranges = [];
+            for (let i = 0; i < applying_holidays.length; i++) {
+                const holiday = getSHForYear(applying_holidays[i], year + 1, false);
+                if (typeof holiday === 'undefined') {
+                    continue;
+                }
+                next_year_ranges.push({
+                    from_month: holiday[0],
+                    from_day: holiday[1],
+                    name: applying_holidays[i].name
+                });
+            }
+            if (next_year_ranges.length > 0) {
+                sortRangesByStartDate(next_year_ranges);
+                return [false, new Date(year + 1, next_year_ranges[0].from_month - 1, next_year_ranges[0].from_day)];
+            }
+
+            throw formatLibraryBugMessage(t('no SH definition', {
+                'name': '',
+                'year': year,
+            }), 'library bug PR only');
+        };
     }
     /* }}} */
 

@@ -2322,7 +2322,39 @@ export default function(value, nominatim_object, optional_conf_parm) {
     }
     /* }}} */
 
+
+    /* Parses a single holiday token (PH or SH) and adds the selector to the rule. {{{
+     *
+     * :param tokens: List of token objects.
+     * :param at: Position of the holiday token.
+     * :param target_array: Array to push the selector to (rule.weekday or rule.holiday).
+     * :returns: New token position after this holiday token.
+     */
+    function parseSingleHolidayToken(tokens, at, target_array) {
+        const holiday_type = tokens[at][0];
+        const applying_holidays = getMatchingHoliday(holiday_type);
+
+        if (holiday_type === 'PH') {
+            const add_days = getMoveDays(tokens, at + 1, 1, 'public holiday');
+            const selector = createPublicHolidaySelector(applying_holidays, add_days);
+            target_array.push(selector);
+            return at + 1 + add_days[1];
+        } else { // SH
+            const selector = createSchoolHolidaySelector(applying_holidays);
+            target_array.push(selector);
+            return at + 1;
+        }
+    }
+    /* }}} */
+
+
     /* Holiday parser for public and school holidays (PH,SH) {{{
+     *
+     * Handles holiday tokens followed by optional weekday selectors:
+     * - "PH" → public holiday
+     * - "PH,SH" → public holiday or school holiday
+     * - "PH Mo-Fr" → public holiday that falls on Monday-Friday
+     * - "SH" → school holiday periods
      *
      * :param tokens: List of token objects.
      * :param at: Position where to start.
@@ -2332,47 +2364,17 @@ export default function(value, nominatim_object, optional_conf_parm) {
      */
     function parseHoliday(tokens, at, rule, push_to_weekday, in_holiday_selector) {
         if (!in_holiday_selector) {
-
-            if (push_to_weekday)
-                tokens[at][3] = 'weekday';
-            else
-                tokens[at][3] = 'holiday'; // Could also be holiday but this is not important here.
+            tokens[at][3] = push_to_weekday ? 'weekday' : 'holiday';
         }
 
-        for (; at < tokens.length; at++) {
+        const target_array = push_to_weekday ? rule.weekday : rule.holiday;
+
+        while (at < tokens.length) {
             if (matchTokens(tokens, at, 'holiday')) {
-                if (tokens[at][0] === 'PH') {
-                    const applying_holidays = getMatchingHoliday(tokens[at][0]);
-
-                    // Only allow moving one day in the past or in the future.
-                    // This makes implementation easier because only one holiday is assumed to be moved to the next year.
-                    const add_days = getMoveDays(tokens, at+1, 1, 'public holiday');
-
-                    const selector = createPublicHolidaySelector(applying_holidays, add_days);
-
-                    if (push_to_weekday)
-                        rule.weekday.push(selector);
-                    else
-                        rule.holiday.push(selector);
-
-                    at += 1 + add_days[1];
-                } else if (tokens[at][0] === 'SH') {
-                    const applying_holidays = getMatchingHoliday(tokens[at][0]);
-
-                    const selector = createSchoolHolidaySelector(applying_holidays);
-
-                    if (push_to_weekday)
-                        rule.weekday.push(selector);
-                    else
-                        rule.holiday.push(selector);
-
-                    // Note: SH does not support move days (e.g., "SH +1 day") unlike PH.
-                    // School holidays are date ranges, not single-day events that can be shifted.
-                    at += 1;
-                }
+                at = parseSingleHolidayToken(tokens, at, target_array);
             } else if (matchTokens(tokens, at, 'weekday')) {
                 return parseWeekdayRange(tokens, at, rule, true, nrule);
-            } else if (matchTokens(tokens, at - 1, ',')) { // additional rule
+            } else if (matchTokens(tokens, at - 1, ',')) {
                 throw formatWarnErrorMessage(
                     nrule,
                     at - 1,
@@ -2381,12 +2383,16 @@ export default function(value, nominatim_object, optional_conf_parm) {
                 throw formatWarnErrorMessage(nrule, at, t('unexpected token holiday', {'token': tokens[at][1]}));
             }
 
+            // Continue only if followed by comma separator
             if (!matchTokens(tokens, at, ','))
                 break;
+
+            at++; // Skip comma
         }
 
         return at;
     }
+    /* }}} */
 
     // Helpers for holiday parsers {{{
 

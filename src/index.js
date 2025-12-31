@@ -2414,30 +2414,8 @@ export default function(value, nominatim_object, optional_conf_parm) {
 
                         // Collect all holiday ranges from all holiday types for this year,
                         // sorted chronologically by start date.
-                        const all_ranges = [];
-                        for (let i = 0; i < applying_holidays.length; i++) {
-                            const holiday = getSHForYear(applying_holidays[i], year, false);
-                            if (typeof holiday === 'undefined') {
-                                continue;
-                            }
-                            for (let h = 0; h < holiday.length; h += 4) {
-                                all_ranges.push({
-                                    from_month: holiday[0 + h],
-                                    from_day: holiday[1 + h],
-                                    to_month: holiday[2 + h],
-                                    to_day: holiday[3 + h],
-                                    name: applying_holidays[i].name,
-                                    holiday_obj: applying_holidays[i]
-                                });
-                            }
-                        }
-
-                        // Sort by start date (month * 100 + day)
-                        all_ranges.sort((a, b) => {
-                            const a_from = (a.from_month - 1) * 100 + a.from_day;
-                            const b_from = (b.from_month - 1) * 100 + b.from_day;
-                            return a_from - b_from;
-                        });
+                        const all_ranges = collectSHRangesForYear(applying_holidays, year);
+                        sortRangesByStartDate(all_ranges);
 
                         // Check for holidays from last year spanning into this year
                         for (let i = 0; i < applying_holidays.length; i++) {
@@ -2445,10 +2423,8 @@ export default function(value, nominatim_object, optional_conf_parm) {
                             if (typeof last_year_holiday === 'object') {
                                 // Check the last range of this holiday type from last year
                                 const last_idx = last_year_holiday.length - 4;
-                                const last_year_holiday_from = (last_year_holiday[last_idx] - 1) * 100
-                                    + last_year_holiday[last_idx + 1];
-                                const last_year_holiday_to = (last_year_holiday[last_idx + 2] - 1) * 100
-                                    + last_year_holiday[last_idx + 3];
+                                const last_year_holiday_from = getDateNumber(last_year_holiday[last_idx], last_year_holiday[last_idx + 1]);
+                                const last_year_holiday_to = getDateNumber(last_year_holiday[last_idx + 2], last_year_holiday[last_idx + 3]);
 
                                 // If holiday spans into next year and we're still in that period
                                 if (last_year_holiday_from > last_year_holiday_to && date_num <= last_year_holiday_to) {
@@ -2463,8 +2439,8 @@ export default function(value, nominatim_object, optional_conf_parm) {
                         // Check each holiday range
                         for (let r = 0; r < all_ranges.length; r++) {
                             const range = all_ranges[r];
-                            const holiday_from = (range.from_month - 1) * 100 + range.from_day;
-                            const holiday_to = (range.to_month - 1) * 100 + range.to_day;
+                            const holiday_from = getDateNumber(range.from_month, range.from_day);
+                            const holiday_to = getDateNumber(range.to_month, range.to_day);
                             const holiday_ends_next_year = holiday_to < holiday_from;
 
                             if (date_num < holiday_from) {
@@ -2492,11 +2468,7 @@ export default function(value, nominatim_object, optional_conf_parm) {
                             });
                         }
                         if (next_year_ranges.length > 0) {
-                            next_year_ranges.sort((a, b) => {
-                                const a_from = (a.from_month - 1) * 100 + a.from_day;
-                                const b_from = (b.from_month - 1) * 100 + b.from_day;
-                                return a_from - b_from;
-                            });
+                            sortRangesByStartDate(next_year_ranges);
                             return [false, new Date(year + 1, next_year_ranges[0].from_month - 1, next_year_ranges[0].from_day)];
                         }
 
@@ -2576,6 +2548,60 @@ export default function(value, nominatim_object, optional_conf_parm) {
             }
         }
         return holiday;
+    }
+    /* }}} */
+
+    /* Convert month and day to a comparable number (month * 100 + day). {{{
+     * For example: Jan 15 -> 115, Dec 25 -> 1225
+     *
+     * :param month: Month as integer (1-12).
+     * :param day: Day as integer (1-31).
+     * :returns: Number for comparison.
+     */
+    function getDateNumber(month, day) {
+        return (month - 1) * 100 + day;
+    }
+    /* }}} */
+
+    /* Collect all school holiday ranges for a given year from multiple holiday definitions. {{{
+     *
+     * :param applying_holidays: Array of holiday definition objects.
+     * :param year: Year as integer.
+     * :returns: Array of range objects with from_month, from_day, to_month, to_day, name, holiday_obj.
+     */
+    function collectSHRangesForYear(applying_holidays, year) {
+        const all_ranges = [];
+        for (let i = 0; i < applying_holidays.length; i++) {
+            const holiday = getSHForYear(applying_holidays[i], year, false);
+            if (typeof holiday === 'undefined') {
+                continue;
+            }
+            for (let h = 0; h < holiday.length; h += 4) {
+                all_ranges.push({
+                    from_month: holiday[0 + h],
+                    from_day: holiday[1 + h],
+                    to_month: holiday[2 + h],
+                    to_day: holiday[3 + h],
+                    name: applying_holidays[i].name,
+                    holiday_obj: applying_holidays[i]
+                });
+            }
+        }
+        return all_ranges;
+    }
+    /* }}} */
+
+    /* Sort holiday ranges by their start date (chronologically). {{{
+     *
+     * :param ranges: Array of range objects (will be sorted in-place).
+     * :returns: The sorted ranges array.
+     */
+    function sortRangesByStartDate(ranges) {
+        return ranges.sort((a, b) => {
+            const a_from = getDateNumber(a.from_month, a.from_day);
+            const b_from = getDateNumber(b.from_month, b.from_day);
+            return a_from - b_from;
+        });
     }
     /* }}} */
 

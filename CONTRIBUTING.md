@@ -119,7 +119,7 @@ The scope indicates the part of the codebase being changed. Common scopes includ
 ```text
 feat(parser): add support for week ranges with step
 
-fix(holidays): correct Easter calculation for edge cases
+fix: resume periodic week schedules mid-range
 
 data(holidays): update Argentina 2026 public holidays
 

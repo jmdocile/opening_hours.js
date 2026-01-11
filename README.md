@@ -820,7 +820,7 @@ If you want to contribute to this project, please read the [contribution guideli
 
 * [Dmitry Marakasov](https://github.com/AMDmi3) <amdmi3@amdmi3.ru>: Maintainer from 2012-12 until 2014-05. Initial coding and design and all basic features like time ranges, week ranges, month ranges and week ranges.
 * [Robin Schneider](https://me.ypid.de/) <ypid@riseup.net>: Maintainer from 2013-09 until 2025-05. Added support for years, holidays, unknown, comments, open end, fallback/additional rules (and more), wrote getWarnings, prettifyValue, translated demo page to English and German and extended it to enter values yourself (now called [evaluation tool][ohlib.evaluation-tool]).
-* [Kristjan ESPERANTO](https://github.com/KristjanESPERANTO) [GitHub](https://github.com/KristjanESPERANTO)/[OSM](https://www.openstreetmap.org/user/Kristjan%20ESPERANTO): Maintainer since 2025-05. Switch from CommonJS to ESM. Sharpening the ESLint rules incl. handling the reported issues. HTML/CSS/JS/GitHub CI improvements, keeping the stack up-to-date.
+* [Kristjan ESPERANTO](https://github.com/KristjanESPERANTO) [GitHub](https://github.com/KristjanESPERANTO)/[OSM](https://www.openstreetmap.org/user/Kristjan%20ESPERANTO): Maintainer since 2025-05. Switch from CommonJS to ESM. Sharpening the ESLint rules incl. handling the reported issues. HTML/CSS/JS/GitHub CI improvements, keeping the stack up-to-date. Major [evaluation tool][ohlib.evaluation-tool] Redesign.
 
 ## Contributors
 

@@ -370,11 +370,7 @@ export const OpeningHoursTable = {
             return `${i18next.t('words.yesterday')} ${timeStr}`;
         } else {
             // For dates further away, show date + time
-            const dateStr = changeDate.toLocaleString(i18next.language, {
-                day: 'numeric',
-                month: 'numeric',
-                year: changeDate.getFullYear() !== currentDate.getFullYear() ? 'numeric' : undefined
-            });
+            const dateStr = this.toISODateString(changeDate);
             return `${dateStr} ${timeStr}`;
         }
     },

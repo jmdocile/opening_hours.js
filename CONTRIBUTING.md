@@ -110,6 +110,7 @@ The scope indicates the part of the codebase being changed. Common scopes includ
 - `build`: Build system (rollup, npm, etc.)
 - `test`: Test infrastructure
 - `deps`: Dependency updates
+- `evaluation-tool`: Evaluation tool written in HTML, CSS, JS
 - Country codes (`de`, `fr`, `us`, etc.): Country-specific changes
 
 **Examples:**

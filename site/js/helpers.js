@@ -6,7 +6,7 @@ import { updateTimeButtonLabels } from './main.js';
 import { YoHoursChecker } from './yohours_model.js';
 
 // Access global variables set by main.js or UMD scripts
-const { opening_hours, default_lat, default_lon, specification_url } = window;
+const { opening_hours, default_lat, default_lon } = window;
 
 // Export date/time state
 export let currentDateTime = {
@@ -142,7 +142,7 @@ function getFragmentIdentifier(selectorType) {
 
 function generateRuleSeparatorHTML(ruleSeparator) {
     return `<span title="${i18next.t('texts.rule separator ' + ruleSeparator)}" class="rule_separator">` +
-           `<a target="_blank" class="specification" href="${specification_url}#section:rule_separators">${ruleSeparator}</a></span><br>`;
+           `<a target="_blank" class="specification" href="${window.specification_url}#section:rule_separators">${ruleSeparator}</a></span><br>`;
 }
 
 function generateSelectorHTML(selectorType, selectorValue) {
@@ -150,7 +150,7 @@ function generateSelectorHTML(selectorType, selectorValue) {
     const translationKey = selectorType.match(/(?:state|comment)/) ? 'modifier' : 'selector';
 
     return `<span title="${i18next.t(`words.${translationKey}`, { name: selectorType })}" class="${selectorType}">` +
-           `<a target="_blank" class="specification" href="${specification_url}#${fragmentIdentifier}">${selectorValue}</a></span>`;
+           `<a target="_blank" class="specification" href="${window.specification_url}#${fragmentIdentifier}">${selectorValue}</a></span>`;
 }
 
 /**

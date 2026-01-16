@@ -75,6 +75,7 @@
 'outside day': 'Time range starts outside of the current day'
 'zero calculation': 'Adding zero in a variable time calculation does not change the variable time. Please omit the calculation (example: "sunrise-(sunset-00:00)").'
 'calculation syntax': 'Calculation with variable time is not in the right syntax'
+'time offset hours only': 'Time offset must be in format HH:MM, not just hours. Did you mean "{{suggestion}}"?'
 'missing': 'Missing "{{symbol}}"'
 '(time)': (time)
 'bad range': 'Bad range: {{from}}-{{to}}'

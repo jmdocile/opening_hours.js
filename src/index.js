@@ -2074,6 +2074,12 @@ export default function(value, nominatim_object, optional_conf_parm) {
                 } else {
                     error = [ at+6, '. ' + t('missing', {'symbol': ')'}) + '.'];
                 }
+            } else if (matchTokens(tokens, at+3, 'number') && matchTokens(tokens, at+4, ')')) {
+                // User likely meant hours without minutes, e.g. (sunset-1) instead of (sunset-01:00)
+                const hours = ('0' + tokens[at+3][0]).slice(-2);
+                const suggestion = '(' + tokens[at+1][0] + tokens[at+2][0] + hours + ':00)';
+                throw formatWarnErrorMessage(nrule, at+3,
+                    t('time offset hours only', { suggestion: suggestion }));
             } else {
                 error = [ at+5, ' ' + t('(time)') + '.'];
             }

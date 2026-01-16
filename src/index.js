@@ -506,7 +506,7 @@ export default function(value, nominatim_object, optional_conf_parm) {
                             console.warn('Last token for rule: ' + JSON.stringify(tokens_to_use[nrule]));
                             console.log(value.substring(0, pos) + ' <--- (' + message + ')');
                             console.log('\n');
-                        } {
+                        } else {
                             console.warn('tokens_to_use[nrule][2] is undefined. This is ok if nrule is the last rule.');
                         }
                     }

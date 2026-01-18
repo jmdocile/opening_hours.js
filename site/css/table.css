@@ -252,11 +252,11 @@ span.oh-times { background: #88ccff; }
     tr.time-scale td:nth-child(2) {
         width: 200px;
     }
-    
+
     td.description {
         display: none;
     }
-    
+
     .scale-labels {
         font-size: 0.65em;
     }

@@ -89,8 +89,8 @@ export const OpeningHoursTable = {
         return i18next.t(trans_base, {count: n});
     },
 
-    printDate (date) {
-        // return date.toLocaleDateString('en-CA');
+    toISODateString (date) {
+        // ISO 8601: https://xkcd.com/1179/
         return `${date.getFullYear()}-${
             this.pad(date.getMonth() + 1)}-${
             this.pad(date.getDate())}`;
@@ -219,7 +219,7 @@ export const OpeningHoursTable = {
             return `<tr${rowClass}>
                 <td class="day ${dayClass}">
                     <span class="weekday">${weekdayName}</span>
-                    <span class="date">${this.printDate(row.date)}</span>
+                    <span class="date">${this.toISODateString(row.date)}</span>
                 </td>
                 <td class="times">
                     ${row.times.join('')}
@@ -370,11 +370,7 @@ export const OpeningHoursTable = {
             return `${i18next.t('words.yesterday')} ${timeStr}`;
         } else {
             // For dates further away, show date + time
-            const dateStr = changeDate.toLocaleString(i18next.language, {
-                day: 'numeric',
-                month: 'numeric',
-                year: changeDate.getFullYear() !== currentDate.getFullYear() ? 'numeric' : undefined
-            });
+            const dateStr = this.toISODateString(changeDate);
             return `${dateStr} ${timeStr}`;
         }
     },

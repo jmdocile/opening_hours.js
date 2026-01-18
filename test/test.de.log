@@ -2243,6 +2243,18 @@ week 02-52/2 We,  <--- (Eine weitere Regel an dieser Stelle ergibt keinen Sinn. 
 "Incorrect syntax which should throw an error" for "(sunrise)-sunset; 00:23-00:42 unknown "warning at correct position?"": [1m[32mPASSED[39m[22m
 (sunrise) <--- (Berechnung mit variabler Zeit hat nicht die korrekte Syntax. "+" or "-" erwartet.)
 
+"Incorrect syntax which should throw an error" for "(sunset-1); 00:23-00:42 unknown "warning at correct position?"": [1m[32mPASSED[39m[22m
+(sunset-1 <--- (Zeitversatz muss im Format HH:MM angegeben werden, nicht nur Stunden. Meintest du "(sunset-01:00)"?)
+
+"Incorrect syntax which should throw an error" for "(sunrise+2); 00:23-00:42 unknown "warning at correct position?"": [1m[32mPASSED[39m[22m
+(sunrise+2 <--- (Zeitversatz muss im Format HH:MM angegeben werden, nicht nur Stunden. Meintest du "(sunrise+02:00)"?)
+
+"Incorrect syntax which should throw an error" for "(dawn-1); 00:23-00:42 unknown "warning at correct position?"": [1m[32mPASSED[39m[22m
+(dawn-1 <--- (Zeitversatz muss im Format HH:MM angegeben werden, nicht nur Stunden. Meintest du "(dawn-01:00)"?)
+
+"Incorrect syntax which should throw an error" for "(dusk+3); 00:23-00:42 unknown "warning at correct position?"": [1m[32mPASSED[39m[22m
+(dusk+3 <--- (Zeitversatz muss im Format HH:MM angegeben werden, nicht nur Stunden. Meintest du "(dusk+03:00)"?)
+
 "Incorrect syntax which should throw an error" for "(; 00:23-00:42 unknown "warning at correct position?"": [1m[32mPASSED[39m[22m
 ( <--- (Unerwartetes Zeichen: "(" Das bedeutet, dass die Syntax an dieser Stelle nicht erkannt werden konnte.) 
 
@@ -2709,7 +2721,7 @@ Der optional_conf_parm["tag_key"] fehlt, ist aber notwendig wegen optional_conf_
 "Test isEqualTo function" for "Mo 10:00-20:00; We-Fr 10:00-20:01": [1m[32mPASSED[39m[22m
 "Test isEqualTo function" for "Mo 10:00-20:00; We-Fr 10:00-19:59": [1m[32mPASSED[39m[22m
 "Test isEqualTo function" for "closed; Sa unknown "comment"": [1m[32mPASSED[39m[22m
-940/950 tests passed. 10 did not pass.
+944/954 tests passed. 10 did not pass.
 41 tests where (partly) ignored, sorted by commonness:
 * 26: prettifyValue (most of the cases this is used to test if values with selectors in wrong order or wrong symbols (error tolerance) are evaluated correctly)
 * 11: not implemented yet

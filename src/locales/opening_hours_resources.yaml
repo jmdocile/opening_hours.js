@@ -92,6 +92,7 @@ de:
       outside day: "Die Zeitspanne beginnt außerhalb des aktuellen Tages"
       zero calculation: "Das Hinzufügen von 0 in einer variablen Zeitberechnung ändert die variable Zeit nicht. Bitte entferne die Zeitberechnung (Beispiel: \"sunrise-(sunset-00:00)\")."
       calculation syntax: "Berechnung mit variabler Zeit hat nicht die korrekte Syntax"
+      time offset hours only: "Zeitversatz muss im Format HH:MM angegeben werden, nicht nur Stunden. Meintest du \"{{suggestion}}\"?"
       missing: "Fehlendes \"{{symbol}}\""
       '(time)': "(Zeit)"
       bad range: "Ungültige Zeitspanne: {{from}}-{{to}}"

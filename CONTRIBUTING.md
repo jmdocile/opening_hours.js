@@ -107,9 +107,11 @@ The scope indicates the part of the codebase being changed. Common scopes includ
 - `parser`: Parser/tokenizer changes
 - `holidays`: Holiday definition logic (not data updates)
 - `locales`: Translation/i18n changes
-- `build`: Build system (rollup, npm, etc.)
+- `rollup`: rollup changes
+- `npm`: npm changes
 - `test`: Test infrastructure
 - `deps`: Dependency updates
+- `evaluation-tool`: Evaluation tool written in HTML, CSS, JS
 - Country codes (`de`, `fr`, `us`, etc.): Country-specific changes
 
 **Examples:**
@@ -117,7 +119,7 @@ The scope indicates the part of the codebase being changed. Common scopes includ
 ```text
 feat(parser): add support for week ranges with step
 
-fix(holidays): correct Easter calculation for edge cases
+fix: resume periodic week schedules mid-range
 
 data(holidays): update Argentina 2026 public holidays
 

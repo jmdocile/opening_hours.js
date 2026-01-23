@@ -29,7 +29,7 @@
 /**
  * The days in a week
  */
-DAYS = {
+const DAYS = {
 	MONDAY: 0,
 	TUESDAY: 1,
 	WEDNESDAY: 2,
@@ -42,42 +42,42 @@ DAYS = {
 /**
  * The days in OSM
  */
-OSM_DAYS = [ "Mo", "Tu", "We", "Th", "Fr", "Sa", "Su" ];
+const OSM_DAYS = [ "Mo", "Tu", "We", "Th", "Fr", "Sa", "Su" ];
 
 /**
  * The days IRL
  */
-IRL_DAYS = [ "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" ];
+const IRL_DAYS = [ "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" ];
 
 /**
  * The month in OSM
  */
-OSM_MONTHS = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ];
+const OSM_MONTHS = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ];
 
 /**
  * The months IRL
  */
-IRL_MONTHS = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ];
+const IRL_MONTHS = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ];
 
 /**
  * The last day of month
  */
-MONTH_END_DAY = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
+const MONTH_END_DAY = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
 
 /**
  * The maximal minute that an interval can have
  */
-MINUTES_MAX = 1440;
+const MINUTES_MAX = 1440;
 
 /**
  * The maximal value of days
  */
-DAYS_MAX = 6;
+const DAYS_MAX = 6;
 
 /**
  * The weekday ID for PH
  */
-PH_WEEKDAY = -2;
+const PH_WEEKDAY = -2;
 
 /*
  * ========== CLASSES ==========
@@ -717,7 +717,7 @@ var Day = function() {
 		this._intervals = [];
 		for(var i=0; i < intervals.length; i++) {
 			if(intervals[i] != undefined && intervals[i].getStartDay() == 0 && intervals[i].getEndDay() == 0) {
-				this._intervals.push($.extend(true, {}, intervals[i]));
+				this._intervals.push(structuredClone(intervals[i]));
 			}
 		}
 		
@@ -1045,7 +1045,7 @@ var Week = function() {
 		this._intervals = [];
 		for(var i=0; i < intervals.length; i++) {
 			if(intervals[i] != undefined) {
-				this._intervals.push($.extend(true, {}, intervals[i]));
+				this._intervals.push(structuredClone(intervals[i]));
 			}
 		}
 	};
@@ -2177,7 +2177,7 @@ var OpeningHoursParser = function() {
 		
 		var block, tokens, currentToken, ruleModifier, timeSelector, weekdaySelector, wideRangeSelector;
 		var singleTime, from, to, times;
-		var singleWeekday, wdStart, wdEnd, holidays, weekdays;
+		var singleWeekday, wdStart, wdEnd, wdFrom, wdTo, holidays, weekdays;
 		var monthSelector, weekSelector, weeks, singleWeek, weekFrom, weekTo, singleMonth, months, monthFrom, monthTo;
 		var dateRanges, dateRange, drObj, foundDateRange, resDrId;
 		
@@ -2638,7 +2638,7 @@ var OpeningHoursParser = function() {
 		//Check added interval are OK for days
 		if(typical instanceof Day) {
 			if(weekdays.from != 0 || (weekdays.to != 0 && times.from <= times.to)) {
-				weekdays = $.extend({}, weekdays);
+				weekdays = Object.assign({}, weekdays);
 				weekdays.from = 0;
 				weekdays.to = (times.from <= times.to) ? 0 : 1;
 			}
@@ -2728,10 +2728,10 @@ var OpeningHoursParser = function() {
 	 */
 	OpeningHoursParser.prototype._tokenize = function(block) {
 		var result = block.trim().split(' ');
-		var position = $.inArray("", result);
+		var position = result.indexOf("");
 		while( ~position ) {
 			result.splice(position, 1);
-			position = $.inArray("", result);
+			position = result.indexOf("");
 		}
 		return result;
 	};
@@ -2784,3 +2784,5 @@ var YoHoursChecker = function() {
 		
 		return result;
 	};
+
+export { OpeningHoursBuilder, OpeningHoursParser, YoHoursChecker };
